@@ -44,7 +44,7 @@ PROG__unit_loud         (void)
 char       /*----: stop logging ----------------------------------------------*/
 PROG__unit_end          (void)
 {
-   PROC_purge ();
+   PROG_purge ();
    yLOGS_end     ();
    return 0;
 }

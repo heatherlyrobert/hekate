@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5a"
-#define     P_VERTXT    "draw unit tested basics from yEXEC"
+#define     P_VERNUM    "0.5b"
+#define     P_VERTXT    "proc and exec hooking/unhooking added and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

@@ -210,7 +210,7 @@ PROC_unhook             (tPROC **a_proc)
       return rce;
    }
    /*---(unlink exec)--------------------*/
-   /*> rc = yexec_mon__unhook_exec (*a_proc);                                         <*/
+   rc = EXEC_unhook (*a_proc);
    /*> rc = yexec_mon__unhook_lib  (*a_proc);                                         <*/
    /*---(remove base)--------------------*/
    rc = PROC_free (a_proc);
