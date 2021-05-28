@@ -265,3 +265,64 @@ LIBS_unhook             (tPROC *a_proc)
 }
 
 
+
+/*====================------------------------------------====================*/
+/*===----                     searching and finding                    ----===*/
+/*====================------------------------------------====================*/
+static void  o___SEARCH__________o () { return; }
+
+char LIBS_by_cursor  (char a_move, tLIBS **a_curr) { return SHARE_by_cursor ('L', a_move, a_curr); }
+
+
+
+/*====================------------------------------------====================*/
+/*===----                         unit testing                         ----===*/
+/*====================------------------------------------====================*/
+static void  o___UNIT_TEST_______o () { return; }
+
+char*        /*-> unit testing accessor --------------[ ------ [gs.HA0.1B3.K5]*/ /*-[02.0000.00#.#]-*/ /*-[--.---.---.--]-*/
+LIBS__unit              (char *a_question, int n)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         x_fore      = 0;
+   int         x_back      = 0;
+   tLIBS      *x_lib       = NULL;
+   char        rc          =    0;
+   int         c           =    0;
+   char        t           [LEN_RECD]  = "[]";
+   char        s           [LEN_RECD]  = "";
+   char        u           [LEN_RECD]  = "";
+   char        w           [LEN_RECD]  = "";
+   /*---(preprare)-----------------------*/
+   strcpy (unit_answer, "LIBS             : question not understood");
+   /*---(dependency list)----------------*/
+   if      (strcmp (a_question, "count"    )      == 0) {
+      x_lib = l_head; while (x_lib != NULL) { ++x_fore; x_lib = x_lib->m_next; }
+      x_lib = l_tail; while (x_lib != NULL) { ++x_back; x_lib = x_lib->m_prev; }
+      snprintf (unit_answer, LEN_RECD, "LIBS count       : num=%4d, fore=%4d, back=%4d", l_count, x_fore, x_back);
+   }
+   else if (strcmp (a_question, "list"        )   == 0) {
+      snprintf (unit_answer, LEN_RECD, "LIBS list        : num=%4d, head=%-10p, tail=%p", l_count, l_head, l_tail);
+   }
+   else if (strcmp (a_question, "entry"    )      == 0) {
+      x_lib  = l_head;
+      while (x_lib != NULL) {
+         if (c == n)  break;
+         ++c;
+         x_lib = x_lib->m_next;
+      }
+      if (x_lib != NULL) {
+         sprintf  (t, "%2då%.10sæ", strlen (x_lib->terse), x_lib->terse);
+         sprintf  (u, "%2då%.20sæ", strlen (x_lib->name ), x_lib->name);
+         snprintf (unit_answer, LEN_RECD, "LIBS entry  (%2d) : %-14.14s %-24.24s  %-9ld  %2d  %7d",
+               n, t, u, x_lib->inode, x_lib->t_count, x_lib->m_text);
+      } else {
+         snprintf (unit_answer, LEN_RECD, "LIBS entry  (%2d) :  -åæ            -åæ                      -           -        -", n);
+      }
+      return unit_answer;
+   }
+   /*---(complete)-----------------------*/
+   return unit_answer;
+}
+
+

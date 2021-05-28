@@ -12,7 +12,7 @@
 
 #define     P_NAMESAKE  "hekate-triodia (queen of the crossroads)"
 #define     P_HERITAGE  "greek titaness of boundaries, crossroads, witchcraft, and ghosts"
-#define     P_IMAGERY   "triple goddess guarding the boundaries of sky, earth, and sea"
+#define     P_IMAGERY   "triple goddess with three bodies facing three directions"
 #define     P_REASON    "as the goddess of witchcraft, boundaries and the unseen"
 
 #define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
@@ -32,8 +32,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5b"
-#define     P_VERTXT    "proc and exec hooking/unhooking added and unit tested"
+#define     P_VERNUM    "0.5c"
+#define     P_VERTXT    "libs and ties hooking/unhooking added and unit tested"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -60,6 +60,7 @@
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
 #include    <yEXEC.h>        /* CUSTOM  heatherly process execution           */
+#include    <yDLST_solo.h>   /* CUSTOM : heatherly list constants             */
 
 
 
@@ -234,6 +235,17 @@ char        PROG__unit_end          (void);
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+/*---(memory)---------------*/
+char        SHARE_new               (char a_type, void **a_new, char a_force);
+char        SHARE_free              (char a_type, void **a_old);
+char        SHARE_purge             (char a_type);
+/*---(find)-----------------*/
+char        SHARE_by_cursor         (char a_type, char a_move, void **a_curr);
+/*---(done)-----------------*/
+
+
+
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 /*---(support)--------------*/
 char*       EXEC__memory            (tEXEC *a_cur);
 char        EXEC_wipe               (tEXEC *a_new, char a_type);
@@ -245,6 +257,8 @@ char        EXEC_purge              (void);
 /*---(hooking)--------------*/
 char        EXEC_hook               (tPROC *a_proc, char *a_name);
 char        EXEC_unhook             (tPROC *a_proc);
+/*---(searching)------------*/
+char        EXEC_by_cursor          (char a_move, tEXEC **a_curr);
 /*---(unittest)-------------*/
 char*       EXEC__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -263,6 +277,9 @@ char        PROC_purge              (void);
 /*---(hooking)--------------*/
 char        PROC_hook               (tPROC **a_proc, int a_rpid);
 char        PROC_unhook             (tPROC **a_proc);
+/*---(searching)------------*/
+char        PROC_by_cursor          (char a_move, tPROC **a_curr);
+char        PROC_by_rpid            (int a_rpid, tPROC **a_curr);
 /*---(unittest)-------------*/
 char*       PROC__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -278,6 +295,8 @@ char        TIES_new                (void **a_new);
 char        TIES_force              (void **a_new);
 char        TIES_free               (void **a_old);
 char        TIES_purge              (void);
+/*---(searching)------------*/
+char        TIES_by_cursor          (char a_move, tTIES **a_curr);
 /*---(unittest)-------------*/
 char*       TIES__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -296,6 +315,8 @@ char        LIBS_purge              (void);
 /*---(hooking)--------------*/
 char        LIBS_hook               (tPROC *a_proc, char *a_name);
 char        LIBS_unhook             (tPROC *a_proc);
+/*---(searching)------------*/
+char        LIBS_by_cursor          (char a_move, tLIBS **a_curr);
 /*---(unittest)-------------*/
 char*       LIBS__unit              (char *a_question, int n);
 /*---(done)-----------------*/

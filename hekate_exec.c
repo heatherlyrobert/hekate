@@ -218,6 +218,15 @@ EXEC_unhook             (tPROC *a_proc)
 
 
 /*====================------------------------------------====================*/
+/*===----                     searching and finding                    ----===*/
+/*====================------------------------------------====================*/
+static void  o___SEARCH__________o () { return; }
+
+char EXEC_by_cursor  (char a_move, tEXEC **a_curr) { return SHARE_by_cursor ('E', a_move, a_curr); }
+
+
+
+/*====================------------------------------------====================*/
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
 static void  o___UNITTEST________o () { return; }
@@ -236,7 +245,7 @@ EXEC__unit              (char *a_question, int n)
    char        u           [LEN_RECD]  = "";
    char        w           [LEN_RECD]  = "";
    /*---(preprare)-----------------------*/
-   strcpy (unit_answer, "MON              : question not understood");
+   strcpy (unit_answer, "EXEC             : question not understood");
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {
       x_exec = e_head; while (x_exec != NULL) { ++x_fore; x_exec = x_exec->m_next; }

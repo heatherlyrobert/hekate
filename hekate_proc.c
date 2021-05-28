@@ -211,9 +211,57 @@ PROC_unhook             (tPROC **a_proc)
    }
    /*---(unlink exec)--------------------*/
    rc = EXEC_unhook (*a_proc);
-   /*> rc = yexec_mon__unhook_lib  (*a_proc);                                         <*/
+   rc = LIBS_unhook (*a_proc);
    /*---(remove base)--------------------*/
    rc = PROC_free (a_proc);
+   /*---(complete)-----------------------*/
+   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   return rc;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                     searching and finding                    ----===*/
+/*====================------------------------------------====================*/
+static void  o___SEARCH__________o () { return; }
+
+char PROC_by_cursor  (char a_move, tPROC **a_curr) { return SHARE_by_cursor ('P', a_move, a_curr); }
+
+char
+PROC_by_rpid            (int a_rpid, tPROC **a_curr)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tPROC      *p_temp      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   /*---(defaults)-----------------------*/
+   if (a_curr != NULL)  *a_curr = NULL;
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (p_head);
+   --rce;  if (p_head == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk)---------------------------*/
+   p_temp = p_head;
+   while (p_temp != NULL) {
+      if (p_temp->rpid == a_rpid) {
+         p_curr = p_temp;
+         break;
+      }
+      p_temp = p_temp->m_next;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (p_temp);
+   --rce;  if (p_temp == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(normal result)------------------*/
+   if (a_curr != NULL)  *a_curr = p_curr;
    /*---(complete)-----------------------*/
    DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
    return rc;
@@ -241,7 +289,7 @@ PROC__unit              (char *a_question, int n)
    char        u           [LEN_RECD]  = "";
    char        w           [LEN_RECD]  = "";
    /*---(preprare)-----------------------*/
-   strcpy (unit_answer, "MON              : question not understood");
+   strcpy (unit_answer, "PROC             : question not understood");
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {
       x_proc = p_head; while (x_proc != NULL) { ++x_fore; x_proc = x_proc->m_next; }
@@ -252,11 +300,14 @@ PROC__unit              (char *a_question, int n)
       snprintf (unit_answer, LEN_RECD, "PROC list        : num=%4d, head=%-10p, tail=%p", p_count, p_head, p_tail);
    }
    else if (strcmp (a_question, "entry"    )      == 0) {
-      x_proc = p_head;
-      while (x_proc != NULL) {
-         if (c == n)  break;
-         ++c;
-         x_proc = x_proc->m_next;
+      if (n == -1)   x_proc = p_curr;
+      else {
+         x_proc = p_head;
+         while (x_proc != NULL) {
+            if (c == n)  break;
+            ++c;
+            x_proc = x_proc->m_next;
+         }
       }
       if (x_proc != NULL) {
          strcpy (t, " -еж");

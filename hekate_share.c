@@ -254,3 +254,134 @@ SHARE_purge             (char a_type)
    return 0;
 }
 
+
+
+/*====================------------------------------------====================*/
+/*===----                       mass data changes                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___FIND____________o () { return; }
+
+#define  IF_EXEC   if      (a_type == 'E')
+#define  EL_PROC   else if (a_type == 'P')
+#define  EL_TIE    else if (a_type == 'T')
+#define  EL_LIB    else                   
+
+char
+SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tEXEC      *e_temp      = NULL;
+   tPROC      *p_temp      = NULL;
+   tTIES      *t_temp      = NULL;
+   tLIBS      *l_temp      = NULL;
+   void       *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   /*---(defaults)-----------------------*/
+   if (a_curr != NULL)  *a_curr = NULL;
+   IF_EXEC  x_curr = e_temp = e_curr;
+   EL_PROC  x_curr = p_temp = p_curr;
+   EL_TIE   x_curr = t_temp = t_curr;
+   EL_LIB   x_curr = l_temp = l_curr;
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   --rce;  if (x_curr == NULL) {
+      /*---(non-bounce)------------------*/
+      if (strchr (YDLST_DREL, a_move) != NULL) {
+         IF_EXEC  e_curr = e_temp;
+         EL_PROC  p_curr = p_temp;
+         EL_TIE   t_curr = t_temp;
+         EL_LIB   l_curr = l_temp;
+         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         return rce;
+      }
+      /*---(bounce types)----------------*/
+      IF_EXEC  x_curr = e_temp = e_head;
+      EL_PROC  x_curr = p_temp = p_head;
+      EL_TIE   x_curr = t_temp = t_head;
+      EL_LIB   x_curr = l_temp = l_head;
+      DEBUG_YEXEC   yLOG_spoint  (x_curr);
+      if (x_curr == NULL) {
+         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         return rce;
+      }
+   }
+   /*---(switch)-------------------------*/
+   DEBUG_YEXEC  yLOG_schar   (a_move);
+   --rce;  switch (a_move) {
+   case YDLST_HEAD : case YDLST_DHEAD :
+      IF_EXEC  x_curr = e_temp = e_head;
+      EL_PROC  x_curr = p_temp = p_head;
+      EL_TIE   x_curr = t_temp = t_head;
+      EL_LIB   x_curr = l_temp = l_head;
+      break;
+   case YDLST_PREV : case YDLST_DPREV :
+      IF_EXEC  x_curr = e_temp = e_temp->m_prev;
+      EL_PROC  x_curr = p_temp = p_temp->m_prev;
+      EL_TIE   x_curr = t_temp = t_temp->m_prev;
+      EL_LIB   x_curr = l_temp = l_temp->m_prev;
+      break;
+   case YDLST_CURR : case YDLST_DCURR :
+      break;
+   case YDLST_NEXT : case YDLST_DNEXT :
+      IF_EXEC  x_curr = e_temp = e_temp->m_next;
+      EL_PROC  x_curr = p_temp = p_temp->m_next;
+      EL_TIE   x_curr = t_temp = t_temp->m_next;
+      EL_LIB   x_curr = l_temp = l_temp->m_next;
+      break;
+   case YDLST_TAIL : case YDLST_DTAIL :
+      IF_EXEC  x_curr = e_temp = e_tail;
+      EL_PROC  x_curr = p_temp = p_tail;
+      EL_TIE   x_curr = t_temp = t_tail;
+      EL_LIB   x_curr = l_temp = l_tail;
+      break;
+   default         :
+      DEBUG_YEXEC  yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   /*---(check end)----------------------*/
+   --rce;  if (x_curr == NULL) {
+      /*---(bounce off ends)-------------*/
+      if (a_move == YDLST_PREV) {
+         IF_EXEC  x_curr = e_temp = e_head;
+         EL_PROC  x_curr = p_temp = p_head;
+         EL_TIE   x_curr = t_temp = t_head;
+         EL_LIB   x_curr = l_temp = l_head;
+      }
+      if (a_move == YDLST_NEXT) {
+         IF_EXEC  x_curr = e_temp = e_tail;
+         EL_PROC  x_curr = p_temp = p_tail;
+         EL_TIE   x_curr = t_temp = t_tail;
+         EL_LIB   x_curr = l_temp = l_tail;
+      }
+      /*---(no bounce)-------------------*/
+      if (x_curr == NULL) {
+         IF_EXEC  e_curr = e_temp;
+         EL_PROC  p_curr = p_temp;
+         EL_TIE   t_curr = t_temp;
+         EL_LIB   l_curr = l_temp;
+         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         return rce;
+      }
+      /*---(mark trouble)----------------*/
+      DEBUG_YEXEC   yLOG_snote   ("BOUNCE");
+      rc = rce;
+      /*---(done)------------------------*/
+   }
+   /*---(normal result)------------------*/
+   IF_EXEC  x_curr = e_curr = e_temp;
+   EL_PROC  x_curr = p_curr = p_temp;
+   EL_TIE   x_curr = t_curr = t_temp;
+   EL_LIB   x_curr = l_curr = l_temp;
+   /*---(save back)----------------------*/
+   if (a_curr != NULL)  *a_curr = x_curr;
+   /*---(complete)-----------------------*/
+   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   return rc;
+}
+
+
+
