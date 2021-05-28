@@ -147,7 +147,7 @@ PROC_hook               (tPROC **a_proc, int a_rpid)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   tPROC      *p_temp      = NULL;
+   tPROC      *x_proc      = NULL;
    /*---(header)-------------------------*/
    DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -160,30 +160,30 @@ PROC_hook               (tPROC **a_proc, int a_rpid)
    *a_proc = NULL;
    /*---(walk)---------------------------*/
    DEBUG_YEXEC  yLOG_spoint  (p_head);
-   p_temp = p_head;
-   while (p_temp != NULL) {
-      if (p_temp->rpid == a_rpid) {
+   x_proc = p_head;
+   while (x_proc != NULL) {
+      if (x_proc->rpid == a_rpid) {
          DEBUG_YEXEC  yLOG_snote   ("existing");
-         p_curr = p_temp;
+         p_curr = x_proc;
          DEBUG_YEXEC  yLOG_spoint  (p_curr);
          *a_proc = p_curr;
          DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
          return 0;
       }
-      p_temp = p_temp->m_next;
+      x_proc = x_proc->m_next;
    }
    /*---(add if necessary)---------------*/
    DEBUG_YEXEC  yLOG_snote   ("must add");
-   rc = PROC_new (&p_temp);
+   rc = PROC_new (&x_proc);
    DEBUG_YEXEC  yLOG_sint    (rc);
    if (rc < 0) {
       DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(adding)-------------------------*/
-   p_curr = p_temp;
+   p_curr = x_proc;
    DEBUG_YEXEC  yLOG_spoint  (p_curr);
-   p_temp->rpid = a_rpid;
+   x_proc->rpid = a_rpid;
    *a_proc = p_curr;
    /*---(complete)-----------------------*/
    DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
@@ -227,6 +227,7 @@ PROC_unhook             (tPROC **a_proc)
 static void  o___SEARCH__________o () { return; }
 
 char PROC_by_cursor  (char a_move, tPROC **a_curr) { return SHARE_by_cursor ('P', a_move, a_curr); }
+char PROC_by_index   (int a_index, tPROC **a_curr) { return SHARE_by_index  ('P', a_index, a_curr); }
 
 char
 PROC_by_rpid            (int a_rpid, tPROC **a_curr)
@@ -234,7 +235,7 @@ PROC_by_rpid            (int a_rpid, tPROC **a_curr)
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
    char        rc          =    0;
-   tPROC      *p_temp      = NULL;
+   tPROC      *x_proc      = NULL;
    /*---(header)-------------------------*/
    DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
    /*---(defaults)-----------------------*/
@@ -246,17 +247,17 @@ PROC_by_rpid            (int a_rpid, tPROC **a_curr)
       return rce;
    }
    /*---(walk)---------------------------*/
-   p_temp = p_head;
-   while (p_temp != NULL) {
-      if (p_temp->rpid == a_rpid) {
-         p_curr = p_temp;
+   x_proc = p_head;
+   while (x_proc != NULL) {
+      if (x_proc->rpid == a_rpid) {
+         p_curr = x_proc;
          break;
       }
-      p_temp = p_temp->m_next;
+      x_proc = x_proc->m_next;
    }
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (p_temp);
-   --rce;  if (p_temp == NULL) {
+   DEBUG_YEXEC  yLOG_spoint  (x_proc);
+   --rce;  if (x_proc == NULL) {
       DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
@@ -300,15 +301,16 @@ PROC__unit              (char *a_question, int n)
       snprintf (unit_answer, LEN_RECD, "PROC list        : num=%4d, head=%-10p, tail=%p", p_count, p_head, p_tail);
    }
    else if (strcmp (a_question, "entry"    )      == 0) {
-      if (n == -1)   x_proc = p_curr;
-      else {
-         x_proc = p_head;
-         while (x_proc != NULL) {
-            if (c == n)  break;
-            ++c;
-            x_proc = x_proc->m_next;
-         }
-      }
+      PROC_by_index (n, &x_proc);
+      /*> if (n == -1)   x_proc = p_curr;                                             <* 
+       *> else {                                                                      <* 
+       *>    x_proc = p_head;                                                         <* 
+       *>    while (x_proc != NULL) {                                                 <* 
+       *>       if (c == n)  break;                                                   <* 
+       *>       ++c;                                                                  <* 
+       *>       x_proc = x_proc->m_next;                                              <* 
+       *>    }                                                                        <* 
+       *> }                                                                           <*/
       if (x_proc != NULL) {
          strcpy (t, " -еж");
          strcpy (s, "-");

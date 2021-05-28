@@ -223,6 +223,90 @@ EXEC_unhook             (tPROC *a_proc)
 static void  o___SEARCH__________o () { return; }
 
 char EXEC_by_cursor  (char a_move, tEXEC **a_curr) { return SHARE_by_cursor ('E', a_move, a_curr); }
+char EXEC_by_index   (int a_index, tEXEC **a_curr) { return SHARE_by_index  ('E', a_index, a_curr); }
+
+char
+EXEC_by_inode           (int a_inode, tEXEC **a_curr)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tEXEC      *x_exec      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   /*---(defaults)-----------------------*/
+   if (a_curr != NULL)  *a_curr = NULL;
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (e_head);
+   --rce;  if (e_head == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk)---------------------------*/
+   x_exec = e_head;
+   while (x_exec != NULL) {
+      if (x_exec->inode == a_inode) {
+         e_curr = x_exec;
+         break;
+      }
+      x_exec = x_exec->m_next;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (x_exec);
+   --rce;  if (x_exec == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(normal result)------------------*/
+   if (a_curr != NULL)  *a_curr = e_curr;
+   /*---(complete)-----------------------*/
+   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   return rc;
+}
+
+char
+EXEC_by_name            (char *a_name, tEXEC **a_curr)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tEXEC      *x_exec      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   /*---(defaults)-----------------------*/
+   if (a_curr != NULL)  *a_curr = NULL;
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (e_head);
+   --rce;  if (e_head == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_YEXEC  yLOG_spoint  (a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk)---------------------------*/
+   x_exec = e_head;
+   while (x_exec != NULL) {
+      if (strcmp (x_exec->name, a_name) == 0) {
+         e_curr = x_exec;
+         break;
+      }
+      x_exec = x_exec->m_next;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (x_exec);
+   --rce;  if (x_exec == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(normal result)------------------*/
+   if (a_curr != NULL)  *a_curr = e_curr;
+   /*---(complete)-----------------------*/
+   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   return rc;
+}
 
 
 
@@ -256,12 +340,7 @@ EXEC__unit              (char *a_question, int n)
       snprintf (unit_answer, LEN_RECD, "EXEC list        : num=%4d, head=%-10p, tail=%p", e_count, e_head, e_tail);
    }
    else if (strcmp (a_question, "entry"    )      == 0) {
-      x_exec = e_head;
-      while (x_exec != NULL) {
-         if (c == n)  break;
-         ++c;
-         x_exec = x_exec->m_next;
-      }
+      EXEC_by_index (n, &x_exec);
       if (x_exec != NULL) {
          sprintf  (t, "%2då%.10sæ", strlen (x_exec->name), x_exec->name);
          snprintf (unit_answer, LEN_RECD, "EXEC entry  (%2d) : %-14.14s %-9d   %2d %-10p %p",
