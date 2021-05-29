@@ -271,7 +271,10 @@ LIBS_unhook             (tPROC *a_proc)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-char LIBS_by_cursor  (char a_move, tLIBS **a_curr) { return SHARE_by_cursor ('L', a_move, a_curr); }
+char LIBS_by_cursor  (char a_move, tLIBS **a_curr)  { return SHARE_by_cursor ('L', a_move, a_curr); }
+char LIBS_by_index   (int a_index, tLIBS **a_curr)  { return SHARE_by_index  ('L', a_index, a_curr); }
+char LIBS_by_inode   (int a_inode, tLIBS **a_curr)  { return SHARE_by_inode  ('L', a_inode, a_curr); }
+char LIBS_by_name    (char *a_name, tLIBS **a_curr) { return SHARE_by_name   ('L', a_name, a_curr); }
 
 
 
@@ -305,12 +308,7 @@ LIBS__unit              (char *a_question, int n)
       snprintf (unit_answer, LEN_RECD, "LIBS list        : num=%4d, head=%-10p, tail=%p", l_count, l_head, l_tail);
    }
    else if (strcmp (a_question, "entry"    )      == 0) {
-      x_lib  = l_head;
-      while (x_lib != NULL) {
-         if (c == n)  break;
-         ++c;
-         x_lib = x_lib->m_next;
-      }
+      LIBS_by_index (n, &x_lib);
       if (x_lib != NULL) {
          sprintf  (t, "%2då%.10sæ", strlen (x_lib->terse), x_lib->terse);
          sprintf  (u, "%2då%.20sæ", strlen (x_lib->name ), x_lib->name);

@@ -215,6 +215,35 @@ EXEC_unhook             (tPROC *a_proc)
    return rc;
 }
 
+char
+EXEC_rehook             (tPROC *a_proc, char *a_name)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(header)-------------------------*/
+   DEBUG_YEXEC  yLOG_enter   (__FUNCTION__);
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_point   ("a_proc"    , a_proc);
+   --rce;  if (a_proc == NULL) {
+      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(unhook)-------------------------*/
+   rc = EXEC_unhook (a_proc);
+   DEBUG_YEXEC  yLOG_value   ("unhook"    , rc);
+   /*---(re-hook)------------------------*/
+   rc = EXEC_hook   (a_proc, a_name);
+   DEBUG_YEXEC  yLOG_value   ("hook"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_YDLST  yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
 
 
 /*====================------------------------------------====================*/
@@ -222,91 +251,10 @@ EXEC_unhook             (tPROC *a_proc)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-char EXEC_by_cursor  (char a_move, tEXEC **a_curr) { return SHARE_by_cursor ('E', a_move, a_curr); }
-char EXEC_by_index   (int a_index, tEXEC **a_curr) { return SHARE_by_index  ('E', a_index, a_curr); }
-
-char
-EXEC_by_inode           (int a_inode, tEXEC **a_curr)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tEXEC      *x_exec      = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
-   /*---(defaults)-----------------------*/
-   if (a_curr != NULL)  *a_curr = NULL;
-   /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (e_head);
-   --rce;  if (e_head == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(walk)---------------------------*/
-   x_exec = e_head;
-   while (x_exec != NULL) {
-      if (x_exec->inode == a_inode) {
-         e_curr = x_exec;
-         break;
-      }
-      x_exec = x_exec->m_next;
-   }
-   /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (x_exec);
-   --rce;  if (x_exec == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(normal result)------------------*/
-   if (a_curr != NULL)  *a_curr = e_curr;
-   /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
-   return rc;
-}
-
-char
-EXEC_by_name            (char *a_name, tEXEC **a_curr)
-{
-   /*---(locals)-----------+-----+-----+-*/
-   char        rce         =  -10;
-   char        rc          =    0;
-   tEXEC      *x_exec      = NULL;
-   /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
-   /*---(defaults)-----------------------*/
-   if (a_curr != NULL)  *a_curr = NULL;
-   /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (e_head);
-   --rce;  if (e_head == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   DEBUG_YEXEC  yLOG_spoint  (a_name);
-   --rce;  if (a_name == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(walk)---------------------------*/
-   x_exec = e_head;
-   while (x_exec != NULL) {
-      if (strcmp (x_exec->name, a_name) == 0) {
-         e_curr = x_exec;
-         break;
-      }
-      x_exec = x_exec->m_next;
-   }
-   /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (x_exec);
-   --rce;  if (x_exec == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
-      return rce;
-   }
-   /*---(normal result)------------------*/
-   if (a_curr != NULL)  *a_curr = e_curr;
-   /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
-   return rc;
-}
+char EXEC_by_cursor  (char a_move, tEXEC **a_curr)  { return SHARE_by_cursor ('E', a_move, a_curr); }
+char EXEC_by_index   (int a_index, tEXEC **a_curr)  { return SHARE_by_index  ('E', a_index, a_curr); }
+char EXEC_by_inode   (int a_inode, tEXEC **a_curr)  { return SHARE_by_inode  ('E', a_inode, a_curr); }
+char EXEC_by_name    (char *a_name, tEXEC **a_curr) { return SHARE_by_name   ('E', a_name, a_curr); }
 
 
 

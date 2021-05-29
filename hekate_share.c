@@ -442,5 +442,124 @@ SHARE_by_index          (char a_type, int a_index, void **a_curr)
    return 0;
 }
 
+char
+SHARE_by_inode          (char a_type, int a_inode, void **a_curr)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   int         x_inode     =    0;
+   tEXEC      *x_exec      = NULL;
+   tLIBS      *x_libs      = NULL;
+   void       *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   DEBUG_DATA   yLOG_schar   (a_type);
+   DEBUG_DATA   yLOG_sint    (a_inode);
+   /*---(defaults)-----------------------*/
+   if (a_curr != NULL)  *a_curr = NULL;
+   /*---(prepare)------------------------*/
+   --rce;
+   IF_EXEC   x_curr = x_exec = e_head;
+   EL_LIBS   x_curr = x_libs = l_head;
+   ELSE {
+      DEBUG_DATA   yLOG_snote   ("unknown type");
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (x_curr);
+   --rce;  if (x_curr == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk)---------------------------*/
+   while (x_curr != NULL) {
+      rc = 0;
+      IF_EXEC   x_inode = x_exec->inode;
+      EL_LIBS   x_inode = x_libs->inode;
+      if (x_inode == a_inode) {
+         IF_EXEC  e_curr = x_exec;
+         EL_LIBS  l_curr = x_libs;
+         break;
+      }
+      IF_EXEC   x_curr = x_exec = x_exec->m_next;
+      EL_LIBS   x_curr = x_libs = x_libs->m_next;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   --rce;  if (x_curr == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(normal result)------------------*/
+   if (a_curr != NULL)  *a_curr = x_curr;
+   /*---(complete)-----------------------*/
+   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
+char
+SHARE_by_name           (char a_type, char *a_name, tEXEC **a_curr)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char       *x_name      = NULL;
+   tEXEC      *x_exec      = NULL;
+   tLIBS      *x_libs      = NULL;
+   void       *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   DEBUG_DATA   yLOG_schar   (a_type);
+   DEBUG_DATA   yLOG_snote   (a_name);
+   /*---(defaults)-----------------------*/
+   if (a_curr != NULL)  *a_curr = NULL;
+   /*---(prepare)------------------------*/
+   --rce;
+   IF_EXEC   x_curr = x_exec = e_head;
+   EL_LIBS   x_curr = x_libs = l_head;
+   ELSE {
+      DEBUG_DATA   yLOG_snote   ("unknown type");
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (x_curr);
+   --rce;  if (x_curr == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_spoint  (a_name);
+   --rce;  if (a_name == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk)---------------------------*/
+   while (x_curr != NULL) {
+      rc = 0;
+      IF_EXEC   x_name  = x_exec->name;
+      EL_LIBS   x_name  = x_libs->terse;
+      if (strcmp (x_name, a_name) == 0) {
+         IF_EXEC  e_curr = x_exec;
+         EL_LIBS  l_curr = x_libs;
+         break;
+      }
+      IF_EXEC   x_curr = x_exec = x_exec->m_next;
+      EL_LIBS   x_curr = x_libs = x_libs->m_next;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   --rce;  if (x_curr == NULL) {
+      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(normal result)------------------*/
+   if (a_curr != NULL)  *a_curr = x_curr;
+   /*---(complete)-----------------------*/
+   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
 
 

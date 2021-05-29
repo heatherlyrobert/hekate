@@ -7,10 +7,11 @@
 
 #define     P_FOCUS     "OS (kernel/operrating system)"
 #define     P_NICHE     "pr (process anaylsis)"
-#define     P_SUBJECT   "process and memory management
+#define     P_SUBJECT   "process and memory monitoring"
 #define     P_PURPOSE   "deep dive on the process and memory execution environment"
 
 #define     P_NAMESAKE  "hekate-triodia (queen of the crossroads)"
+#define     P_PRONOUNCE "heck-uh-tea"
 #define     P_HERITAGE  "greek titaness of boundaries, crossroads, witchcraft, and ghosts"
 #define     P_IMAGERY   "triple goddess with three bodies facing three directions"
 #define     P_REASON    "as the goddess of witchcraft, boundaries and the unseen"
@@ -18,7 +19,7 @@
 #define     P_ONELINE   P_NAMESAKE " " P_SUBJECT
 
 #define     P_BASENAME  "hekate"
-#define     P_FULLPATH  "/usr/local/sbin/kehate"
+#define     P_FULLPATH  "/usr/local/sbin/hekate"
 #define     P_SUFFIX    "n/a"
 #define     P_CONTENT   "n/a"
 
@@ -32,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5d"
-#define     P_VERTXT    "proc and exec cursoring and searching unit tested"
+#define     P_VERNUM    "0.5e"
+#define     P_VERTXT    "unit tested lib cursoring and searching, plus exec switching"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -242,6 +243,8 @@ char        SHARE_purge             (char a_type);
 /*---(find)-----------------*/
 char        SHARE_by_cursor         (char a_type, char a_move, void **a_curr);
 char        SHARE_by_index          (char a_type, int a_index, void **a_curr);
+char        SHARE_by_inode          (char a_type, int a_inode, void **a_curr);
+char        SHARE_by_name           (char a_type, char *a_name, tEXEC **a_curr);
 /*---(done)-----------------*/
 
 
@@ -258,6 +261,7 @@ char        EXEC_purge              (void);
 /*---(hooking)--------------*/
 char        EXEC_hook               (tPROC *a_proc, char *a_name);
 char        EXEC_unhook             (tPROC *a_proc);
+char        EXEC_rehook             (tPROC *a_proc, char *a_name);
 /*---(searching)------------*/
 char        EXEC_by_cursor          (char a_move, tEXEC **a_curr);
 char        EXEC_by_index           (int a_index, tEXEC **a_curr);
@@ -322,6 +326,9 @@ char        LIBS_hook               (tPROC *a_proc, char *a_name);
 char        LIBS_unhook             (tPROC *a_proc);
 /*---(searching)------------*/
 char        LIBS_by_cursor          (char a_move, tLIBS **a_curr);
+char        LIBS_by_index           (int a_index, tLIBS **a_curr);
+char        LIBS_by_inode           (int a_inode, tLIBS **a_curr);
+char        LIBS_by_name            (char *a_name, tLIBS **a_curr);
 /*---(unittest)-------------*/
 char*       LIBS__unit              (char *a_question, int n);
 /*---(done)-----------------*/
