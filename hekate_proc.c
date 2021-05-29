@@ -30,7 +30,6 @@ PROC__memory            (tPROC *a_cur)
    strlcpy (s_print, "е__.______.___________.___.___._.__.___ж", LEN_RECD);
    ++n;  if (a_cur->rpid        >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->ppid        >  0)           s_print [n] = 'X';
-   ++n;  if (a_cur->land        != '-')         s_print [n] = 'X';
    ++n;
    ++n;  if (a_cur->c_state     != '-')         s_print [n] = 'X';
    ++n;  if (a_cur->c_utime     >  0)           s_print [n] = 'X';
@@ -81,7 +80,6 @@ PROC_wipe               (tPROC *a_new, char a_type)
    if (a_type == '*') {
       a_new->rpid     = 0;
       a_new->ppid     = 0;
-      a_new->land     = '-';
    }
    /*---(cpu)----------------------------*/
    a_new->c_state  = '-';
@@ -325,7 +323,7 @@ PROC__unit              (char *a_question, int n)
          if (x_proc->t_head)   sprintf  (u, "%2dе%.10sж", strlen (x_proc->t_head->l_link), x_proc->t_head->l_link);
          if (x_proc->t_tail)   sprintf  (w, "%2dе%.10sж", strlen (x_proc->t_tail->l_link), x_proc->t_tail->l_link);
          snprintf (unit_answer, LEN_RECD, "PROC entry  (%2d) : %-5d %-14.14s %-9.9s %-5d %c   %2d %-14.14s %s",
-               n, x_proc->rpid, t, s, x_proc->ppid, x_proc->land,
+               n, x_proc->rpid, t, s, x_proc->ppid, '-',
                x_proc->t_count, u, w);
       } else {
          snprintf (unit_answer, LEN_RECD, "PROC entry  (%2d) : -      -еж           -         -     -    -  -еж            -еж", n);

@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5f"
-#define     P_VERTXT    "unit tested funcy cursoring by parents (exec, libs, proc)"
+#define     P_VERNUM    "0.5g"
+#define     P_VERTXT    "unit tested instantaneous cpu data gathering (not since last use)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -78,6 +78,8 @@ static struct cEXEC {
    long        inode;
    /*---(memory)------------*/
    int         m_text;
+   int         m_code;   /* bytes of address space in full pages */
+   int         m_data;   /* bytes of address space in full pages */
    /*---(size)--------------*/
    int         s_total;
    int         s_text;
@@ -104,7 +106,6 @@ static struct cPROC {
    /*---(master)------------*/
    int         rpid;
    int         ppid;
-   char        land;
    /*---(cpu)---------------*/
    char        c_state;
    long        c_utime;
@@ -340,4 +341,7 @@ char*       LIBS__unit              (char *a_question, int n);
 /*---(done)-----------------*/
 
 
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        CPU_detail              (tPROC *a_proc, char *a_file);
+char*       CPU__unit               (char *a_question, int n);
 
