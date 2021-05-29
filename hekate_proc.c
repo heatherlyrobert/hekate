@@ -226,8 +226,9 @@ PROC_unhook             (tPROC **a_proc)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-char PROC_by_cursor  (char a_move, tPROC **a_curr) { return SHARE_by_cursor ('P', a_move, a_curr); }
-char PROC_by_index   (int a_index, tPROC **a_curr) { return SHARE_by_index  ('P', a_index, a_curr); }
+char PROC_by_cursor      (char a_move, tPROC **a_curr)                  { return SHARE_by_cursor ('P', a_move, a_curr); }
+char PROC_by_exec_cursor (tEXEC *a_owner, char a_move, tPROC **a_curr)  { return SHARE_cursor_by_owner ('E', a_owner, a_move, a_curr); }
+char PROC_by_index       (int a_index, tPROC **a_curr)                  { return SHARE_by_index  ('P', a_index, a_curr); }
 
 char
 PROC_by_rpid            (int a_rpid, tPROC **a_curr)
@@ -267,6 +268,7 @@ PROC_by_rpid            (int a_rpid, tPROC **a_curr)
    DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
    return rc;
 }
+
 
 
 

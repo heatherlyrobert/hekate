@@ -89,7 +89,18 @@ char TIES_purge   (void)         { return SHARE_purge ('T'); }
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-char TIES_by_cursor  (char a_move, tTIES **a_curr) { return SHARE_by_cursor ('T', a_move, a_curr); }
+char TIES_by_cursor      (char a_move, tTIES **a_curr)                  { return SHARE_by_cursor ('T', a_move, a_curr); }
+char TIES_by_proc_cursor (tPROC *a_owner, char a_move, tTIES **a_curr)  { return SHARE_cursor_by_owner ('P', a_owner, a_move, a_curr); }
+char TIES_by_libs_cursor (tLIBS *a_owner, char a_move, tTIES **a_curr)  { return SHARE_cursor_by_owner ('L', a_owner, a_move, a_curr); }
+char TIES_by_index       (int a_index, tTIES **a_curr)                  { return SHARE_by_index  ('T', a_index, a_curr); }
+
+char
+TIES_by_exec_cursor     (tEXEC *a_owner, char a_move, tTIES **a_curr)
+{
+   char        rce         =  -10;
+   --rce;  if (a_owner == NULL)  return rce;
+   return SHARE_cursor_by_owner ('P', a_owner->p_head, a_move, a_curr);
+}
 
 
 
@@ -123,12 +134,7 @@ TIES__unit              (char *a_question, int n)
       snprintf (unit_answer, LEN_RECD, "TIES list        : num=%4d, head=%-10p, tail=%p", t_count, t_head, t_tail);
    }
    else if (strcmp (a_question, "entry"    )      == 0) {
-      x_tie  = t_head;
-      while (x_tie != NULL) {
-         if (c == n)  break;
-         ++c;
-         x_tie = x_tie->m_next;
-      }
+      TIES_by_index (n, &x_tie);
       if (x_tie != NULL) {
          strcpy (t, " -еж");
          strcpy (u, " -еж");

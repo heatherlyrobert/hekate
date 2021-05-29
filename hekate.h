@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5e"
-#define     P_VERTXT    "unit tested lib cursoring and searching, plus exec switching"
+#define     P_VERNUM    "0.5f"
+#define     P_VERTXT    "unit tested funcy cursoring by parents (exec, libs, proc)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -242,6 +242,7 @@ char        SHARE_free              (char a_type, void **a_old);
 char        SHARE_purge             (char a_type);
 /*---(find)-----------------*/
 char        SHARE_by_cursor         (char a_type, char a_move, void **a_curr);
+char        SHARE_cursor_by_owner   (char a_type, void *a_owner, char a_move, void **a_curr);
 char        SHARE_by_index          (char a_type, int a_index, void **a_curr);
 char        SHARE_by_inode          (char a_type, int a_inode, void **a_curr);
 char        SHARE_by_name           (char a_type, char *a_name, tEXEC **a_curr);
@@ -287,6 +288,7 @@ char        PROC_hook               (tPROC **a_proc, int a_rpid);
 char        PROC_unhook             (tPROC **a_proc);
 /*---(searching)------------*/
 char        PROC_by_cursor          (char a_move, tPROC **a_curr);
+char        PROC_by_exec_cursor     (tEXEC *a_owner, char a_move, tPROC **a_curr);
 char        PROC_by_index           (int a_index, tPROC **a_curr);
 char        PROC_by_rpid            (int a_rpid, tPROC **a_curr);
 /*---(unittest)-------------*/
@@ -306,6 +308,10 @@ char        TIES_free               (void **a_old);
 char        TIES_purge              (void);
 /*---(searching)------------*/
 char        TIES_by_cursor          (char a_move, tTIES **a_curr);
+char        TIES_by_exec_cursor     (tEXEC *a_owner, char a_move, tTIES **a_curr);
+char        TIES_by_proc_cursor     (tPROC *a_owner, char a_move, tTIES **a_curr);
+char        TIES_by_libs_cursor     (tLIBS *a_owner, char a_move, tTIES **a_curr);
+char        TIES_by_index           (int a_index, tTIES **a_curr);
 /*---(unittest)-------------*/
 char*       TIES__unit              (char *a_question, int n);
 /*---(done)-----------------*/
