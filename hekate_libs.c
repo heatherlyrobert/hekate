@@ -27,7 +27,7 @@ LIBS__memory            (tLIBS *a_cur)
       strlcpy (s_print, "n/a", LEN_RECD);
       return s_print;
    }
-   strlcpy (s_print, "å___.____._____.__.___æ", LEN_RECD);
+   strlcpy (s_print, "å___.____.____.__.___æ", LEN_RECD);
    ++n;  if (a_cur->terse   [0] != '\0')        s_print [n] = 'X';
    ++n;  if (a_cur->name    [0] != '\0')        s_print [n] = 'X';
    ++n;  if (a_cur->inode       >  0)           s_print [n] = 'X';
@@ -41,7 +41,6 @@ LIBS__memory            (tLIBS *a_cur)
    ++n;  if (a_cur->s_text      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->s_data      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->s_bss       >  0)           s_print [n] = 'X';
-   ++n;  if (a_cur->s_disk      >  0)           s_print [n] = 'X';
    ++n;
    ++n;  if (a_cur->m_prev      != NULL)        s_print [n] = 'X';
    ++n;  if (a_cur->m_next      != NULL)        s_print [n] = 'X';
@@ -76,7 +75,6 @@ LIBS_wipe               (tLIBS *a_new, char a_type)
    a_new->s_text   = 0;
    a_new->s_data   = 0;
    a_new->s_bss    = 0;
-   a_new->s_disk   = 0;
    /*---(links)--------------------------*/
    if (a_type == '*') {
       a_new->m_prev   = NULL;

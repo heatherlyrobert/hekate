@@ -1,0 +1,40 @@
+Name:	X
+State:	S (sleeping)
+Tgid:	2391
+Ngid:	0
+Pid:	2391
+PPid:	2390
+TracerPid:	0
+Uid:	0	0	0	0
+Gid:	0	0	0	0
+FDSize:	64
+Groups:	0 1 2 3 4 6 10 11 26 27 
+VmPeak:	  415144 kB
+VmSize:	  381780 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	  138512 kB
+VmRSS:	  100552 kB
+VmData:	  167152 kB
+VmStk:	     136 kB
+VmExe:	    2124 kB
+VmLib:	   23536 kB
+VmPTE:	     468 kB
+VmPMD:	      12 kB
+VmSwap:	       0 kB
+Threads:	4
+SigQ:	4/30581
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000000000
+SigIgn:	0000000000381000
+SigCgt:	00000001c18066ef
+CapInh:	0000000000000000
+CapPrm:	0000003fffffffff
+CapEff:	0000003fffffffff
+CapBnd:	0000003fffffffff
+Seccomp:	0
+Cpus_allowed:	f
+Cpus_allowed_list:	0-3
+voluntary_ctxt_switches:	6174632
+nonvoluntary_ctxt_switches:	456340

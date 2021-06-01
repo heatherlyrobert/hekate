@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5h"
-#define     P_VERTXT    "unit tested pre-work getting process names, exe, and cmdline"
+#define     P_VERNUM    "0.5i"
+#define     P_VERTXT    "unit tested pre-work sizes and updates to DATA_cpu, DATA_mem"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -83,6 +83,7 @@ static struct cEXEC {
    int         m_cons;   /* read only vars */
    int         m_heap;   /* shared heap */
    int         m_kern;   /* kernel helpers for executable */
+   /*---(calcluated)--------*/
    int         m_code;   /* bytes of address space in full pages */
    int         m_data;   /* bytes of address space in full pages */
    /*---(size)--------------*/
@@ -90,7 +91,6 @@ static struct cEXEC {
    int         s_text;
    int         s_data;
    int         s_bss;
-   int         s_disk;
    /*---(master list)-------*/
    tEXEC      *m_prev;
    tEXEC      *m_next;
@@ -120,12 +120,12 @@ static struct cPROC {
    char        c_snice;
    char        c_flag;
    /*---(memory)------------*/
-   long        m_full;
-   long        m_proc;
-   long        m_data;
-   long        m_heap;
-   long        m_stack;
-   long        m_other;
+   int         m_full;
+   int         m_proc;
+   int         m_data;
+   int         m_heap;
+   int         m_stack;
+   int         m_other;
    char        m_flag;
    /*---(disk)--------------*/
    long        d_read;
@@ -194,7 +194,6 @@ static struct cLIBS {
    int         s_text;
    int         s_data;
    int         s_bss;
-   int         s_disk;
    /*---(procs)-------------*/
    tTIES      *t_head;
    tTIES      *t_tail;
@@ -348,12 +347,21 @@ char*       LIBS__unit              (char *a_question, int n);
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
-char        DATA_exename            (char *a_file, char *a_base, char *a_full);
-char        DATA_pubname            (char *a_file, char *a_public);
-char        DATA_cmdline            (char *a_file, char *a_cmdline);
-char        CPU_detail              (tPROC *a_proc, char *a_file);
-char*       CPU__unit               (char *a_question, int n);
+/*---(prework)--------------*/
+char        DATA__exename           (char *a_file, char *a_base, char *a_full);
+char        DATA__pubname           (char *a_file, char *a_public);
+char        DATA__cmdline           (char *a_file, char *a_cmdline);
+char        DATA__size              (tPROC *a_proc);
+char        DATA_prework            (int a_rpid, tPROC **a_proc, char a_unit);
+/*---(detail)---------------*/
+char        DATA_cpu                (tPROC *a_proc, char *a_file);
+char        DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, int a_inode, char *a_perm, int a_full, int a_rss, int a_pvt);
+char        DATA_mem                (tPROC *a_proc, char *a_file);
+/*---(driver)---------------*/
+char        DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit);
+/*---(unittest)-------------*/
+char*       DATA__unit              (char *a_question, int n);
+/*---(done)-----------------*/
 
-/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
-char        MEM_detail              (tPROC *a_proc, char *a_file);
-char*       MEM__unit               (char *a_question, int n);
+
+

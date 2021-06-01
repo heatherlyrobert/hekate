@@ -1,0 +1,40 @@
+Name:	Eterm
+State:	S (sleeping)
+Tgid:	7127
+Ngid:	0
+Pid:	7127
+PPid:	2413
+TracerPid:	0
+Uid:	0	0	0	0
+Gid:	0	0	0	0
+FDSize:	64
+Groups:	0 1 2 3 4 6 10 11 26 27 
+VmPeak:	  104744 kB
+VmSize:	  103600 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	   14640 kB
+VmRSS:	    7252 kB
+VmData:	    1768 kB
+VmStk:	     136 kB
+VmExe:	       4 kB
+VmLib:	    8520 kB
+VmPTE:	     200 kB
+VmPMD:	      12 kB
+VmSwap:	       0 kB
+Threads:	1
+SigQ:	1/30581
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000000000
+SigIgn:	0000000000381201
+SigCgt:	00000001c00144ee
+CapInh:	0000000000000000
+CapPrm:	0000003fffffffff
+CapEff:	0000003fffffffff
+CapBnd:	0000003fffffffff
+Seccomp:	0
+Cpus_allowed:	f
+Cpus_allowed_list:	0-3
+voluntary_ctxt_switches:	1605667
+nonvoluntary_ctxt_switches:	125031

@@ -65,13 +65,13 @@ PROG_review             (void)
       /*---(gather)----------------------*/
       printf ("%d\n", x_rpid);
       sprintf (x_name, "/proc/%d/stat", x_rpid);
-      rc = CPU_detail (x_new, x_name);
+      rc = DATA_cpu  (x_new, x_name);
       if (rc < 0)  {
          PROC_unhook (&x_new);
          continue;
       }
       sprintf (x_name, "/proc/%d/smaps", x_rpid);
-      rc = MEM_detail (x_new, x_name);
+      rc = DATA_mem (x_new, x_name);
       if (rc < 0)  continue;
       /*---(summary)---------------------*/
       printf ("\n\n\n");

@@ -1,0 +1,40 @@
+Name:	vi
+State:	S (sleeping)
+Tgid:	26436
+Ngid:	0
+Pid:	26436
+PPid:	26434
+TracerPid:	0
+Uid:	0	0	0	0
+Gid:	0	0	0	0
+FDSize:	64
+Groups:	0 1 2 3 4 6 10 11 26 27 
+VmPeak:	   56516 kB
+VmSize:	   55960 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	   18260 kB
+VmRSS:	   18260 kB
+VmData:	   11900 kB
+VmStk:	     136 kB
+VmExe:	    2264 kB
+VmLib:	    5936 kB
+VmPTE:	     116 kB
+VmPMD:	      12 kB
+VmSwap:	       0 kB
+Threads:	1
+SigQ:	3/30581
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000000000
+SigIgn:	0000000000003000
+SigCgt:	000000006f824eff
+CapInh:	0000000000000000
+CapPrm:	0000003fffffffff
+CapEff:	0000003fffffffff
+CapBnd:	0000003fffffffff
+Seccomp:	0
+Cpus_allowed:	f
+Cpus_allowed_list:	0-3
+voluntary_ctxt_switches:	78734
+nonvoluntary_ctxt_switches:	70079
