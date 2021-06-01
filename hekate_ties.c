@@ -138,12 +138,12 @@ TIES__unit              (char *a_question, int n)
       if (x_tie != NULL) {
          strcpy (t, " -еж");
          strcpy (u, " -еж");
-         if (x_tie->p_link != NULL && x_tie->p_link->e_link)  sprintf  (t, "%2dе%.10sж", strlen (x_tie->p_link->e_link->name), x_tie->p_link->e_link->name);
+         if (x_tie->p_link != NULL && x_tie->p_link->e_link)  sprintf  (t, "%2dе%.10sж", strlen (x_tie->p_link->e_link->base), x_tie->p_link->e_link->base);
          if (x_tie->l_link != NULL)  sprintf  (u, "%2dе%.10sж", strlen (x_tie->l_link->terse), x_tie->l_link->terse);
-         snprintf (unit_answer, LEN_RECD, "TIES entry  (%2d) : %-5d  %-14.14s %-14.14s   %7d %7d",
-               n, x_tie->p_link->rpid, t, u, x_tie->m_data, x_tie->m_heap);
+         snprintf (unit_answer, LEN_RECD, "TIES entry  (%2d) : %-5d  %-14.14s %-14.14s   %7d",
+               n, x_tie->p_link->rpid, t, u, x_tie->m_data);
       } else {
-         snprintf (unit_answer, LEN_RECD, "TIES entry  (%2d) : -       -еж            -еж                   -       -", n);
+         snprintf (unit_answer, LEN_RECD, "TIES entry  (%2d) : -       -еж            -еж                   -", n);
       }
       return unit_answer;
    }

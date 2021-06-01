@@ -27,11 +27,15 @@ EXEC__memory            (tEXEC *a_cur)
       strlcpy (s_print, "n/a", LEN_RECD);
       return s_print;
    }
-   strlcpy (s_print, "å__.___._____.__.___æ", LEN_RECD);
-   ++n;  if (a_cur->name [0]    != '\0')        s_print [n] = 'X';
+   strlcpy (s_print, "å__.____._____.__.___æ", LEN_RECD);
+   ++n;  if (a_cur->base [0]    != '\0')        s_print [n] = 'X';
+   ++n;  if (a_cur->full [0]    != '\0')        s_print [n] = 'X';
    ++n;  if (a_cur->inode       >  0)           s_print [n] = 'X';
    ++n;
    ++n;  if (a_cur->m_text      >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->m_cons      >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->m_heap      >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->m_kern      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_code      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_data      >  0)           s_print [n] = 'X';
    ++n;
@@ -60,11 +64,15 @@ EXEC_wipe               (tEXEC *a_new, char a_type)
     */
    /*---(memory)-------------------------*/
    a_new->m_text   = 0;
+   a_new->m_cons   = 0;
+   a_new->m_heap   = 0;
+   a_new->m_kern   = 0;
    a_new->m_code   = 0;
    a_new->m_data   = 0;
    /*---(master)-------------------------*/
    if (a_type == '-')  return 0;
-   a_new->name [0] = '\0';
+   a_new->base [0] = '\0';
+   a_new->full [0] = '\0';
    a_new->inode    = 0;
    /*---(size)---------------------------*/
    a_new->s_total  = 0;
@@ -125,7 +133,7 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
    DEBUG_YEXEC  yLOG_snote   (a_name);
    /*---(pre-check)----------------------*/
    --rce;  if (a_proc->e_link != NULL) {
-      if (strcmp (a_proc->e_link->name, a_name) == 0) {
+      if (strcmp (a_proc->e_link->base, a_name) == 0) {
          DEBUG_YEXEC  yLOG_snote   ("already attached correctly");
          DEBUG_YEXEC  yLOG_sexit   (__FUNCTION__);
          return 2;
@@ -138,7 +146,7 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
    /*---(walk)---------------------------*/
    e_temp = e_head;
    while (e_temp != NULL) {
-      if (strcmp (e_temp->name, a_name) == 0) {
+      if (strcmp (e_temp->base, a_name) == 0) {
          e_curr = e_temp;
          break;
       }
@@ -154,7 +162,7 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
          return rce;
       }
       e_curr = e_temp;
-      strlcpy (e_temp->name, a_name, LEN_TITLE);
+      strlcpy (e_temp->base, a_name, LEN_TITLE);
       rc = 1;
    } else {
       DEBUG_YEXEC  yLOG_snote   ("existing");
@@ -294,7 +302,7 @@ EXEC__unit              (char *a_question, int n)
    else if (strcmp (a_question, "entry"    )      == 0) {
       EXEC_by_index (n, &x_exec);
       if (x_exec != NULL) {
-         sprintf  (t, "%2då%.10sæ", strlen (x_exec->name), x_exec->name);
+         sprintf  (t, "%2då%.10sæ", strlen (x_exec->base), x_exec->base);
          snprintf (unit_answer, LEN_RECD, "EXEC entry  (%2d) : %-14.14s %-9d   %2d %-10p %p",
                n, t, x_exec->inode, x_exec->p_count, x_exec->p_head, x_exec->p_tail);
       } else {

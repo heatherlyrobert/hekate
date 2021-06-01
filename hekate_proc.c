@@ -27,9 +27,11 @@ PROC__memory            (tPROC *a_cur)
       strlcpy (s_print, "n/a", LEN_RECD);
       return s_print;
    }
-   strlcpy (s_print, "å__.______.___________.___.___._.__.___æ", LEN_RECD);
+   strlcpy (s_print, "å__.______.__________.___.___._.__.___æ", LEN_RECD);
    ++n;  if (a_cur->rpid        >  0)           s_print [n] = 'X';
-   ++n;  if (a_cur->ppid        >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->rpid        >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->shown [0]   != '\0')        s_print [n] = 'X';
+   ++n;  if (a_cur->cmdline [0] != '\0')        s_print [n] = 'X';
    ++n;
    ++n;  if (a_cur->c_state     != '-')         s_print [n] = 'X';
    ++n;  if (a_cur->c_utime     >  0)           s_print [n] = 'X';
@@ -37,15 +39,11 @@ PROC__memory            (tPROC *a_cur)
    ++n;  if (a_cur->c_snice     >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->c_flag      != '-')         s_print [n] = 'X';
    ++n;
-   ++n;  if (a_cur->m_max       >  0)           s_print [n] = 'X';
-   ++n;  if (a_cur->m_base      >  0)           s_print [n] = 'X';
-   ++n;  if (a_cur->m_min       >  0)           s_print [n] = 'X';
-   ++n;  if (a_cur->m_text      >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->m_full      >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->m_proc      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_data      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_heap      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_stack     >  0)           s_print [n] = 'X';
-   ++n;  if (a_cur->m_kern      >  0)           s_print [n] = 'X';
-   ++n;  if (a_cur->m_libs      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_other     >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_flag      != '-')         s_print [n] = 'X';
    ++n;
@@ -78,8 +76,10 @@ PROC_wipe               (tPROC *a_new, char a_type)
     */
    /*---(master)-------------------------*/
    if (a_type == '*') {
-      a_new->rpid     = 0;
-      a_new->ppid     = 0;
+      a_new->rpid        = 0;
+      a_new->ppid        = 0;
+      a_new->shown [0]   = '\0';
+      a_new->cmdline [0] = '\0';
    }
    /*---(cpu)----------------------------*/
    a_new->c_state  = '-';
@@ -88,15 +88,11 @@ PROC_wipe               (tPROC *a_new, char a_type)
    a_new->c_snice  = 0;
    a_new->c_flag   = '-';
    /*---(memory--------------------------*/
-   a_new->m_max    = 0;
-   a_new->m_base   = 0;
-   a_new->m_min    = 0;
-   a_new->m_text   = 0;
+   a_new->m_full   = 0;
+   a_new->m_proc   = 0;
    a_new->m_data   = 0;
    a_new->m_heap   = 0;
    a_new->m_stack  = 0;
-   a_new->m_kern   = 0;
-   a_new->m_libs   = 0;
    a_new->m_other  = 0;
    a_new->m_flag   = '-';
    /*---(disk)---------------------------*/
@@ -317,7 +313,7 @@ PROC__unit              (char *a_question, int n)
          strcpy (u, " -åæ");
          strcpy (w, " -åæ");
          if (x_proc->e_link != NULL) {
-            sprintf  (t, "%2då%.10sæ", strlen (x_proc->e_link->name), x_proc->e_link->name);
+            sprintf  (t, "%2då%.10sæ", strlen (x_proc->e_link->base), x_proc->e_link->base);
             sprintf  (s, "%d", x_proc->e_link->inode);
          }
          if (x_proc->t_head)   sprintf  (u, "%2då%.10sæ", strlen (x_proc->t_head->l_link), x_proc->t_head->l_link);

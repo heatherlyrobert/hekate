@@ -20,10 +20,57 @@
  *
  */
 
+
+
 /*====================------------------------------------====================*/
 /*===----                        data gathering                        ----===*/
 /*====================------------------------------------====================*/
 static void  o___GATHER__________o () { return; }
+
+/*> char                                                                              <* 
+ *> CPU_public              (tPROC *a_proc, char *a_file)                             <* 
+ *> {                                                                                 <* 
+ *>    /+---(locals)-----------+-----+-----+-+/                                       <* 
+ *>    int         rce         =  -10;                                                <* 
+ *>    int         rc          =    0;                                                <* 
+ *>    FILE       *f;                                                                 <* 
+ *>    char        x_recd      [LEN_RECD]  = "";                                      <* 
+ *>    /+---(header)------------------------+/                                        <* 
+ *>    DEBUG_ENVI   yLOG_enter   (__FUNCTION__);                                      <* 
+ *>    /+---(defense)-----------------------+/                                        <* 
+ *>    DEBUG_ENVI   yLOG_point   ("a_proc"    , a_proc);                              <* 
+ *>    --rce;  if (a_proc == NULL) {                                                  <* 
+ *>       DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    DEBUG_ENVI   yLOG_point   ("a_file"    , a_file);                              <* 
+ *>    --rce;  if (a_file == NULL) {                                                  <* 
+ *>       DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    DEBUG_ENVI   yLOG_info    ("a_file"    , a_file);                              <* 
+ *>    /+---(open proc)----------------------+/                                       <* 
+ *>    f = fopen (a_file, "rt");                                                      <* 
+ *>    DEBUG_ENVI   yLOG_point   ("f"         , f);                                   <* 
+ *>    --rce;  if (f == NULL) {                                                       <* 
+ *>       DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(read line)---------------------+/                                        <* 
+ *>    fgets (x_recd, LEN_RECD, f);                                                   <* 
+ *>    /+---(close file)--------------------+/                                        <* 
+ *>    rc = fclose (f);                                                               <* 
+ *>    DEBUG_ENVI   yLOG_value   ("close"     , rc);                                  <* 
+ *>    --rce;  if (f <  0) {                                                          <* 
+ *>       DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);                              <* 
+ *>       return rce;                                                                 <* 
+ *>    }                                                                              <* 
+ *>    /+---(saveback)----------------------+/                                        <* 
+ *>    strlcpy (a_proc->name, x_recd, LEN_TITLE);                                     <* 
+ *>    /+---(complete)----------------------+/                                        <* 
+ *>    DEBUG_ENVI   yLOG_exit    (__FUNCTION__);                                      <* 
+ *>    return 0;                                                                      <* 
+ *> }                                                                                 <*/
 
 char
 CPU_detail              (tPROC *a_proc, char *a_file)
@@ -41,50 +88,62 @@ CPU_detail              (tPROC *a_proc, char *a_file)
    char        c           =    0;
    int         x_beg       =    0;
    /*---(header)------------------------*/
-   DEBUG_YEXEC  yLOG_enter   (__FUNCTION__);
+   DEBUG_ENVI   yLOG_enter   (__FUNCTION__);
    /*---(defense)-----------------------*/
-   DEBUG_YEXEC  yLOG_point   ("a_file"    , a_file);
+   DEBUG_ENVI   yLOG_point   ("a_file"    , a_file);
    --rce;  if (a_file == NULL) {
-      DEBUG_YEXEC  yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YEXEC  yLOG_info    ("a_file"    , a_file);
+   DEBUG_ENVI   yLOG_info    ("a_file"    , a_file);
    /*---(open proc)----------------------*/
    /*> sprintf (x_name, "/proc/%d/stat", a_rpid);                                     <*/
    f = fopen (a_file, "rt");
-   DEBUG_YEXEC  yLOG_point   ("f"         , f);
+   DEBUG_ENVI   yLOG_point   ("f"         , f);
    --rce;  if (f == NULL) {
-      DEBUG_YEXEC  yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(defense)-----------------------*/
-   DEBUG_YEXEC  yLOG_point   ("a_proc"    , a_proc);
+   DEBUG_ENVI   yLOG_point   ("a_proc"    , a_proc);
    --rce;  if (a_proc == NULL) {
       fclose (f);
-      DEBUG_YEXEC  yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(read line)---------------------*/
    fgets (x_recd, LEN_RECD, f);
    p = strtok_r (x_recd, " ", &r);
-   DEBUG_YEXEC  yLOG_point   ("p"         , p);
+   DEBUG_ENVI   yLOG_point   ("p"         , p);
    --rce;  if (p == NULL) {
       fclose (f);
-      DEBUG_YEXEC  yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    --rce;  while (p != NULL && c < 48) {
-      DEBUG_YEXEC  yLOG_info    ("p"         , p);
+      DEBUG_ENVI   yLOG_info    ("p"         , p);
       switch (c) {
       case  1 :
          strlcpy (x_name, p + 1, strlen (p) - 1);
          x_exec = a_proc->e_link;
-         DEBUG_YEXEC  yLOG_point   ("x_exec"    , x_exec);
+         DEBUG_ENVI   yLOG_point   ("x_exec"    , x_exec);
          --rce;  if (x_exec == NULL) {
             rc = EXEC_hook (a_proc, x_name);
+            DEBUG_ENVI   yLOG_value   ("hook"      , rc);
             if (rc < 0) {
                fclose (f);
-               DEBUG_YEXEC  yLOG_exitr   (__FUNCTION__, rce);
+               DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
+               return rce;
+            }
+         }
+         x_exec = a_proc->e_link;
+         if (strcmp (x_exec->base, x_name) != 0) {
+            DEBUG_ENVI   yLOG_note    ("name change");
+            rc = EXEC_rehook (a_proc, x_name);
+            DEBUG_ENVI   yLOG_value   ("rehook"    , rc);
+            if (rc < 0) {
+               fclose (f);
+               DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
                return rce;
             }
          }
@@ -101,8 +160,7 @@ CPU_detail              (tPROC *a_proc, char *a_file)
          }
          if (a_proc->rpid == 1)  x_land = '-';
          if (x_land == 'k') {
-            DEBUG_YEXEC  yLOG_note    ("kernel thread, skipping");
-            PROC_unhook (a_proc);
+            DEBUG_ENVI   yLOG_note    ("kernel thread, skipping");
             break;
          }
          break;
@@ -120,33 +178,34 @@ CPU_detail              (tPROC *a_proc, char *a_file)
          x_beg  = atoi (p);
          break;
       case 26 :
-         x_exec->m_code = atoi (p) - x_beg;
+         x_exec->m_code = (atoi (p) - x_beg) / 1024;
          break;
       case 44 :
          x_beg  = atoi (p);
          break;
       case 45 :
-         x_exec->m_data = atoi (p) - x_beg;
+         x_exec->m_data = (atoi (p) - x_beg) / 1024;
          break;
       }
       if (x_land != '-')  break;
       ++c;
       p = strtok_r (NULL  , " ", &r);
    }
-   DEBUG_YEXEC  yLOG_value   ("c"         , c);
+   DEBUG_ENVI   yLOG_value   ("c"         , c);
    --rce;  if (c <  45) {
-      DEBUG_YEXEC  yLOG_exitr   (__FUNCTION__, rce);
+      rc = fclose (f);
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(close file)--------------------*/
    rc = fclose (f);
-   DEBUG_YEXEC  yLOG_value   ("close"     , rc);
+   DEBUG_ENVI   yLOG_value   ("close"     , rc);
    --rce;  if (f <  0) {
-      DEBUG_YEXEC  yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(complete)----------------------*/
-   DEBUG_YEXEC  yLOG_exit    (__FUNCTION__);
+   DEBUG_ENVI   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -172,19 +231,7 @@ CPU__unit               (char *a_question, int n)
    /*---(preprare)-----------------------*/
    strcpy (unit_answer, "CPU              : question not understood");
    /*---(dependency list)----------------*/
-   if      (strcmp (a_question, "exec"     )      == 0) {
-      PROC_by_index (n, &x_proc);
-      if (x_proc != NULL)  x_exec = x_proc->e_link;
-      if (x_exec != NULL) {
-         sprintf  (t, "%2då%.10sæ", strlen (x_exec->name), x_exec->name);
-         snprintf (unit_answer, LEN_RECD, "CPU exec    (%2d) : %-14.14s  %7dc %7dd",
-               n, t, x_exec->m_code, x_exec->m_data);
-      } else {
-         snprintf (unit_answer, LEN_RECD, "CPU exec    (%2d) :  -åæ                  -c       -d", n);
-      }
-      return unit_answer;
-   }
-   else if (strcmp (a_question, "proc"     )      == 0) {
+   if      (strcmp (a_question, "proc"     )      == 0) {
       PROC_by_index (n, &x_proc);
       if (x_proc != NULL) {
          snprintf (unit_answer, LEN_RECD, "CPU proc    (%2d) : %5d %5d  %c %7du %7ds %2dn  %c",

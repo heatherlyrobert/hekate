@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5g"
-#define     P_VERTXT    "unit tested instantaneous cpu data gathering (not since last use)"
+#define     P_VERNUM    "0.5h"
+#define     P_VERTXT    "unit tested pre-work getting process names, exe, and cmdline"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -74,10 +74,15 @@ typedef struct  cTIES  tTIES;
 
 static struct cEXEC {
    /*---(master)------------*/
-   char        name        [LEN_TITLE];
+   char        base        [LEN_TITLE];
+   char        full        [LEN_RECD];
    long        inode;
    /*---(memory)------------*/
-   int         m_text;
+   int         m_full;   /* all exec space */
+   int         m_text;   /* actual code space */
+   int         m_cons;   /* read only vars */
+   int         m_heap;   /* shared heap */
+   int         m_kern;   /* kernel helpers for executable */
    int         m_code;   /* bytes of address space in full pages */
    int         m_data;   /* bytes of address space in full pages */
    /*---(size)--------------*/
@@ -106,6 +111,8 @@ static struct cPROC {
    /*---(master)------------*/
    int         rpid;
    int         ppid;
+   char        shown       [LEN_TITLE];
+   char        cmdline     [LEN_RECD];
    /*---(cpu)---------------*/
    char        c_state;
    long        c_utime;
@@ -113,15 +120,11 @@ static struct cPROC {
    char        c_snice;
    char        c_flag;
    /*---(memory)------------*/
-   long        m_max;
-   long        m_base;
-   long        m_min;
-   long        m_text;
+   long        m_full;
+   long        m_proc;
    long        m_data;
    long        m_heap;
    long        m_stack;
-   long        m_kern;
-   long        m_libs;
    long        m_other;
    char        m_flag;
    /*---(disk)--------------*/
@@ -154,8 +157,8 @@ extern int         p_count;
 
 static struct cTIES {
    /*---(memory)------------*/
-   long        m_data;
-   long        m_heap;
+   int         m_data;
+   int         m_heap;
    /*---(ties)--------------*/
    tTIES      *m_prev;
    tTIES      *m_next;
@@ -184,7 +187,8 @@ static struct cLIBS {
    /*---(memory)------------*/
    int         m_full;
    int         m_text;
-   int         m_data;
+   int         m_cons;
+   int         m_priv;
    /*---(size)--------------*/
    int         s_total;
    int         s_text;
@@ -228,6 +232,8 @@ extern      char        unit_answer [LEN_RECD];
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 /*---(memory)---------------*/
 char        PROG_purge              (void);
+/*---(drivers)--------------*/
+char        PROG_review             (void);
 /*---(unittest)-------------*/
 char        PROG__unit_quiet        (void);
 char        PROG__unit_loud         (void);
@@ -329,7 +335,7 @@ char        LIBS_force              (void **a_new);
 char        LIBS_free               (void **a_old);
 char        LIBS_purge              (void);
 /*---(hooking)--------------*/
-char        LIBS_hook               (tPROC *a_proc, char *a_name);
+char        LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties);
 char        LIBS_unhook             (tPROC *a_proc);
 /*---(searching)------------*/
 char        LIBS_by_cursor          (char a_move, tLIBS **a_curr);
@@ -342,6 +348,12 @@ char*       LIBS__unit              (char *a_question, int n);
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        DATA_exename            (char *a_file, char *a_base, char *a_full);
+char        DATA_pubname            (char *a_file, char *a_public);
+char        DATA_cmdline            (char *a_file, char *a_cmdline);
 char        CPU_detail              (tPROC *a_proc, char *a_file);
 char*       CPU__unit               (char *a_question, int n);
 
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        MEM_detail              (tPROC *a_proc, char *a_file);
+char*       MEM__unit               (char *a_question, int n);

@@ -668,7 +668,7 @@ SHARE_by_name           (char a_type, char *a_name, tEXEC **a_curr)
    /*---(walk)---------------------------*/
    while (x_curr != NULL) {
       rc = 0;
-      IF_EXEC   x_name  = x_exec->name;
+      IF_EXEC   x_name  = x_exec->base;
       EL_LIBS   x_name  = x_libs->terse;
       if (strcmp (x_name, a_name) == 0) {
          IF_EXEC  e_curr = x_exec;
