@@ -47,7 +47,7 @@
 static void  o___PREWORK_________o () { return; }
 
 char
-DATA__exename           (char *a_file, char *a_base, char *a_full)
+DATA__exename           (char *a_file, int *a_inode, char *a_base, char *a_full)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         rce         =  -10;
@@ -84,14 +84,21 @@ DATA__exename           (char *a_file, char *a_base, char *a_full)
    if (x_recd [l - 1] == '\n')  x_recd [--l] = '\0';
    /*---(open proc)----------------------*/
    p = strtok_r (x_recd, " \t", &r);
-   --rce;  for (i = 0; i < 5; ++i) {
+   --rce;  for (i = 0; i < 4; ++i) {
       p = strtok_r (NULL, " \t", &r);
       if (p == NULL) {
          DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
    }
+   /*---(inode)--------------------------*/
+   if (a_inode != NULL)  *a_inode = atol (p);
    /*---(save back)----------------------*/
+   p = strtok_r (NULL, " \t", &r);
+   if (p == NULL) {
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
    DEBUG_ENVI   yLOG_point   ("a_full"    , p);
    if (a_full != NULL)  strlcpy (a_full, p, LEN_RECD);
    /*---(parse name)---------------------*/
@@ -290,13 +297,14 @@ DATA_prework            (int a_rpid, tPROC **a_proc, char a_unit)
    char        x_full      [LEN_RECD]  = "";
    char        x_public    [LEN_TITLE] = "";
    char        x_cmdline   [LEN_RECD]  = "";
+   long        x_inode     =    0;
    /*---(header)------------------------*/
    DEBUG_ENVI   yLOG_enter   (__FUNCTION__);
    /*> printf ("%d\n", a_rpid);                                                       <*/
    /*---(exename)---------------------*/
    if (a_unit != 'y')  sprintf (x_file, "/proc/%d/smaps", a_rpid);
-   else                sprintf (x_file, "./%d_smaps", a_rpid);
-   rc = DATA__exename (x_file, x_base, x_full);
+   else                sprintf (x_file, "./testdata/%d_smaps", a_rpid);
+   rc = DATA__exename (x_file, &x_inode, x_base, x_full);
    DEBUG_ENVI   yLOG_value   ("exename"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_note    ("can not gather exec name");
@@ -305,7 +313,7 @@ DATA_prework            (int a_rpid, tPROC **a_proc, char a_unit)
    }
    /*---(public name)-----------------*/
    if (a_unit != 'y')  sprintf (x_file, "/proc/%d/comm", a_rpid);
-   else                sprintf (x_file, "./%d_comm", a_rpid);
+   else                sprintf (x_file, "./testdata/%d_comm", a_rpid);
    rc = DATA__pubname (x_file, x_public);
    DEBUG_ENVI   yLOG_value   ("pubname"   , rc);
    --rce;  if (rc < 0) {
@@ -315,7 +323,7 @@ DATA_prework            (int a_rpid, tPROC **a_proc, char a_unit)
    }
    /*---(command line)----------------*/
    if (a_unit != 'y')  sprintf (x_file, "/proc/%d/cmdline", a_rpid);
-   else                sprintf (x_file, "./%d_cmdline", a_rpid);
+   else                sprintf (x_file, "./testdata/%d_cmdline", a_rpid);
    rc = DATA__cmdline (x_file, x_cmdline);
    DEBUG_ENVI   yLOG_value   ("cmdline"   , rc);
    --rce;  if (rc < 0) {
@@ -342,6 +350,7 @@ DATA_prework            (int a_rpid, tPROC **a_proc, char a_unit)
    }
    /*---(add prework)-----------------*/
    strlcpy ((*a_proc)->e_link->full, x_full   , LEN_RECD);
+   (*a_proc)->e_link->inode        = x_inode;
    strlcpy ((*a_proc)->shown       , x_public , LEN_TITLE);
    strlcpy ((*a_proc)->cmdline     , x_cmdline, LEN_RECD);
    /*---(gather cpu)------------------*/
@@ -513,13 +522,14 @@ DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit)
    char        x_full      [LEN_RECD]  = "";
    char        x_public    [LEN_TITLE] = "";
    char        x_cmdline   [LEN_RECD]  = "";
+   long        x_inode     =    0;
    /*---(header)------------------------*/
    DEBUG_ENVI   yLOG_enter   (__FUNCTION__);
    /*> printf ("%d\n", a_rpid);                                                       <*/
    /*---(exename)---------------------*/
    if (a_unit != 'y')  sprintf (x_file, "/proc/%d/smaps", a_rpid);
    else                sprintf (x_file, "./%d_smaps", a_rpid);
-   rc = DATA__exename (x_file, x_base, x_full);
+   rc = DATA__exename (x_file, &x_inode, x_base, x_full);
    DEBUG_ENVI   yLOG_value   ("exename"   , rc);
    --rce;  if (rc < 0) {
       DEBUG_INPT   yLOG_note    ("can not gather exec name");
@@ -565,6 +575,7 @@ DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit)
    }
    /*---(add prework)-----------------*/
    strlcpy ((*a_proc)->e_link->full, x_full   , LEN_RECD);
+   (*a_proc)->e_link->inode        = x_inode;
    strlcpy ((*a_proc)->shown       , x_public , LEN_TITLE);
    strlcpy ((*a_proc)->cmdline     , x_cmdline, LEN_RECD);
    /*---(gather cpu)------------------*/
@@ -709,19 +720,16 @@ DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, 
       a_proc->m_full  += a_pvt;
       a_proc->m_proc  += a_pvt;
       a_proc->m_data  += a_pvt;
-      /*> a_proc->m_other += a_full - a_pvt;                                          <*/
       break;
    case PROC_HEAP : 
       a_proc->m_full  += a_rss;
       a_proc->m_proc  += a_rss;
       a_proc->m_heap  += a_rss;
-      /*> a_proc->m_other += x_empty;                                                 <*/
       break;
    case PROC_STCK : 
       a_proc->m_full  += a_rss;
       a_proc->m_proc  += a_rss;
       a_proc->m_stack += a_rss;
-      /*> a_proc->m_other += x_empty;                                                 <*/
       break;
    case PROC_OTHR : 
       a_proc->m_full  += a_full;
@@ -924,8 +932,7 @@ DATA__unit              (char *a_question, int n)
       return unit_answer;
    }
    else if (strcmp (a_question, "emem"     )      == 0) {
-      PROC_by_index (n, &x_proc);
-      if (x_proc != NULL)  x_exec = x_proc->e_link;
+      EXEC_by_index (n, &x_exec);
       if (x_exec != NULL) {
          sprintf  (t, "%2då%.10sæ", strlen (x_exec->base), x_exec->base);
          snprintf (unit_answer, LEN_RECD, "DATA emem   (%2d) : %-14.14s  %4dc %4dd   %4df %4dt %3dc %4dh %2dk   %4dt %4dd %3db %4dt",
@@ -936,14 +943,25 @@ DATA__unit              (char *a_question, int n)
       return unit_answer;
    }
    else if (strcmp (a_question, "esize"    )      == 0) {
-      PROC_by_index (n, &x_proc);
-      if (x_proc != NULL)  x_exec = x_proc->e_link;
+      EXEC_by_index (n, &x_exec);
       if (x_exec != NULL) {
          sprintf  (t, "%2då%.10sæ", strlen (x_exec->base), x_exec->base);
          snprintf (unit_answer, LEN_RECD, "DATA esize  (%2d) : %-14.14s  %5dt %5dd %5db %5dt",
                n, t, x_exec->s_text, x_exec->s_data, x_exec->s_bss, x_exec->s_total);
       } else {
          snprintf (unit_answer, LEN_RECD, "DATA esize  (%2d) :  -åæ                -t     -d     -b     -t", n);
+      }
+      return unit_answer;
+   }
+   else if (strcmp (a_question, "pmem"     )      == 0) {
+      PROC_by_index (n, &x_proc);
+      if (x_proc != NULL) {
+         x_exec = x_proc->e_link;
+         if (x_exec != NULL) sprintf  (t, "%2då%.10sæ", strlen (x_exec->base), x_exec->base);
+         snprintf (unit_answer, LEN_RECD, "DATA pmem   (%2d) : %-14.14s %5df %4dp %4dd %4dh %4ds %4do - %4dr %4dw - %4dr %4dw -",
+               n, t, x_proc->m_full, x_proc->m_proc, x_proc->m_data, x_proc->m_heap, x_proc->m_stack, x_proc->m_other, x_proc->d_read, x_proc->d_write, x_proc->n_read, x_proc->n_write);
+      } else {
+         snprintf (unit_answer, LEN_RECD, "DATA pmem   (%2d) :  -åæ               -f    -p    -d    -h    -s    -o -    -r    -w -    -r    -w -", n);
       }
       return unit_answer;
    }

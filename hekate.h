@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5i"
-#define     P_VERTXT    "unit tested pre-work sizes and updates to DATA_cpu, DATA_mem"
+#define     P_VERNUM    "0.5j"
+#define     P_VERTXT    "unit tested all prework together, whoo-hoo;)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -128,12 +128,12 @@ static struct cPROC {
    int         m_other;
    char        m_flag;
    /*---(disk)--------------*/
-   long        d_read;
-   long        d_write;
+   int         d_read;
+   int         d_write;
    char        d_flag;
    /*---(net)---------------*/
-   long        n_read;
-   long        n_write;
+   int         n_read;
+   int         n_write;
    char        n_flag;
    /*---(executable)--------*/
    tEXEC      *e_link;
@@ -348,7 +348,7 @@ char*       LIBS__unit              (char *a_question, int n);
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 /*---(prework)--------------*/
-char        DATA__exename           (char *a_file, char *a_base, char *a_full);
+char        DATA__exename           (char *a_file, int *a_inode, char *a_base, char *a_full);
 char        DATA__pubname           (char *a_file, char *a_public);
 char        DATA__cmdline           (char *a_file, char *a_cmdline);
 char        DATA__size              (tPROC *a_proc);

@@ -302,10 +302,17 @@ EXEC__unit              (char *a_question, int n)
       EXEC_by_index (n, &x_exec);
       if (x_exec != NULL) {
          sprintf  (t, "%2dе%.10sж", strlen (x_exec->base), x_exec->base);
-         snprintf (unit_answer, LEN_RECD, "EXEC entry  (%2d) : %-14.14s %-9d   %2d %-10p %p",
-               n, t, x_exec->inode, x_exec->p_count, x_exec->p_head, x_exec->p_tail);
+         sprintf  (s, "%2dе%.16sж", strlen (x_exec->full), x_exec->full);
+         sprintf  (u, "еж");
+         sprintf  (w, "еж");
+         if (x_exec->p_head != NULL) {
+            sprintf  (u, "е%dж", x_exec->p_head->rpid);
+            sprintf  (w, "е%dж", x_exec->p_tail->rpid);
+         }
+         snprintf (unit_answer, LEN_RECD, "EXEC entry  (%2d) : %-14.14s %-9d %-20.20s   %2d %-8.8s %s",
+               n, t, x_exec->inode, s, x_exec->p_count, u, w);
       } else {
-         snprintf (unit_answer, LEN_RECD, "EXEC entry  (%2d) :  -еж           -            - -          -", n);
+         snprintf (unit_answer, LEN_RECD, "EXEC entry  (%2d) :  -еж           -          -еж                    - еж       еж", n);
       }
       return unit_answer;
    }

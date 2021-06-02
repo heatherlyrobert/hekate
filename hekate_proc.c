@@ -283,6 +283,7 @@ PROC__unit              (char *a_question, int n)
    int         c           =    0;
    char        t           [LEN_RECD]  = "[]";
    char        s           [LEN_RECD]  = "";
+   char        r           [LEN_RECD]  = "";
    char        u           [LEN_RECD]  = "";
    char        w           [LEN_RECD]  = "";
    /*---(preprare)-----------------------*/
@@ -298,31 +299,24 @@ PROC__unit              (char *a_question, int n)
    }
    else if (strcmp (a_question, "entry"    )      == 0) {
       PROC_by_index (n, &x_proc);
-      /*> if (n == -1)   x_proc = p_curr;                                             <* 
-       *> else {                                                                      <* 
-       *>    x_proc = p_head;                                                         <* 
-       *>    while (x_proc != NULL) {                                                 <* 
-       *>       if (c == n)  break;                                                   <* 
-       *>       ++c;                                                                  <* 
-       *>       x_proc = x_proc->m_next;                                              <* 
-       *>    }                                                                        <* 
-       *> }                                                                           <*/
       if (x_proc != NULL) {
          strcpy (t, " -еж");
-         strcpy (s, "-");
+         strcpy (s, " -еж");
+         strcpy (r, " -еж");
          strcpy (u, " -еж");
          strcpy (w, " -еж");
          if (x_proc->e_link != NULL) {
             sprintf  (t, "%2dе%.10sж", strlen (x_proc->e_link->base), x_proc->e_link->base);
-            sprintf  (s, "%d", x_proc->e_link->inode);
+            sprintf  (s, "%3dе%.10sж", strlen (x_proc->cmdline), x_proc->cmdline);
+            sprintf  (r, "%2dе%.10sж", strlen (x_proc->shown), x_proc->shown);
          }
          if (x_proc->t_head)   sprintf  (u, "%2dе%.10sж", strlen (x_proc->t_head->l_link), x_proc->t_head->l_link);
          if (x_proc->t_tail)   sprintf  (w, "%2dе%.10sж", strlen (x_proc->t_tail->l_link), x_proc->t_tail->l_link);
-         snprintf (unit_answer, LEN_RECD, "PROC entry  (%2d) : %-5d %-14.14s %-9.9s %-5d %c   %2d %-14.14s %s",
-               n, x_proc->rpid, t, s, x_proc->ppid, '-',
-               x_proc->t_count, u, w);
+         snprintf (unit_answer, LEN_RECD, "PROC entry  (%2d) : %-5d %-14.14s %-5d %2d %-14.14s %-14.14s%-15.15s %s",
+               n, x_proc->rpid, t, x_proc->ppid,
+               x_proc->t_count, u, w, s, r);
       } else {
-         snprintf (unit_answer, LEN_RECD, "PROC entry  (%2d) : -      -еж           -         -     -    -  -еж            -еж", n);
+         snprintf (unit_answer, LEN_RECD, "PROC entry  (%2d) : -      -еж           -      -  -еж            -еж            -еж            -еж", n);
       }
       return unit_answer;
    }
