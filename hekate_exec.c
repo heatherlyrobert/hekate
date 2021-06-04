@@ -117,28 +117,28 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
    char        rc          =    0;
    tEXEC      *e_temp      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_NORM   yLOG_spoint  (a_proc);
+   DEBUG_NORM   yLOG_point   ("a_proc", a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_NORM   yLOG_spoint  (a_name);
+   DEBUG_NORM   yLOG_point   ("a_name", a_name);
    --rce;  if (a_name == NULL || strlen (a_name) <= 0) {
-      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_NORM   yLOG_snote   (a_name);
+   DEBUG_NORM   yLOG_note    (a_name);
    /*---(pre-check)----------------------*/
    --rce;  if (a_proc->e_link != NULL) {
       if (strcmp (a_proc->e_link->base, a_name) == 0) {
-         DEBUG_NORM   yLOG_snote   ("already attached correctly");
-         DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
+         DEBUG_NORM   yLOG_note    ("already attached correctly");
+         DEBUG_NORM   yLOG_exit    (__FUNCTION__);
          return 2;
       } else {
-         DEBUG_NORM   yLOG_snote   ("already attached, unhook before repeating");
-         DEBUG_NORM   yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_NORM   yLOG_note    ("already attached, unhook before repeating");
+         DEBUG_NORM   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
    }
@@ -153,29 +153,29 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
    }
    /*---(add if necessary)---------------*/
    --rce;  if (e_temp == NULL) {
-      DEBUG_NORM   yLOG_snote   ("must add");
+      DEBUG_NORM   yLOG_note    ("must add");
       rc = EXEC_new (&e_temp);
-      DEBUG_NORM   yLOG_sint    (rc);
+      DEBUG_NORM   yLOG_value   ("rc", rc);
       if (rc < 0) {
-         DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       e_curr = e_temp;
       strlcpy (e_temp->base, a_name, LEN_TITLE);
       rc = 1;
    } else {
-      DEBUG_NORM   yLOG_snote   ("existing");
+      DEBUG_NORM   yLOG_note    ("existing");
       rc = 0;
    }
-   DEBUG_NORM   yLOG_spoint  (e_curr);
+   DEBUG_NORM   yLOG_point   ("e_curr", e_curr);
    /*---(initialize)---------------------*/
    a_proc->p_prev  = a_proc->p_next = NULL;
    /*---(link exec to proc)--------------*/
    if (e_curr->p_head == NULL) {
-      DEBUG_DATA   yLOG_snote  ("first");
+      DEBUG_DATA   yLOG_note   ("first on exec");
       e_curr->p_head  = e_curr->p_tail = a_proc;
    } else {
-      DEBUG_DATA   yLOG_snote   ("append");
+      DEBUG_DATA   yLOG_note    ("append to exec");
       a_proc->p_prev          = e_curr->p_tail;
       e_curr->p_tail->p_next  = a_proc;
       e_curr->p_tail          = a_proc;
@@ -185,7 +185,7 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
    /*---(update count)-------------------*/
    ++e_curr->p_count;
    /*---(complete)-----------------------*/
-   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -197,17 +197,17 @@ EXEC_unhook             (tPROC *a_proc)
    char        rc          =    0;
    tEXEC      *x_exec      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_NORM   yLOG_spoint  (a_proc);
+   DEBUG_NORM   yLOG_point   ("a_proc", a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_exec = a_proc->e_link;
-   DEBUG_NORM   yLOG_spoint  (x_exec);
+   DEBUG_NORM   yLOG_point   ("x_exec", x_exec);
    if (x_exec == NULL) {
-      DEBUG_NORM    yLOG_sexit   (__FUNCTION__);
+      DEBUG_NORM    yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(unlink exec from proc)----------*/
@@ -222,7 +222,7 @@ EXEC_unhook             (tPROC *a_proc)
    /*---(remove if necesary)-------------*/
    if (x_exec->p_count <= 0)  EXEC_free (&x_exec);
    /*---(complete)-----------------------*/
-   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 

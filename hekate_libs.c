@@ -116,43 +116,43 @@ LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties)
    tLIBS      *x_libs      = NULL;
    char       *p           = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   DEBUG_YEXEC  yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (a_proc);
+   DEBUG_YEXEC  yLOG_point   ("a_proc"    , a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YEXEC  yLOG_spoint  (a_name);
+   DEBUG_YEXEC  yLOG_point   ("a_name", a_name);
    --rce;  if (a_name == NULL || strlen (a_name) <= 0) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YEXEC  yLOG_snote   (a_name);
+   DEBUG_YEXEC  yLOG_note    (a_name);
    /*---(walk)---------------------------*/
    x_ties = a_proc->t_head;
    while (x_ties != NULL) {
       if (x_ties->l_link != NULL && strcmp (x_ties->l_link->name, a_name) == 0) {
          t_curr = x_ties;
-         DEBUG_YEXEC  yLOG_snote   ("existing tie/lib");
+         DEBUG_YEXEC  yLOG_note    ("existing tie/lib");
          if (a_ties != NULL)  *a_ties = x_ties;
-         DEBUG_YEXEC   yLOG_sexit   (__FUNCTION__);
+         DEBUG_YEXEC   yLOG_exit    (__FUNCTION__);
          return 0;
       }
-      x_ties = x_ties->l_next;
+      x_ties = x_ties->p_next;
    }
    /*---(add tie)------------------------*/
-   DEBUG_YEXEC  yLOG_snote   ("add tie");
+   DEBUG_YEXEC  yLOG_note    ("add tie");
    rc = TIES_new (&x_ties);
-   DEBUG_YEXEC  yLOG_sint    (rc);
+   DEBUG_YEXEC  yLOG_value   ("rc", rc);
    --rce;  if (rc < 0) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_ties->p_link = a_proc;
    t_curr = x_ties;
    rc = 1;
-   DEBUG_YEXEC  yLOG_spoint  (t_curr);
+   DEBUG_YEXEC  yLOG_point   ("t_curr", t_curr);
    /*---(walk)---------------------------*/
    x_libs = l_head;
    while (x_libs != NULL) {
@@ -162,21 +162,21 @@ LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties)
       }
       x_libs = x_libs->m_next;
    }
-   DEBUG_YEXEC  yLOG_spoint  (l_curr);
+   DEBUG_YEXEC  yLOG_point   ("l_curr", l_curr);
    /*---(add lib)------------------------*/
    if (x_libs == NULL) {
-      DEBUG_YEXEC  yLOG_snote   ("add lib");
+      DEBUG_YEXEC  yLOG_note    ("add lib");
       rc = LIBS_new (&x_libs);
-      DEBUG_YEXEC  yLOG_sint    (rc);
+      DEBUG_YEXEC  yLOG_value   ("rc", rc);
       --rce;  if (rc < 0) {
-         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
          return rce;
       }
       l_curr = x_libs;
    }
    /*---(add name)-----------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (l_curr);
-   strlcpy (l_curr->name , a_name, LEN_TITLE);
+   DEBUG_YEXEC  yLOG_point   ("l_curr", l_curr);
+   strlcpy (l_curr->name , a_name, LEN_RECD);
    p = strrchr (a_name, '/');
    if (p == NULL)  p = a_name;
    else            ++p;
@@ -184,10 +184,10 @@ LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties)
    rc = 1;
    /*---(hook tie to proc)---------------*/
    if (a_proc->t_head == NULL) {
-      DEBUG_DATA   yLOG_snote  ("first");
+      DEBUG_DATA   yLOG_note   ("first in proc");
       a_proc->t_head  = a_proc->t_tail = x_ties;
    } else {
-      DEBUG_DATA   yLOG_snote   ("append");
+      DEBUG_DATA   yLOG_note    ("append to proc");
       x_ties->p_prev          = a_proc->t_tail;
       a_proc->t_tail->p_next  = x_ties;
       a_proc->t_tail          = x_ties;
@@ -196,10 +196,10 @@ LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties)
    /*---(hook tie to lib)----------------*/
    x_ties->l_link = x_libs;
    if (l_curr->t_head == NULL) {
-      DEBUG_DATA   yLOG_snote  ("first");
+      DEBUG_DATA   yLOG_note   ("first for lib");
       l_curr->t_head  = l_curr->t_tail = x_ties;
    } else {
-      DEBUG_DATA   yLOG_snote   ("append");
+      DEBUG_DATA   yLOG_note    ("append to lib");
       x_ties->l_prev          = l_curr->t_tail;
       l_curr->t_tail->l_next  = x_ties;
       l_curr->t_tail          = x_ties;
@@ -208,7 +208,7 @@ LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties)
    /*---(save back)----------------------*/
    if (a_ties != NULL)  *a_ties = x_ties;
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   DEBUG_YDLST  yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -222,17 +222,17 @@ LIBS_unhook             (tPROC *a_proc)
    tLIBS      *x_lib       = NULL;
    tTIES      *x_next      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   DEBUG_YEXEC  yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (a_proc);
+   DEBUG_YEXEC  yLOG_point   ("a_proc", a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    x_tie  = a_proc->t_head;
-   DEBUG_YEXEC  yLOG_spoint  (x_tie);
+   DEBUG_YEXEC  yLOG_point   ("x_tie", x_tie);
    if (x_tie == NULL) {
-      DEBUG_YEXEC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_YEXEC   yLOG_exit    (__FUNCTION__);
       return 0;
    }
    /*---(cycle ties)---------------------*/
@@ -263,7 +263,7 @@ LIBS_unhook             (tPROC *a_proc)
       /*---(done)------------------------*/
    }
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   DEBUG_YDLST  yLOG_exit    (__FUNCTION__);
    return rc;
 }
 

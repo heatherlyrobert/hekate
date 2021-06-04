@@ -32,9 +32,9 @@
 #define     P_CREATED   "2021-05"
 
 #define     P_VERMAJOR  "0.--, pre-production"
-#define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5k"
-#define     P_VERTXT    "all unit testing updated with latest unit accessor format changes"
+#define     P_VERMINOR  "0.6-, branching into the driving and looping portion"
+#define     P_VERNUM    "0.6a"
+#define     P_VERTXT    "great start on unit test for driver on individual processes"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -192,7 +192,7 @@ extern int         t_count;
 static struct cLIBS {
    /*---(master)------------*/
    char        terse       [LEN_TITLE];
-   char        name        [LEN_TITLE];
+   char        name        [LEN_RECD];
    long        inode;
    /*---(memory)------------*/
    int         m_full;

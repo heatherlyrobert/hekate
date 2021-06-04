@@ -143,44 +143,44 @@ PROC_hook               (tPROC **a_proc, int a_rpid)
    char        rc          =    0;
    tPROC      *x_proc      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_NORM   yLOG_spoint  (a_proc);
+   DEBUG_NORM   yLOG_point   ("a_proc", a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(default)------------------------*/
    *a_proc = NULL;
    /*---(walk)---------------------------*/
-   DEBUG_NORM   yLOG_spoint  (p_head);
+   DEBUG_NORM   yLOG_point   ("p_head", p_head);
    x_proc = p_head;
    while (x_proc != NULL) {
       if (x_proc->rpid == a_rpid) {
-         DEBUG_NORM   yLOG_snote   ("existing");
+         DEBUG_NORM   yLOG_note    ("existing");
          p_curr = x_proc;
-         DEBUG_NORM   yLOG_spoint  (p_curr);
+         DEBUG_NORM   yLOG_point   ("p_curr", p_curr);
          *a_proc = p_curr;
-         DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
+         DEBUG_NORM   yLOG_exit    (__FUNCTION__);
          return 0;
       }
       x_proc = x_proc->m_next;
    }
    /*---(add if necessary)---------------*/
-   DEBUG_NORM   yLOG_snote   ("must add");
+   DEBUG_NORM   yLOG_note    ("must add");
    rc = PROC_new (&x_proc);
-   DEBUG_NORM   yLOG_sint    (rc);
+   DEBUG_NORM   yLOG_value   ("rc", rc);
    if (rc < 0) {
-      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(adding)-------------------------*/
    p_curr = x_proc;
-   DEBUG_NORM   yLOG_spoint  (p_curr);
+   DEBUG_NORM   yLOG_point   ("p_curr", p_curr);
    x_proc->rpid = a_rpid;
    *a_proc = p_curr;
    /*---(complete)-----------------------*/
-   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_exit    (__FUNCTION__);
    return 1;
 }
 
@@ -191,16 +191,16 @@ PROC_unhook             (tPROC **a_proc)
    char        rce         =  -10;
    char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_NORM   yLOG_spoint  (a_proc);
+   DEBUG_NORM   yLOG_point   ("a_proc", a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_NORM   yLOG_spoint  (*a_proc);
+   DEBUG_NORM   yLOG_point   ("*a_proc", *a_proc);
    --rce;  if (*a_proc == NULL) {
-      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(unlink exec)--------------------*/
@@ -209,7 +209,7 @@ PROC_unhook             (tPROC **a_proc)
    /*---(remove base)--------------------*/
    rc = PROC_free (a_proc);
    /*---(complete)-----------------------*/
-   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
@@ -259,7 +259,7 @@ PROC_by_rpid            (tPROC **r_curr, int a_rpid)
    /*---(normal result)------------------*/
    if (r_curr != NULL)  *r_curr = p_curr;
    /*---(complete)-----------------------*/
-   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_exit    (__FUNCTION__);
    return rc;
 }
 
