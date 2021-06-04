@@ -97,10 +97,10 @@ EXEC_wipe               (tEXEC *a_new, char a_type)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char EXEC_new     (void **a_new) { return SHARE_new   ('E', a_new, '-'); }
-char EXEC_force   (void **a_new) { return SHARE_new   ('E', a_new, 'y'); }
-char EXEC_free    (void **a_old) { return SHARE_free  ('E', a_old); }
-char EXEC_purge   (void)         { return SHARE_purge ('E'); }
+char EXEC_new     (void **a_new) { return SHARE_new   (TYPE_EXEC, a_new, '-'); }
+char EXEC_force   (void **a_new) { return SHARE_new   (TYPE_EXEC, a_new, 'y'); }
+char EXEC_free    (void **a_old) { return SHARE_free  (TYPE_EXEC, a_old); }
+char EXEC_purge   (void)         { return SHARE_purge (TYPE_EXEC); }
 
 
 
@@ -117,28 +117,28 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
    char        rc          =    0;
    tEXEC      *e_temp      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (a_proc);
+   DEBUG_NORM   yLOG_spoint  (a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YEXEC  yLOG_spoint  (a_name);
+   DEBUG_NORM   yLOG_spoint  (a_name);
    --rce;  if (a_name == NULL || strlen (a_name) <= 0) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YEXEC  yLOG_snote   (a_name);
+   DEBUG_NORM   yLOG_snote   (a_name);
    /*---(pre-check)----------------------*/
    --rce;  if (a_proc->e_link != NULL) {
       if (strcmp (a_proc->e_link->base, a_name) == 0) {
-         DEBUG_YEXEC  yLOG_snote   ("already attached correctly");
-         DEBUG_YEXEC  yLOG_sexit   (__FUNCTION__);
+         DEBUG_NORM   yLOG_snote   ("already attached correctly");
+         DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
          return 2;
       } else {
-         DEBUG_YEXEC  yLOG_snote   ("already attached, unhook before repeating");
-         DEBUG_YEXEC  yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_NORM   yLOG_snote   ("already attached, unhook before repeating");
+         DEBUG_NORM   yLOG_sexitr  (__FUNCTION__, rce);
          return rce;
       }
    }
@@ -153,21 +153,21 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
    }
    /*---(add if necessary)---------------*/
    --rce;  if (e_temp == NULL) {
-      DEBUG_YEXEC  yLOG_snote   ("must add");
+      DEBUG_NORM   yLOG_snote   ("must add");
       rc = EXEC_new (&e_temp);
-      DEBUG_YEXEC  yLOG_sint    (rc);
+      DEBUG_NORM   yLOG_sint    (rc);
       if (rc < 0) {
-         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
          return rce;
       }
       e_curr = e_temp;
       strlcpy (e_temp->base, a_name, LEN_TITLE);
       rc = 1;
    } else {
-      DEBUG_YEXEC  yLOG_snote   ("existing");
+      DEBUG_NORM   yLOG_snote   ("existing");
       rc = 0;
    }
-   DEBUG_YEXEC  yLOG_spoint  (e_curr);
+   DEBUG_NORM   yLOG_spoint  (e_curr);
    /*---(initialize)---------------------*/
    a_proc->p_prev  = a_proc->p_next = NULL;
    /*---(link exec to proc)--------------*/
@@ -185,7 +185,7 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
    /*---(update count)-------------------*/
    ++e_curr->p_count;
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
    return rc;
 }
 
@@ -197,17 +197,17 @@ EXEC_unhook             (tPROC *a_proc)
    char        rc          =    0;
    tEXEC      *x_exec      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (a_proc);
+   DEBUG_NORM   yLOG_spoint  (a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    x_exec = a_proc->e_link;
-   DEBUG_YEXEC  yLOG_spoint  (x_exec);
+   DEBUG_NORM   yLOG_spoint  (x_exec);
    if (x_exec == NULL) {
-      DEBUG_YEXEC   yLOG_sexit   (__FUNCTION__);
+      DEBUG_NORM    yLOG_sexit   (__FUNCTION__);
       return 0;
    }
    /*---(unlink exec from proc)----------*/
@@ -222,7 +222,7 @@ EXEC_unhook             (tPROC *a_proc)
    /*---(remove if necesary)-------------*/
    if (x_exec->p_count <= 0)  EXEC_free (&x_exec);
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
    return rc;
 }
 
@@ -233,25 +233,25 @@ EXEC_rehook             (tPROC *a_proc, char *a_name)
    char        rce         =  -10;
    char        rc          =    0;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_enter   (__FUNCTION__);
+   DEBUG_NORM   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_point   ("a_proc"    , a_proc);
+   DEBUG_NORM   yLOG_point   ("a_proc"    , a_proc);
    --rce;  if (a_proc == NULL) {
-      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(unhook)-------------------------*/
    rc = EXEC_unhook (a_proc);
-   DEBUG_YEXEC  yLOG_value   ("unhook"    , rc);
+   DEBUG_NORM   yLOG_value   ("unhook"    , rc);
    /*---(re-hook)------------------------*/
    rc = EXEC_hook   (a_proc, a_name);
-   DEBUG_YEXEC  yLOG_value   ("hook"      , rc);
+   DEBUG_NORM   yLOG_value   ("hook"      , rc);
    --rce;  if (rc < 0) {
-      DEBUG_YEXEC   yLOG_exitr   (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_exit    (__FUNCTION__);
+   DEBUG_NORM   yLOG_exit    (__FUNCTION__);
    return 0;
 }
 
@@ -262,10 +262,10 @@ EXEC_rehook             (tPROC *a_proc, char *a_name)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-char EXEC_by_cursor  (char a_move, tEXEC **a_curr)  { return SHARE_by_cursor ('E', a_move, a_curr); }
-char EXEC_by_index   (int a_index, tEXEC **a_curr)  { return SHARE_by_index  ('E', a_index, a_curr); }
-char EXEC_by_inode   (int a_inode, tEXEC **a_curr)  { return SHARE_by_inode  ('E', a_inode, a_curr); }
-char EXEC_by_name    (char *a_name, tEXEC **a_curr) { return SHARE_by_name   ('E', a_name, a_curr); }
+char EXEC_by_cursor  (tEXEC **r_curr, char a_move)  { return SHARE_by_cursor (TYPE_EXEC, r_curr, a_move); }
+char EXEC_by_index   (tEXEC **r_curr, int a_index)  { return SHARE_by_index  (TYPE_EXEC, r_curr, a_index); }
+char EXEC_by_inode   (tEXEC **r_curr, int a_inode)  { return SHARE_by_inode  (TYPE_EXEC, r_curr, a_inode); }
+char EXEC_by_name    (tEXEC **r_curr, char *a_name) { return SHARE_by_name   (TYPE_EXEC, r_curr, a_name); }
 
 
 
@@ -299,7 +299,7 @@ EXEC__unit              (char *a_question, int n)
       snprintf (unit_answer, LEN_RECD, "EXEC list        : num=%4d, head=%-10p, tail=%p", e_count, e_head, e_tail);
    }
    else if (strcmp (a_question, "entry"    )      == 0) {
-      EXEC_by_index (n, &x_exec);
+      EXEC_by_index (&x_exec, n);
       if (x_exec != NULL) {
          sprintf  (t, "%2då%.10sæ", strlen (x_exec->base), x_exec->base);
          sprintf  (s, "%2då%.16sæ", strlen (x_exec->full), x_exec->full);

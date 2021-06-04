@@ -13,7 +13,7 @@ char        unit_answer [LEN_RECD];
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char PROG_purge   (void)         { return SHARE_purge ('A'); }
+char PROG_purge   (void)         { return SHARE_purge (TYPE_ALLS); }
 
 char
 PROG_review             (void)

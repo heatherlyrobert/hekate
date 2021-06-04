@@ -94,10 +94,10 @@ LIBS_wipe               (tLIBS *a_new, char a_type)
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }
 
-char LIBS_new     (void **a_new) { return SHARE_new   ('L', a_new, '-'); }
-char LIBS_force   (void **a_new) { return SHARE_new   ('L', a_new, 'y'); }
-char LIBS_free    (void **a_old) { return SHARE_free  ('L', a_old); }
-char LIBS_purge   (void)         { return SHARE_purge ('L'); }
+char LIBS_new     (void **a_new) { return SHARE_new   (TYPE_LIBS, a_new, '-'); }
+char LIBS_force   (void **a_new) { return SHARE_new   (TYPE_LIBS, a_new, 'y'); }
+char LIBS_free    (void **a_old) { return SHARE_free  (TYPE_LIBS, a_old); }
+char LIBS_purge   (void)         { return SHARE_purge (TYPE_LIBS); }
 
 
 
@@ -274,10 +274,10 @@ LIBS_unhook             (tPROC *a_proc)
 /*====================------------------------------------====================*/
 static void  o___SEARCH__________o () { return; }
 
-char LIBS_by_cursor  (char a_move, tLIBS **a_curr)  { return SHARE_by_cursor ('L', a_move, a_curr); }
-char LIBS_by_index   (int a_index, tLIBS **a_curr)  { return SHARE_by_index  ('L', a_index, a_curr); }
-char LIBS_by_inode   (int a_inode, tLIBS **a_curr)  { return SHARE_by_inode  ('L', a_inode, a_curr); }
-char LIBS_by_name    (char *a_name, tLIBS **a_curr) { return SHARE_by_name   ('L', a_name, a_curr); }
+char LIBS_by_cursor  (tLIBS **r_curr, char a_move)  { return SHARE_by_cursor (TYPE_LIBS, r_curr, a_move); }
+char LIBS_by_index   (tLIBS **r_curr, int a_index)  { return SHARE_by_index  (TYPE_LIBS, r_curr, a_index); }
+char LIBS_by_inode   (tLIBS **r_curr, int a_inode)  { return SHARE_by_inode  (TYPE_LIBS, r_curr, a_inode); }
+char LIBS_by_name    (tLIBS **r_curr, char *a_name) { return SHARE_by_name   (TYPE_LIBS, r_curr, a_name); }
 
 
 
@@ -292,7 +292,7 @@ LIBS__unit              (char *a_question, int n)
    /*---(locals)-----------+-----+-----+-*/
    int         x_fore      = 0;
    int         x_back      = 0;
-   tLIBS      *x_lib       = NULL;
+   tLIBS      *x_libs      = NULL;
    char        rc          =    0;
    int         c           =    0;
    char        t           [LEN_RECD]  = "[]";
@@ -303,22 +303,22 @@ LIBS__unit              (char *a_question, int n)
    strcpy (unit_answer, "LIBS             : question not understood");
    /*---(dependency list)----------------*/
    if      (strcmp (a_question, "count"    )      == 0) {
-      x_lib = l_head; while (x_lib != NULL) { ++x_fore; x_lib = x_lib->m_next; }
-      x_lib = l_tail; while (x_lib != NULL) { ++x_back; x_lib = x_lib->m_prev; }
+      x_libs = l_head; while (x_libs != NULL) { ++x_fore; x_libs = x_libs->m_next; }
+      x_libs = l_tail; while (x_libs != NULL) { ++x_back; x_libs = x_libs->m_prev; }
       snprintf (unit_answer, LEN_RECD, "LIBS count       : num=%4d, fore=%4d, back=%4d", l_count, x_fore, x_back);
    }
    else if (strcmp (a_question, "list"        )   == 0) {
       snprintf (unit_answer, LEN_RECD, "LIBS list        : num=%4d, head=%-10p, tail=%p", l_count, l_head, l_tail);
    }
    else if (strcmp (a_question, "entry"    )      == 0) {
-      LIBS_by_index (n, &x_lib);
-      if (x_lib != NULL) {
-         sprintf  (t, "%2då%.10sæ", strlen (x_lib->terse), x_lib->terse);
-         sprintf  (u, "%2då%.20sæ", strlen (x_lib->name ), x_lib->name);
-         snprintf (unit_answer, LEN_RECD, "LIBS entry  (%2d) : %-14.14s %-24.24s  %-9ld  %2d  %7d",
-               n, t, u, x_lib->inode, x_lib->t_count, x_lib->m_text);
+      LIBS_by_index (&x_libs, n);
+      if (x_libs != NULL) {
+         sprintf  (t, "%2då%.10sæ", strlen (x_libs->terse), x_libs->terse);
+         sprintf  (u, "%2då%.20sæ", strlen (x_libs->name ), x_libs->name);
+         snprintf (unit_answer, LEN_RECD, "LIBS entry  (%2d) : %-14.14s %-24.24s  %-9ld  %2d",
+               n, t, u, x_libs->inode, x_libs->t_count);
       } else {
-         snprintf (unit_answer, LEN_RECD, "LIBS entry  (%2d) :  -åæ            -åæ                      -           -        -", n);
+         snprintf (unit_answer, LEN_RECD, "LIBS entry  (%2d) :  -åæ            -åæ                      -           -", n);
       }
       return unit_answer;
    }

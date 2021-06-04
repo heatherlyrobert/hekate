@@ -3,11 +3,12 @@
 
 
 
-#define  IF_EXEC   if      (a_type == 'E')
-#define  EL_PROC   else if (a_type == 'P')
-#define  EL_TIES   else if (a_type == 'T')
-#define  EL_LIBS   else if (a_type == 'L')
-#define  EL_ALLS   else if (a_type == 'A')
+#define  IF_EXEC   if      (a_type == TYPE_EXEC)
+#define  EL_PROC   else if (a_type == TYPE_PROC)
+#define  EL_TIES   else if (a_type == TYPE_TIES)
+#define  EL_LIBS   else if (a_type == TYPE_LIBS)
+#define  EL_DATA   else if (a_type == TYPE_DATA)
+#define  EL_ALLS   else if (a_type == TYPE_ALLS)
 #define  ELSE      else 
 
 
@@ -28,8 +29,9 @@ SHARE_new               (char a_type, void **a_new, char a_force)
    int         x_size      =    0;
    tEXEC      *x_exec      = NULL;
    tPROC      *x_proc      = NULL;
-   tTIES      *x_tie       = NULL;
-   tLIBS      *x_lib       = NULL;
+   tTIES      *x_ties      = NULL;
+   tLIBS      *x_libs      = NULL;
+   tDATA      *x_data      = NULL;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    DEBUG_DATA   yLOG_schar   (a_type);
@@ -53,6 +55,7 @@ SHARE_new               (char a_type, void **a_new, char a_force)
    EL_PROC   x_size = sizeof (tPROC);
    EL_TIES   x_size = sizeof (tTIES);
    EL_LIBS   x_size = sizeof (tLIBS);
+   EL_DATA   x_size = sizeof (tDATA);
    ELSE {
       DEBUG_DATA   yLOG_snote   ("unknown type");
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
@@ -88,19 +91,28 @@ SHARE_new               (char a_type, void **a_new, char a_force)
       p_tail = x_proc;
       ++p_count;
    } EL_TIES {
-      x_tie  = (tTIES *) x_new;
-      TIES_wipe (x_tie, '*');
-      if    (t_tail == NULL) { t_head = x_tie; }
-      else { x_tie->m_prev  = t_tail; t_tail->m_next = x_tie; }
-      t_tail = x_tie;
+      x_ties = (tTIES *) x_new;
+      TIES_wipe (x_ties, '*');
+      if    (t_tail == NULL) { t_head = x_ties; }
+      else { x_ties->m_prev  = t_tail; t_tail->m_next = x_ties; }
+      t_tail = x_ties;
       ++t_count;
    } EL_LIBS {
-      x_lib  = (tLIBS *) x_new;
-      LIBS_wipe (x_lib, '*');
-      if    (l_tail == NULL) { l_head = x_lib; }
-      else { x_lib->m_prev  = l_tail; l_tail->m_next = x_lib; }
-      l_tail = x_lib;
+      x_libs = (tLIBS *) x_new;
+      LIBS_wipe (x_libs, '*');
+      if    (l_tail == NULL) { l_head = x_libs; }
+      else { x_libs->m_prev  = l_tail; l_tail->m_next = x_libs; }
+      l_tail = x_libs;
       ++l_count;
+   } EL_DATA {
+      x_data = (tDATA *) x_new;
+      x_data->rpid = 0;
+      x_data->m_prev = NULL;
+      x_data->m_next = NULL;
+      if    (d_tail == NULL) { d_head = x_data; }
+      else { x_data->m_prev  = d_tail; d_tail->m_next = x_data; }
+      d_tail = x_data;
+      ++d_count;
    }
    /*---(save return)--------------------*/
    *a_new = x_new;
@@ -116,8 +128,9 @@ SHARE_free              (char a_type, void **a_old)
    char        rce         =  -10;
    tEXEC      *x_exec      = NULL;
    tPROC      *x_proc      = NULL;
-   tTIES      *x_tie       = NULL;
-   tLIBS      *x_lib       = NULL;
+   tTIES      *x_ties      = NULL;
+   tLIBS      *x_libs      = NULL;
+   tDATA      *x_data      = NULL;
    /*---(header)-------------------------*/
    DEBUG_DATA   yLOG_senter  (__FUNCTION__);
    DEBUG_DATA   yLOG_schar   (a_type);
@@ -150,19 +163,26 @@ SHARE_free              (char a_type, void **a_old)
       else                        p_head                   = x_proc->m_next;
       --p_count;
    } EL_TIES {
-      x_tie  = (tTIES *) *a_old;
-      if (x_tie->m_next != NULL)  x_tie->m_next->m_prev    = x_tie->m_prev;
-      else                        t_tail                   = x_tie->m_prev;
-      if (x_tie->m_prev != NULL)  x_tie->m_prev->m_next    = x_tie->m_next;
-      else                        t_head                   = x_tie->m_next;
+      x_ties = (tTIES *) *a_old;
+      if (x_ties->m_next != NULL)  x_ties->m_next->m_prev  = x_ties->m_prev;
+      else                         t_tail                  = x_ties->m_prev;
+      if (x_ties->m_prev != NULL)  x_ties->m_prev->m_next  = x_ties->m_next;
+      else                         t_head                  = x_ties->m_next;
       --t_count;
    } EL_LIBS {
-      x_lib  = (tLIBS *) *a_old;
-      if (x_lib->m_next != NULL)  x_lib->m_next->m_prev    = x_lib->m_prev;
-      else                        l_tail                   = x_lib->m_prev;
-      if (x_lib->m_prev != NULL)  x_lib->m_prev->m_next    = x_lib->m_next;
-      else                        l_head                   = x_lib->m_next;
+      x_libs  = (tLIBS *) *a_old;
+      if (x_libs->m_next != NULL)  x_libs->m_next->m_prev  = x_libs->m_prev;
+      else                         l_tail                  = x_libs->m_prev;
+      if (x_libs->m_prev != NULL)  x_libs->m_prev->m_next  = x_libs->m_next;
+      else                         l_head                  = x_libs->m_next;
       --l_count;
+   } EL_DATA {
+      x_data = (tDATA *) *a_old;
+      if (x_data->m_next != NULL)  x_data->m_next->m_prev  = x_data->m_prev;
+      else                         d_tail                  = x_data->m_prev;
+      if (x_data->m_prev != NULL)  x_data->m_prev->m_next  = x_data->m_next;
+      else                         d_head                  = x_data->m_next;
+      --d_count;
    }
    /*---(clear and return)---------------*/
    free (*a_old);
@@ -187,6 +207,7 @@ SHARE_purge             (char a_type)
    EL_PROC   x_curr = p_head;
    EL_TIES   x_curr = t_head;
    EL_LIBS   x_curr = l_head;
+   EL_DATA   x_curr = d_head;
    EL_ALLS   x_curr = p_head;
    ELSE {
       DEBUG_DATA   yLOG_snote   ("unknown type");
@@ -206,6 +227,9 @@ SHARE_purge             (char a_type)
       } EL_LIBS {
          LIBS_free (&x_curr);
          x_curr = l_head;
+      } EL_DATA {
+         DATA_free (&x_curr);
+         x_curr = d_head;
       } EL_ALLS {
          PROC_unhook (&x_curr);
          x_curr = p_head;
@@ -224,6 +248,9 @@ SHARE_purge             (char a_type)
    } EL_LIBS {
       l_head   = l_tail   = l_curr   = NULL;
       l_count  = 0;
+   } EL_DATA {
+      d_head   = d_tail   = d_curr   = NULL;
+      d_count  = 0;
    }
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
@@ -238,7 +265,7 @@ SHARE_purge             (char a_type)
 static void  o___FIND____________o () { return; }
 
 char
-SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
+SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -247,25 +274,27 @@ SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
    tPROC      *x_proc      = NULL;
    tTIES      *x_ties      = NULL;
    tLIBS      *x_libs      = NULL;
+   tDATA      *x_data      = NULL;
    void       *x_curr      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
-   DEBUG_YEXEC  yLOG_schar   (a_move);
+   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_schar   (a_move);
    /*---(defaults)-----------------------*/
-   if (a_curr != NULL)  *a_curr = NULL;
+   if (r_curr != NULL)  *r_curr = NULL;
    /*---(starting point)-----------------*/
    --rce;
    IF_EXEC  x_curr = x_exec = e_curr;
    EL_PROC  x_curr = x_proc = p_curr;
    EL_TIES  x_curr = x_ties = t_curr;
    EL_LIBS  x_curr = x_libs = l_curr;
+   EL_DATA  x_curr = x_data = d_curr;
    ELSE {
-      DEBUG_YEXEC   yLOG_snote   ("unknown type");
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_snote   ("unknown type");
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   DEBUG_NORM   yLOG_spoint  (x_curr);
    --rce;  if (x_curr == NULL) {
       /*---(non-bounce)------------------*/
       if (strchr (YDLST_DREL, a_move) != NULL) {
@@ -273,7 +302,8 @@ SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
          EL_PROC  p_curr = x_proc;
          EL_TIES  t_curr = x_ties;
          EL_LIBS  l_curr = x_libs;
-         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         EL_DATA  d_curr = x_data;
+         DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
          return rce;
       }
       /*---(bounce types)----------------*/
@@ -281,9 +311,10 @@ SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
       EL_PROC  x_curr = x_proc = p_head;
       EL_TIES  x_curr = x_ties = t_head;
       EL_LIBS  x_curr = x_libs = l_head;
-      DEBUG_YEXEC   yLOG_spoint  (x_curr);
+      EL_DATA  x_curr = x_data = d_head;
+      DEBUG_NORM    yLOG_spoint  (x_curr);
       if (x_curr == NULL) {
-         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
          return rce;
       }
    }
@@ -294,12 +325,14 @@ SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
       EL_PROC  x_curr = x_proc = p_head;
       EL_TIES  x_curr = x_ties = t_head;
       EL_LIBS  x_curr = x_libs = l_head;
+      EL_DATA  x_curr = x_data = d_head;
       break;
    case YDLST_PREV : case YDLST_DPREV :
       IF_EXEC  x_curr = x_exec = x_exec->m_prev;
       EL_PROC  x_curr = x_proc = x_proc->m_prev;
       EL_TIES  x_curr = x_ties = x_ties->m_prev;
       EL_LIBS  x_curr = x_libs = x_libs->m_prev;
+      EL_DATA  x_curr = x_data = x_data->m_prev;
       break;
    case YDLST_CURR : case YDLST_DCURR :
       break;
@@ -308,18 +341,20 @@ SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
       EL_PROC  x_curr = x_proc = x_proc->m_next;
       EL_TIES  x_curr = x_ties = x_ties->m_next;
       EL_LIBS  x_curr = x_libs = x_libs->m_next;
+      EL_DATA  x_curr = x_data = x_data->m_next;
       break;
    case YDLST_TAIL : case YDLST_DTAIL :
       IF_EXEC  x_curr = x_exec = e_tail;
       EL_PROC  x_curr = x_proc = p_tail;
       EL_TIES  x_curr = x_ties = t_tail;
       EL_LIBS  x_curr = x_libs = l_tail;
+      EL_DATA  x_curr = x_data = d_tail;
       break;
    default         :
-      DEBUG_YEXEC  yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   DEBUG_NORM   yLOG_spoint  (x_curr);
    /*---(check end)----------------------*/
    --rce;  if (x_curr == NULL) {
       /*---(bounce off ends)-------------*/
@@ -328,12 +363,14 @@ SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
          EL_PROC  x_curr = x_proc = p_head;
          EL_TIES  x_curr = x_ties = t_head;
          EL_LIBS  x_curr = x_libs = l_head;
+         EL_DATA  x_curr = x_data = d_head;
       }
       if (a_move == YDLST_NEXT) {
          IF_EXEC  x_curr = x_exec = e_tail;
          EL_PROC  x_curr = x_proc = p_tail;
          EL_TIES  x_curr = x_ties = t_tail;
          EL_LIBS  x_curr = x_libs = l_tail;
+         EL_DATA  x_curr = x_data = d_tail;
       }
       /*---(no bounce)-------------------*/
       if (x_curr == NULL) {
@@ -341,11 +378,12 @@ SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
          EL_PROC  p_curr = x_proc;
          EL_TIES  t_curr = x_ties;
          EL_LIBS  l_curr = x_libs;
-         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         EL_DATA  l_curr = x_data;
+         DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
          return rce;
       }
       /*---(mark trouble)----------------*/
-      DEBUG_YEXEC   yLOG_snote   ("BOUNCE");
+      DEBUG_NORM    yLOG_snote   ("BOUNCE");
       rc = rce;
       /*---(done)------------------------*/
    }
@@ -354,15 +392,16 @@ SHARE_by_cursor         (char a_type, char a_move, void **a_curr)
    EL_PROC  x_curr = p_curr = x_proc;
    EL_TIES  x_curr = t_curr = x_ties;
    EL_LIBS  x_curr = l_curr = x_libs;
+   EL_DATA  x_curr = d_curr = x_data;
    /*---(save back)----------------------*/
-   if (a_curr != NULL)  *a_curr = x_curr;
+   if (r_curr != NULL)  *r_curr = x_curr;
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
    return rc;
 }
 
 char
-SHARE_cursor_by_owner  (char a_type, void *a_owner, char a_move, void **a_curr)
+SHARE_cursor_by_owner  (char a_type, void **r_curr, void *a_owner, char a_move)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -373,10 +412,10 @@ SHARE_cursor_by_owner  (char a_type, void *a_owner, char a_move, void **a_curr)
    tLIBS      *x_libs      = NULL;
    void       *x_curr      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
-   DEBUG_YEXEC  yLOG_schar   (a_move);
+   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_schar   (a_move);
    /*---(defaults)-----------------------*/
-   if (a_curr != NULL)  *a_curr = NULL;
+   if (r_curr != NULL)  *r_curr = NULL;
    /*---(defense)------------------------*/
    DEBUG_DATA   yLOG_spoint  (a_owner);
    --rce;  if (a_owner == NULL) {
@@ -401,27 +440,27 @@ SHARE_cursor_by_owner  (char a_type, void *a_owner, char a_move, void **a_curr)
       else if (t_curr->l_link != x_libs)  x_curr = x_ties = x_libs->t_head;
       else                                x_curr = x_ties = t_curr;
    } ELSE {
-      DEBUG_YEXEC   yLOG_snote   ("unknown type");
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_snote   ("unknown type");
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   DEBUG_NORM   yLOG_spoint  (x_curr);
    --rce;  if (x_curr == NULL) {
       /*---(non-bounce)------------------*/
       if (strchr (YDLST_DREL, a_move) != NULL) {
          IF_EXEC  p_curr = x_curr;
          EL_PROC  t_curr = x_curr;
-         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
          return rce;
       }
       /*---(bounce types)----------------*/
       IF_EXEC   p_curr = x_exec->p_head;
       EL_PROC   t_curr = x_proc->t_head;
       EL_LIBS   t_curr = x_libs->t_head;
-      DEBUG_YEXEC   yLOG_spoint  (x_curr);
+      DEBUG_NORM    yLOG_spoint  (x_curr);
       if (x_curr == NULL) {
-         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
          return rce;
       }
    }
@@ -450,10 +489,10 @@ SHARE_cursor_by_owner  (char a_type, void *a_owner, char a_move, void **a_curr)
       EL_LIBS  x_curr = x_ties = x_libs->t_tail;
       break;
    default         :
-      DEBUG_YEXEC  yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM   yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
-   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   DEBUG_NORM   yLOG_spoint  (x_curr);
    /*---(check end)----------------------*/
    --rce;  if (x_curr == NULL) {
       /*---(bounce off ends)-------------*/
@@ -472,11 +511,11 @@ SHARE_cursor_by_owner  (char a_type, void *a_owner, char a_move, void **a_curr)
          IF_EXEC  p_curr = x_curr;
          EL_PROC  t_curr = x_curr;
          EL_LIBS  t_curr = x_curr;
-         DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+         DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
          return rce;
       }
       /*---(mark trouble)----------------*/
-      DEBUG_YEXEC   yLOG_snote   ("BOUNCE");
+      DEBUG_NORM    yLOG_snote   ("BOUNCE");
       rc = rce;
       /*---(done)------------------------*/
    }
@@ -485,14 +524,14 @@ SHARE_cursor_by_owner  (char a_type, void *a_owner, char a_move, void **a_curr)
    EL_PROC  t_curr = x_curr;
    EL_LIBS  t_curr = x_curr;
    /*---(save back)----------------------*/
-   if (a_curr != NULL)  *a_curr = x_curr;
+   if (r_curr != NULL)  *r_curr = x_curr;
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
    return rc;
 }
 
 char
-SHARE_by_index          (char a_type, int a_index, void **a_curr)
+SHARE_by_index          (char a_type, void **r_curr, int a_index)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -500,6 +539,7 @@ SHARE_by_index          (char a_type, int a_index, void **a_curr)
    tPROC      *x_proc      = NULL;
    tTIES      *x_ties      = NULL;
    tLIBS      *x_libs      = NULL;
+   tDATA      *x_data      = NULL;
    void       *x_curr      = NULL;
    int         c           =    0;
    /*---(header)-------------------------*/
@@ -507,7 +547,7 @@ SHARE_by_index          (char a_type, int a_index, void **a_curr)
    DEBUG_DATA   yLOG_schar   (a_type);
    DEBUG_DATA   yLOG_sint    (a_index);
    /*---(default)------------------------*/
-   if (a_curr != NULL)  *a_curr = NULL;
+   if (r_curr != NULL)  *r_curr = NULL;
    /*---(short-cut)----------------------*/
    --rce;  if (a_index == -1) {
       DEBUG_DATA   yLOG_snote   ("requested current");
@@ -515,7 +555,8 @@ SHARE_by_index          (char a_type, int a_index, void **a_curr)
       EL_PROC  x_curr = p_curr;
       EL_TIES  x_curr = t_curr;
       EL_LIBS  x_curr = l_curr;
-      if (a_curr != NULL)  *a_curr = x_curr;
+      EL_DATA  x_curr = d_curr;
+      if (r_curr != NULL)  *r_curr = x_curr;
       DEBUG_DATA   yLOG_spoint  (x_curr);
       --rce;  if (x_curr == NULL) {
          DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
@@ -530,6 +571,7 @@ SHARE_by_index          (char a_type, int a_index, void **a_curr)
    EL_PROC   x_curr = x_proc = p_head;
    EL_TIES   x_curr = x_ties = t_head;
    EL_LIBS   x_curr = x_libs = l_head;
+   EL_DATA   x_curr = x_data = d_head;
    ELSE {
       DEBUG_DATA   yLOG_snote   ("unknown type");
       DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
@@ -554,6 +596,7 @@ SHARE_by_index          (char a_type, int a_index, void **a_curr)
       EL_PROC     x_curr = x_proc = x_proc->m_next;
       EL_TIES     x_curr = x_ties = x_ties->m_next;
       EL_LIBS     x_curr = x_libs = x_libs->m_next;
+      EL_DATA     x_curr = x_data = x_data->m_next;
    }
    /*---(check result)-------------------*/
    DEBUG_DATA   yLOG_sint    (x_curr);
@@ -566,14 +609,15 @@ SHARE_by_index          (char a_type, int a_index, void **a_curr)
    EL_PROC     p_curr = x_proc;
    EL_TIES     t_curr = x_ties;
    EL_LIBS     l_curr = x_libs;
-   if (a_curr != NULL)  *a_curr = x_curr;
+   EL_DATA     d_curr = x_data;
+   if (r_curr != NULL)  *r_curr = x_curr;
    /*---(complete)-----------------------*/
    DEBUG_DATA   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char
-SHARE_by_inode          (char a_type, int a_inode, void **a_curr)
+SHARE_by_inode          (char a_type, void **r_curr, int a_inode)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -583,11 +627,11 @@ SHARE_by_inode          (char a_type, int a_inode, void **a_curr)
    tLIBS      *x_libs      = NULL;
    void       *x_curr      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
    DEBUG_DATA   yLOG_schar   (a_type);
    DEBUG_DATA   yLOG_sint    (a_inode);
    /*---(defaults)-----------------------*/
-   if (a_curr != NULL)  *a_curr = NULL;
+   if (r_curr != NULL)  *r_curr = NULL;
    /*---(prepare)------------------------*/
    --rce;
    IF_EXEC   x_curr = x_exec = e_head;
@@ -617,20 +661,20 @@ SHARE_by_inode          (char a_type, int a_inode, void **a_curr)
       EL_LIBS   x_curr = x_libs = x_libs->m_next;
    }
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   DEBUG_NORM   yLOG_spoint  (x_curr);
    --rce;  if (x_curr == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(normal result)------------------*/
-   if (a_curr != NULL)  *a_curr = x_curr;
+   if (r_curr != NULL)  *r_curr = x_curr;
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 
 char
-SHARE_by_name           (char a_type, char *a_name, tEXEC **a_curr)
+SHARE_by_name           (char a_type, void **r_curr, char *a_name)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -640,11 +684,11 @@ SHARE_by_name           (char a_type, char *a_name, tEXEC **a_curr)
    tLIBS      *x_libs      = NULL;
    void       *x_curr      = NULL;
    /*---(header)-------------------------*/
-   DEBUG_YEXEC  yLOG_senter  (__FUNCTION__);
+   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
    DEBUG_DATA   yLOG_schar   (a_type);
    DEBUG_DATA   yLOG_snote   (a_name);
    /*---(defaults)-----------------------*/
-   if (a_curr != NULL)  *a_curr = NULL;
+   if (r_curr != NULL)  *r_curr = NULL;
    /*---(prepare)------------------------*/
    --rce;
    IF_EXEC   x_curr = x_exec = e_head;
@@ -679,15 +723,15 @@ SHARE_by_name           (char a_type, char *a_name, tEXEC **a_curr)
       EL_LIBS   x_curr = x_libs = x_libs->m_next;
    }
    /*---(defense)------------------------*/
-   DEBUG_YEXEC  yLOG_spoint  (x_curr);
+   DEBUG_NORM   yLOG_spoint  (x_curr);
    --rce;  if (x_curr == NULL) {
-      DEBUG_YEXEC   yLOG_sexitr  (__FUNCTION__, rce);
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
       return rce;
    }
    /*---(normal result)------------------*/
-   if (a_curr != NULL)  *a_curr = x_curr;
+   if (r_curr != NULL)  *r_curr = x_curr;
    /*---(complete)-----------------------*/
-   DEBUG_YDLST  yLOG_sexit   (__FUNCTION__);
+   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
    return 0;
 }
 

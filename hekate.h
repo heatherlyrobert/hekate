@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.5-, bring development from yEXEC into a program"
-#define     P_VERNUM    "0.5j"
-#define     P_VERTXT    "unit tested all prework together, whoo-hoo;)"
+#define     P_VERNUM    "0.5k"
+#define     P_VERTXT    "all unit testing updated with latest unit accessor format changes"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -61,7 +61,17 @@
 #include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
 #include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
 #include    <yEXEC.h>        /* CUSTOM  heatherly process execution           */
-#include    <yDLST_solo.h>   /* CUSTOM : heatherly list constants             */
+#include    <yDLST_solo.h>   /* CUSTOM  heatherly list constants              */
+#include    <ySORT.h>        /* CUSTOM  heatherly gnome sorting library       */
+
+
+
+#define     TYPE_EXEC     'E'
+#define     TYPE_PROC     'P'
+#define     TYPE_TIES     'T'
+#define     TYPE_LIBS     'L'
+#define     TYPE_DATA     'D'
+#define     TYPE_ALLS     'A'
 
 
 
@@ -210,6 +220,20 @@ extern int         l_count;
 
 
 
+typedef struct cDATA tDATA;
+struct cDATA {
+   int         rpid;
+   char        key         [LEN_TERSE];
+   tDATA      *m_prev;
+   tDATA      *m_next;
+};
+extern tDATA    *d_head;
+extern tDATA    *d_tail;
+extern tDATA    *d_curr;
+extern int       d_count;
+
+
+
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 typedef     struct      dirent      tDIRENT;
@@ -247,11 +271,11 @@ char        SHARE_new               (char a_type, void **a_new, char a_force);
 char        SHARE_free              (char a_type, void **a_old);
 char        SHARE_purge             (char a_type);
 /*---(find)-----------------*/
-char        SHARE_by_cursor         (char a_type, char a_move, void **a_curr);
-char        SHARE_cursor_by_owner   (char a_type, void *a_owner, char a_move, void **a_curr);
-char        SHARE_by_index          (char a_type, int a_index, void **a_curr);
-char        SHARE_by_inode          (char a_type, int a_inode, void **a_curr);
-char        SHARE_by_name           (char a_type, char *a_name, tEXEC **a_curr);
+char        SHARE_by_cursor         (char a_type, void **r_curr, char a_move);
+char        SHARE_cursor_by_owner   (char a_type, void **r_curr, void *a_owner, char a_move);
+char        SHARE_by_index          (char a_type, void **r_curr, int a_index);
+char        SHARE_by_inode          (char a_type, void **r_curr, int a_inode);
+char        SHARE_by_name           (char a_type, void **r_curr, char *a_name);
 /*---(done)-----------------*/
 
 
@@ -270,10 +294,10 @@ char        EXEC_hook               (tPROC *a_proc, char *a_name);
 char        EXEC_unhook             (tPROC *a_proc);
 char        EXEC_rehook             (tPROC *a_proc, char *a_name);
 /*---(searching)------------*/
-char        EXEC_by_cursor          (char a_move, tEXEC **a_curr);
-char        EXEC_by_index           (int a_index, tEXEC **a_curr);
-char        EXEC_by_inode           (int a_inode, tEXEC **a_curr);
-char        EXEC_by_name            (char *a_name, tEXEC **a_curr);
+char        EXEC_by_cursor          (tEXEC **r_curr, char a_move);
+char        EXEC_by_index           (tEXEC **r_curr, int a_index);
+char        EXEC_by_inode           (tEXEC **r_curr, int a_inode);
+char        EXEC_by_name            (tEXEC **r_curr, char *a_name);
 /*---(unittest)-------------*/
 char*       EXEC__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -293,10 +317,10 @@ char        PROC_purge              (void);
 char        PROC_hook               (tPROC **a_proc, int a_rpid);
 char        PROC_unhook             (tPROC **a_proc);
 /*---(searching)------------*/
-char        PROC_by_cursor          (char a_move, tPROC **a_curr);
-char        PROC_by_exec_cursor     (tEXEC *a_owner, char a_move, tPROC **a_curr);
-char        PROC_by_index           (int a_index, tPROC **a_curr);
-char        PROC_by_rpid            (int a_rpid, tPROC **a_curr);
+char        PROC_by_cursor          (tPROC **r_curr, char a_move);
+char        PROC_by_exec_cursor     (tPROC **r_curr, tEXEC *a_owner, char a_move);
+char        PROC_by_index           (tPROC **r_curr, int a_index);
+char        PROC_by_rpid            (tPROC **r_curr, int a_rpid);
 /*---(unittest)-------------*/
 char*       PROC__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -313,11 +337,11 @@ char        TIES_force              (void **a_new);
 char        TIES_free               (void **a_old);
 char        TIES_purge              (void);
 /*---(searching)------------*/
-char        TIES_by_cursor          (char a_move, tTIES **a_curr);
-char        TIES_by_exec_cursor     (tEXEC *a_owner, char a_move, tTIES **a_curr);
-char        TIES_by_proc_cursor     (tPROC *a_owner, char a_move, tTIES **a_curr);
-char        TIES_by_libs_cursor     (tLIBS *a_owner, char a_move, tTIES **a_curr);
-char        TIES_by_index           (int a_index, tTIES **a_curr);
+char        TIES_by_cursor          (tTIES **r_curr, char a_move);
+char        TIES_by_exec_cursor     (tTIES **r_curr, tEXEC *a_owner, char a_move);
+char        TIES_by_proc_cursor     (tTIES **r_curr, tPROC *a_owner, char a_move);
+char        TIES_by_libs_cursor     (tTIES **r_curr, tLIBS *a_owner, char a_move);
+char        TIES_by_index           (tTIES **r_curr, int a_index);
 /*---(unittest)-------------*/
 char*       TIES__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -337,10 +361,10 @@ char        LIBS_purge              (void);
 char        LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties);
 char        LIBS_unhook             (tPROC *a_proc);
 /*---(searching)------------*/
-char        LIBS_by_cursor          (char a_move, tLIBS **a_curr);
-char        LIBS_by_index           (int a_index, tLIBS **a_curr);
-char        LIBS_by_inode           (int a_inode, tLIBS **a_curr);
-char        LIBS_by_name            (char *a_name, tLIBS **a_curr);
+char        LIBS_by_cursor          (tLIBS **r_curr, char a_move);
+char        LIBS_by_index           (tLIBS **r_curr, int a_index);
+char        LIBS_by_inode           (tLIBS **r_curr, int a_inode);
+char        LIBS_by_name            (tLIBS **r_curr, char *a_name);
 /*---(unittest)-------------*/
 char*       LIBS__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -359,6 +383,17 @@ char        DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, ch
 char        DATA_mem                (tPROC *a_proc, char *a_file);
 /*---(driver)---------------*/
 char        DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit);
+/*---(memory)---------------*/
+char        DATA_new                (void **a_new);
+char        DATA_force              (void **a_new);
+char        DATA_free               (void **a_old);
+char        DATA_purge              (void);
+/*---(searching)------------*/
+char        DATA_by_cursor          (tDATA **r_curr, char a_move);
+char        DATA_by_index           (tDATA **r_curr, int a_index);
+char*       DATA_key                (tDATA *a_curr);
+char        DATA_hook               (tDATA *a_next, tDATA *a_curr);
+char        DATA_unhook             (tDATA *a_curr);
 /*---(unittest)-------------*/
 char*       DATA__unit              (char *a_question, int n);
 /*---(done)-----------------*/
