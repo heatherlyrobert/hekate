@@ -56,32 +56,7 @@ PROG_review             (void)
          continue;
       }
       /*---(create)----------------------*/
-      x_new = NULL;
-      rc = PROC_hook (&x_new, x_rpid);
-      if (rc < 0) {
-         DEBUG_INPT   yLOG_note    ("can not add process");
-         continue;
-      }
-      /*---(gather)----------------------*/
-      printf ("%d\n", x_rpid);
-      sprintf (x_name, "/proc/%d/stat", x_rpid);
-      rc = DATA_cpu  (x_new, x_name);
-      if (rc < 0)  {
-         PROC_unhook (&x_new);
-         continue;
-      }
-      sprintf (x_name, "/proc/%d/smaps", x_rpid);
-      rc = DATA_mem (x_new, x_name);
-      if (rc < 0)  continue;
-      /*---(summary)---------------------*/
-      printf ("\n\n\n");
-      /*> if (x_count % 5 == 0)  printf ("\n#rpid  ---name--------- -ppid l   s -utime- -stime- sn   --text- --data-   --heap- -stack-\n");   <*/
-      /*> printf ("%5d  %-16.16s %5d %c   %c %7ld %7ld %2d   %7ld %7ld   %7ld %7ld\n",   <* 
-       *>       x_new->rpid, x_new->name, x_new->ppid, x_new->land,                      <* 
-       *>       x_new->c_state, x_new->c_utime, x_new->c_stime, x_new->c_snice,          <* 
-       *>       x_new->m_text , x_new->m_data , x_new->m_heap , x_new->m_stack);         <*/
-      /*> printf ("%s\n",                                                             <* 
-       *>       x_file->d_name);                                                      <*/
+      DATA_driver (x_rpid, &x_new, '-');
       /*---(total)-----------------------*/
       ++x_count;
       if (rc >= 0)  ++x_pass;

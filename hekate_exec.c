@@ -27,10 +27,11 @@ EXEC__memory            (tEXEC *a_cur)
       strlcpy (s_print, "n/a", LEN_RECD);
       return s_print;
    }
-   strlcpy (s_print, "å___.____.__.____.__.___æ", LEN_RECD);
+   strlcpy (s_print, "å____.____.__.____.__.___æ", LEN_RECD);
    ++n;  if (a_cur->base [0]    != '\0')        s_print [n] = 'X';
    ++n;  if (a_cur->full [0]    != '\0')        s_print [n] = 'X';
    ++n;  if (a_cur->inode       >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->hint [0]    != '\0')        s_print [n] = 'X';
    ++n;
    ++n;  if (a_cur->m_text      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_cons      >  0)           s_print [n] = 'X';
@@ -74,6 +75,7 @@ EXEC_wipe               (tEXEC *a_new, char a_type)
    a_new->base [0] = '\0';
    a_new->full [0] = '\0';
    a_new->inode    = 0;
+   a_new->hint [0] = '\0';
    /*---(size)---------------------------*/
    a_new->s_total  = 0;
    a_new->s_text   = 0;
@@ -86,6 +88,10 @@ EXEC_wipe               (tEXEC *a_new, char a_type)
    a_new->p_head   = NULL;
    a_new->p_tail   = NULL;
    a_new->p_count  = 0;
+   /*---(working)------------------------*/
+   a_new->e_col    = 0;
+   a_new->e_seq    = 0;
+   a_new->e_shown  = '-';
    /*---(done)---------------------------*/
    return 0;
 }

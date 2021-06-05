@@ -82,6 +82,7 @@ SHARE_new               (char a_type, void **a_new, char a_force)
       if    (e_tail == NULL) { e_head = x_exec; }
       else { x_exec->m_prev  = e_tail; e_tail->m_next = x_exec; }
       e_tail = x_exec;
+      strlhint (e_count, "ll", x_exec->hint);
       ++e_count;
    } EL_PROC {
       x_proc = (tPROC *) x_new;
@@ -89,6 +90,7 @@ SHARE_new               (char a_type, void **a_new, char a_force)
       if    (p_tail == NULL) { p_head = x_proc; }
       else { x_proc->m_prev  = p_tail; p_tail->m_next = x_proc; }
       p_tail = x_proc;
+      strlhint (p_count + (4 * 26), "ll", x_proc->hint);
       ++p_count;
    } EL_TIES {
       x_ties = (tTIES *) x_new;
@@ -103,6 +105,7 @@ SHARE_new               (char a_type, void **a_new, char a_force)
       if    (l_tail == NULL) { l_head = x_libs; }
       else { x_libs->m_prev  = l_tail; l_tail->m_next = x_libs; }
       l_tail = x_libs;
+      strlhint (l_count + (11 * 26), "ll", x_libs->hint);
       ++l_count;
    } EL_DATA {
       x_data = (tDATA *) x_new;

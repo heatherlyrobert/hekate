@@ -687,27 +687,17 @@ DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, 
       break;
    }
    /*---(reporting)----------------------*/
-   /*> printf ("%4d   %7ld %7ld %7ld    %c   %7ld  %7ld %7ld   %7ld %7ld %7ld %7ld   %7ld %7ld   %7ld\n",   <* 
-    *>       a_line, a_full, a_rss, a_pvt, x_part,                                                          <* 
-    *>       a_proc->m_full, a_proc->m_text, a_proc->m_cons,                                                 <* 
-    *>       a_proc->m_data, a_proc->m_stack, a_proc->m_heap, a_proc->m_kern,                               <* 
-    *>       x_ties->l_link->m_text, a_proc->m_libs, a_proc->m_other);                                      <*/
-   /*> printf ("%4d   %-20.20s %7ld %7d %7d %5d   %7d %7d %7d   %c   %5d %5d %5d   %7d %7d %7d\n",   <* 
-    *>       a_line, x_base, x_beg, x_end, x_end - x_beg, (x_end - x_beg) / 1024,                    <* 
-    *>       a_full, a_rss, a_pvt, x_part,                                                           <* 
-    *>       x_exec->m_text, x_exec->m_cons, x_exec->m_kern,                                         <* 
-    *>       a_proc->m_full, a_proc->m_data);                                                        <*/
-   if (c % 5 == 0)  printf ("\nline   ---name------------- perm   -full -rss- -pvt-   -   etext econs eheap ekern   pdata pheap stack other   tdata theap   ltext lcons lpriv   -total-\n");
-   printf ("%4d   %-20.20s %-4.4s   ", a_line, x_base, a_perm);
-   printf ("%5d %5d %5d   %c   "     , a_full, a_rss, a_pvt, x_part);
-   printf ("%5d %5d %5d %5d   "      , x_exec->m_text, x_exec->m_cons, x_exec->m_heap, x_exec->m_kern);
-   printf ("%5d %5d %5d %5d   "      , a_proc->m_data, a_proc->m_heap, a_proc->m_stack, a_proc->m_other);
-   if (x_ties != NULL)  printf ("%5d %5d   "          , x_ties->m_data, x_ties->m_heap);
-   else                 printf ("              ");
-   if (x_libs != NULL)  printf ("%5d %5d %5d   "      , x_libs->m_text, x_libs->m_cons, x_libs->m_priv);
-   else                 printf ("                    ");
-   printf ("%7d"                    , a_proc->m_full);
-   printf ("\n");
+   /*> if (c % 5 == 0)  printf ("\nline   ---name------------- perm   -full -rss- -pvt-   -   etext econs eheap ekern   pdata pheap stack other   tdata theap   ltext lcons lpriv   -total-\n");   <*/
+   /*> printf ("%4d   %-20.20s %-4.4s   ", a_line, x_base, a_perm);                   <*/
+   /*> printf ("%5d %5d %5d   %c   "     , a_full, a_rss, a_pvt, x_part);             <*/
+   /*> printf ("%5d %5d %5d %5d   "      , x_exec->m_text, x_exec->m_cons, x_exec->m_heap, x_exec->m_kern);   <*/
+   /*> printf ("%5d %5d %5d %5d   "      , a_proc->m_data, a_proc->m_heap, a_proc->m_stack, a_proc->m_other);   <*/
+   /*> if (x_ties != NULL)  printf ("%5d %5d   "          , x_ties->m_data, x_ties->m_heap);                   <* 
+    *> else                 printf ("              ");                                                         <* 
+    *> if (x_libs != NULL)  printf ("%5d %5d %5d   "      , x_libs->m_text, x_libs->m_cons, x_libs->m_priv);   <* 
+    *> else                 printf ("                    ");                                                   <* 
+    *> printf ("%7d"                    , a_proc->m_full);                                                     <* 
+    *> printf ("\n");                                                                                          <*/
    ++c;
    /*---(complete)-----------------------*/
    DEBUG_ENVI   yLOG_exit    (__FUNCTION__);
@@ -1002,6 +992,45 @@ DATA_gather             (void)
    /*---(complete)-----------------------*/
    DEBUG_INPT   yLOG_exit    (__FUNCTION__);
    return rc;
+}
+
+char
+DATA_treeify_level      (char a_level, tPROC *a_parent)
+{
+   tPROC      *x_proc      = NULL;
+   int         c           = 0;
+   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
+   DEBUG_INPT   yLOG_value   ("a_parent"  , a_parent->rpid);
+   x_proc = p_head;
+   while  (x_proc != NULL) {
+      DEBUG_INPT   yLOG_value   ("x_proc"    , x_proc->rpid);
+      if (x_proc->ppid == a_parent->rpid) {
+         DEBUG_INPT   yLOG_note   ("found CHILD");
+         if (a_parent->h_head == NULL) {
+            a_parent->h_head  = x_proc;
+            a_parent->h_tail  = x_proc;
+            a_parent->h_count = 1;
+         } else {
+            a_parent->h_tail->h_next = x_proc;
+            a_parent->h_tail         = x_proc;
+            ++(a_parent->h_count);
+         }
+         x_proc->h_next = NULL;
+         x_proc->p_lvl = a_level;
+         x_proc->p_seq = ++c;
+         DATA_treeify_level (a_level + 1, x_proc);
+      }
+      x_proc = x_proc->m_next;
+   }
+   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+DATA_treeify            (void)
+{
+   DATA_treeify_level (1, p_head);
+   return 0;
 }
 
 

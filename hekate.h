@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.6-, branching into the driving and looping portion"
-#define     P_VERNUM    "0.6a"
-#define     P_VERTXT    "great start on unit test for driver on individual processes"
+#define     P_VERNUM    "0.6b"
+#define     P_VERTXT    "created my mocked-up main screen to test data collection"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -87,6 +87,7 @@ static struct cEXEC {
    char        base        [LEN_TITLE];
    char        full        [LEN_RECD];
    long        inode;
+   char        hint        [LEN_SHORT];
    /*---(memory)------------*/
    int         m_full;   /* all exec space */
    int         m_text;   /* actual code space */
@@ -108,6 +109,10 @@ static struct cEXEC {
    tPROC      *p_head;
    tPROC      *p_tail;
    int         p_count;
+   /*---(working)-----------*/
+   char        e_col;
+   char        e_seq;
+   char        e_shown;
    /*---(done)--------------*/
 };
 extern tEXEC      *e_head;
@@ -123,6 +128,7 @@ static struct cPROC {
    int         ppid;
    char        shown       [LEN_TITLE];
    char        cmdline     [LEN_RECD];
+   char        hint        [LEN_SHORT];
    /*---(cpu)---------------*/
    char        c_state;
    long        c_utime;
@@ -152,10 +158,19 @@ static struct cPROC {
    /*---(master list)-------*/
    tPROC      *m_prev;
    tPROC      *m_next;
+   /*---(heirarchy)---------*/
+   tPROC      *h_head;
+   tPROC      *h_tail;
+   int        *h_count;
+   tPROC      *h_next;
    /*---(libs)--------------*/
    tTIES      *t_head;
    tTIES      *t_tail;
    int         t_count;
+   /*---(working)-----------*/
+   char        e_seq;
+   char        p_lvl;
+   char        p_seq;
    /*---(done)--------------*/
 };
 extern tPROC      *p_head;
@@ -194,6 +209,7 @@ static struct cLIBS {
    char        terse       [LEN_TITLE];
    char        name        [LEN_RECD];
    long        inode;
+   char        hint        [LEN_SHORT];
    /*---(memory)------------*/
    int         m_full;
    int         m_text;
@@ -394,9 +410,14 @@ char        DATA_by_index           (tDATA **r_curr, int a_index);
 char*       DATA_key                (tDATA *a_curr);
 char        DATA_hook               (tDATA *a_next, tDATA *a_curr);
 char        DATA_unhook             (tDATA *a_curr);
+/*---(treeify)--------------*/
+char        DATA_treeify            (void);
 /*---(unittest)-------------*/
 char*       DATA__unit              (char *a_question, int n);
 /*---(done)-----------------*/
 
 
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        NCURSE_exec_list        (void);
+char        NCURSE_proc_list        (void);
 
