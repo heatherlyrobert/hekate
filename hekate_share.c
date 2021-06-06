@@ -105,7 +105,7 @@ SHARE_new               (char a_type, void **a_new, char a_force)
       if    (l_tail == NULL) { l_head = x_libs; }
       else { x_libs->m_prev  = l_tail; l_tail->m_next = x_libs; }
       l_tail = x_libs;
-      strlhint (l_count + (11 * 26), "ll", x_libs->hint);
+      strlhint (l_count + (12 * 26), "ll", x_libs->hint);
       ++l_count;
    } EL_DATA {
       x_data = (tDATA *) x_new;

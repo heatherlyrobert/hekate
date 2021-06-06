@@ -9,70 +9,78 @@ hekate mock-up
 
 
 
-··  10 exec ············· 23 proc ··········································  ·· ····  75 libs ··························  ··
-aa  init €€€€€€€€€€€€€€€€ 1 ²²²²²init [3]                                     ea ²²²2  ƒ€€23€€ libc-2.28.so                ma
-ab  syslog-ng €€€€€€€€€€€ 2275 €€Š supervising syslog-ng €€€€€€€€€€€€€€€€€€€€ eb €€12€€Š€€€€€€ ld-2.28.so                  mb
-ac  agetty €€€€€€€€€€€€€€ 2301 ²²Š /sbin/agetty 38400 tty1 linux              ec ²²²8  ‡€€€€€€ libdl-2.28.so               mc
-ad  bash €€€€€8€€‰€€€€€€€ 2371 ²²Š /bin/sh /usr/bin/startx                    ed ²²²5  ‡€€€€€€ libpcre.so.1.2.9            md
-ae  xinit €€€€€€€Œ€€€€€€€ 2390 ²²²ˆ xinit /etc/X11/Sessions/fluxbox          ee ²²²²  ‡€€€€€€ libevtlog.so.0.0.0          me
-                 ‡€€€€€€€ 2400 ²²²²²Š /bin/bash -- /root/.fluxbox/startup    ef ²²²²  ‡€€€€€€ libgthread-2.0.so.0.5800.2  mf
-af  fluxbox €€€€€Œ€€€€€€€ 2413 ²²²²²²ˆ fluxbox -verbose -log                eg ²²²²  ‡€€€€€€ libgmodule-2.0.so.0.5800.2  mg
-ag  eterm €€€€3€€Œ€‰€€€€€ 7127 ²²²²²²²²Š Eterm --tint forestgreen           eh ²²²²  ‡€€€€€€ libnsl-2.28.so              mh
-                 ‡€Œ€€€€€ 7130 ²²²²²²²²²ˆ bash                             ei ²²²²  ‡€€€€€€ librt-2.28.so               mi
-ah  make €€€€€3€€Œ€Œ€‰€€€ 8485 ²²²²²²²²²²²ˆ make vi_edit                   ej ²²²²  ‡€€€€€€ libpthread-2.28.so          mj
-                 ‡€Œ€Œ€€€ 8487 ²²²²²²²²²²²²²ˆ /bin/sh -c theia 0e          ek ²²²²  ‡€€€€€€ libglib-2.0.so.0.5800.2     mk
-ai  vim €€€€€€3€€Œ€Œ€Œ€‰€ 8489 ²²²²²²²²²²²²²²²ˆ vi -c call HBUF_on         el ²²²²  „€€€€€€ libsyslog-ng-3.4.8.so       ml
-                  ‡€Œ€Œ€ 7127 ²²²²²²²²Š Eterm --tint forestgreen           em ²²²²     ²²²² libresolv-2.28.so           mm
-                 ‡€Œ€Œ€Œ€ 7130 ²²²²²²²²²ˆ bash                             en ²²²²     ²²²² libnss_dns-2.28.so          mn
-                  Œ ‡€Œ€ 8485 ²²²²²²²²²²²ˆ make vi_edit                   eo ²²²²     ²²²² libnss_files-2.28.so
-                 ‡€Œ€Œ€Œ€ 8487 ²²²²²²²²²²²²²ˆ /bin/sh -c theia 0e          ep ²²²²     ²²²² libnss_db-2.28.so
-                  Œ Œ ‡€ 8489 ²²²²²²²²²²²²²²²ˆ vi -c call HBUF_on         eq ²²²²     ²²²² ISO8859-1.so
-                  „€Œ€Œ€ 7127 ²²²²²²²²ˆ Eterm --tint forestgreen           er ²²²²     ²²²² libtinfo.so.6.2
-                 ‡€€€Œ€Œ€ 7130 ²²²²²²²²²²ˆ bash                             es ²²²²     ²²²² libncurses.so.6.2
-                    „€Œ€ 8485 ²²²²²²²²²²²²ˆ make vi_edit                   et ²²²²     ²²²² libreadline.so.7.0
-                 „€€€€€Œ€ 8487 ²²²²²²²²²²²²²²ˆ /bin/sh -c theia 0e          eu ²²²²     ²²²² libXdmcp.so.6.0.0
-                       „€ 8489 ²²²²²²²²²²²²²²²²ˆ vi -c call HBUF_on         ev ²²²²     ²²²² libXau.so.6.0.0
-aj  xorg €€€€€€€€€€€€€€€€ 2391 ²²²²²„ /usr/bin/X :0 -nolisten tcp vt7        ew ²²²²     ²²²² libxcb.so.1.1.0
-                                                                                          ²²²² libX11.so.6.3.0
-                                                                                          ²²²² libXfixes.so.3.1.0
-ƒ²²²²²²²²²²²²[ executable ]²²²²²²²²²²²²²²²‚                                               ²²²² libXcursor.so.1.0.2
-Œ                                         Œ                                               ²²²² libz.so.1.2.8
-Œ  syslog-ng  (2) 2275, 2276              Œ                                               ²²²² libpng16.so.16.35.0
-Œ                                         Œ                                               ²²²² libbz2.so.1.0.6
-Œ   text   31    text    0    code     0  Œ                                               ²²²² libuuid.so.1.3.0
-Œ   data    2    cons    0    data     0  Œ                                               ²²²² libexpat.so.1.6.0
-Œ   bss     0    heap    0       sum   0  Œ                                               ²²²² libfreetype.so.6.16.0
-Œ     sum  34    kern    0                Œ                                               ²²²² libgcc_s.so.1
-Œ                  sum   0                Œ                                               ²²²² libm-2.28.so
-Œ                                         Œ                                               ²²²² libstdc++.so.6.0.25
-Œ  /usr/bin/syslog-ng                     Œ                                               ²²²² libXrender.so.1.3.0
-Œ                                         Œ                                               ²²²² libXpm.so.4.11.0
-„²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²…                                               ²²²² libXft.so.2.3.2
-                                                                                          ²²²² libXext.so.6.4.0
-                                                                                          ²²²² libXrandr.so.2.2.0
-                                   only show libraries for current process!               ²²²² libImlib2.so.1.4.6
-                                                                                          ²²²² libfontconfig.so.1.12.0
-                                   separate library page for tying back to proc/exec      ²²²² argb.so
-                                                                                          ²²²² bmp.so
-                                                                                          ²²²² bz2.so
-                                                                                          ²²²² libgif.so.4.1.7
-                                                                                          ²²²² libid3tag.so.0.3.0
-                                                                                          ²²²² id3.so
-                                                                                          ²²²² libjpeg.so.62.1.0
-                                                                                          ²²²² pnm.so
-                                                                                          ²²²² jpeg.so
-                                                                                          ²²²² lbm.so
-                                                                                          ²²²² png.so
-                                                                                          ²²²² tga.so
-                                                                                          ²²²² xpm.so
-                                                                                          ²²²² zlib.so
-                                                                                          ²²²² libpng16.so.16.35.0
-                                                                                          ²²²² libutil-2.28.so
-                                                                                          ²²²² libast.so.2.0.1
-                                                                                          ²²²² libutempter.so.1.1.6
-                                                                                          ²²²² libICE.so.6.3.0
-                                                                                          ²²²² libSM.so.6.0.1
-                                                                                          ²²²² libEterm-0.9.6.so
-                                                                                          ²²²² libXt.so.6.0.0
+··  10 exec ·············  23 proc ··········································  ·· ····  75 libs ··························  ··
+aa  init Ï€€€€€€€€€€€€€€€Ï 1 ²²²²²init [3]                                     ea ²²²2  ƒ€€23€Ï libc-2.28.so                ma
+ab  syslog-ng Ï€€€€€€€€€€Ï 2275 €€Ï supervising syslog-ng €€€€€€€€€€€€€€€€€€€Ï eb Ï€12€€Š€€€€€Ï ld-2.28.so                  mb
+ac  agetty Ï€€€€€€€€€€€€€Ï 2301 ²²Ï /sbin/agetty 38400 tty1 linux              ec ²²²8  ‡€€€€€Ï libdl-2.28.so               mc
+ad  bash Ï€€€€8€€‰€€€€€€€Ï 2371 ²²Ï /bin/sh /usr/bin/startx                    ed ²²²5  ‡€€€€€Ï libpcre.so.1.2.9            md
+ae  xinit Ï€€€€€€Œ€€€€€€€Ï 2390 ²²²Ï xinit /etc/X11/Sessions/fluxbox          ee ²²²²  ‡€€€€€Ï libevtlog.so.0.0.0          me
+                 ‡€€€€€€€Ï 2400 ²²²²²Ï /bin/bash -- /root/.fluxbox/startup    ef ²²²²  ‡€€€€€Ï libgthread-2.0.so.0.5800.2  mf
+af  fluxbox Ï€€€€Œ€€€€€€€Ï 2413 ²²²²²²Ï fluxbox -verbose -log                eg ²²²²  ‡€€€€€Ï libgmodule-2.0.so.0.5800.2  mg
+ag  eterm Ï€€€3€€Œ€‰€€€€€Ï 7127 ²²²²²²²²Ï Eterm --tint forestgreen           eh ²²²²  ‡€€€€€Ï libnsl-2.28.so              mh
+                 ‡€Œ€€€€€Ï 7130 ²²²²²²²²²Ï bash                             ei ²²²²  ‡€€€€€Ï librt-2.28.so               mi
+ah  make Ï€€€€3€€Œ€Œ€‰€€€Ï 8485 ²²²²²²²²²²²Ï make vi_edit                   ej ²²²²  ‡€€€€€Ï libpthread-2.28.so          mj
+                 ‡€Œ€Œ€€€Ï 8487 ²²²²²²²²²²²²²Ï /bin/sh -c theia 0e          ek ²²²²  ‡€€€€€Ï libglib-2.0.so.0.5800.2     mk
+ai  vim Ï€€€€€3€€Œ€Œ€Œ€‰€Ï 8489 ²²²²²²²²²²²²²²²Ï vi -c call HBUF_on         el ²²²²  „€€€€€Ï libsyslog-ng-3.4.8.so       ml
+                  ‡€Œ€Œ€Ï 7127 ²²²²²²²²Ï Eterm --tint forestgreen           em ²²²²     ²²²² libresolv-2.28.so           mm
+                 ‡€Œ€Œ€Œ€Ï 7130 ²²²²²²²²²Ï bash                             en ²²²²     ²²²² libnss_dns-2.28.so          mn
+                  Œ ‡€Œ€Ï 8485 ²²²²²²²²²²²Ï make vi_edit                   eo ²²²²     ²²²² libnss_files-2.28.so
+                 ‡€Œ€Œ€Œ€Ï 8487 ²²²²²²²²²²²²²Ï /bin/sh -c theia 0e          ep ²²²²     ²²²² libnss_db-2.28.so
+                  Œ Œ ‡€Ï 8489 ²²²²²²²²²²²²²²²Ï vi -c call HBUF_on         eq ²²²²     ²²²² ISO8859-1.so
+                  „€Œ€Œ€Ï 7127 ²²²²²²²²Ï Eterm --tint forestgreen           er ²²²²     ²²²² libtinfo.so.6.2
+                 ‡€€€Œ€Œ€Ï 7130 ²²²²²²²²²²Ï bash                             es ²²²²     ²²²² libncurses.so.6.2
+                    „€Œ€Ï 8485 ²²²²²²²²²²²²Ï make vi_edit                   et ²²²²     ²²²² libreadline.so.7.0
+                 „€€€€€Œ€Ï 8487 ²²²²²²²²²²²²²²Ï /bin/sh -c theia 0e          eu ²²²²     ²²²² libXdmcp.so.6.0.0
+                       „€Ï 8489 ²²²²²²²²²²²²²²²²Ï vi -c call HBUF_on         ev ²²²²     ²²²² libXau.so.6.0.0
+aj  xorg Ï€€€€€€€€€€€€€€€Ï 2391 ²²²²²Ï /usr/bin/X :0 -nolisten tcp vt7        ew ²²²²     ²²²² libxcb.so.1.1.0
+                                                                                           ²²²² libX11.so.6.3.0
+                                                                                           ²²²² libXfixes.so.3.1.0
+ƒ²²²²²²²²²²²²[ executable ]²²²²²²²²²²²²²²²‚                                                ²²²² libXcursor.so.1.0.2
+Œ                                         Œ                                                ²²²² libz.so.1.2.8
+Œ  syslog-ng  (2) 2275, 2276              Œ                                                ²²²² libpng16.so.16.35.0
+Œ                                         Œ                                                ²²²² libbz2.so.1.0.6
+Œ   text   31    text    0    code     0  Œ                                                ²²²² libuuid.so.1.3.0
+Œ   data    2    cons    0    data     0  Œ                                                ²²²² libexpat.so.1.6.0
+Œ   bss     0    heap    0       sum   0  Œ                                                ²²²² libfreetype.so.6.16.0
+Œ     sum  34    kern    0                Œ                                                ²²²² libgcc_s.so.1
+Œ                  sum   0                Œ                                                ²²²² libm-2.28.so
+Œ                                         Œ                                                ²²²² libstdc++.so.6.0.25
+Œ  /usr/bin/syslog-ng                     Œ                                                ²²²² libXrender.so.1.3.0
+Œ                                         Œ                                                ²²²² libXpm.so.4.11.0
+„²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²…                                                ²²²² libXft.so.2.3.2
+                                                                                           ²²²² libXext.so.6.4.0
+                                                                                           ²²²² libXrandr.so.2.2.0
+                                   only show libraries for current process!                ²²²² libImlib2.so.1.4.6
+                                                                                           ²²²² libfontconfig.so.1.12.0
+                                   separate library page for tying back to proc/exec       ²²²² argb.so
+                                                                                           ²²²² bmp.so
+                                                                                           ²²²² bz2.so
+                                                                                           ²²²² libgif.so.4.1.7
+                                                                                           ²²²² libid3tag.so.0.3.0
+                                                                                           ²²²² id3.so
+                                                                                           ²²²² libjpeg.so.62.1.0
+                                                                                           ²²²² pnm.so
+                                                                                           ²²²² jpeg.so
+                                                                                           ²²²² lbm.so
+                                                                                           ²²²² png.so
+                                                                                           ²²²² tga.so
+                                                                                           ²²²² xpm.so
+                                                                                           ²²²² zlib.so
+                                                                                           ²²²² libpng16.so.16.35.0
+                                                                                           ²²²² libutil-2.28.so
+                                                                                           ²²²² libast.so.2.0.1
+                                                                                           ²²²² libutempter.so.1.1.6
+                                                                                           ²²²² libICE.so.6.3.0
+                                                                                           ²²²² libSM.so.6.0.1
+                                                                                           ²²²² libEterm-0.9.6.so
+                                                                                           ²²²² libXt.so.6.0.0
+
+
+                  ‡€Œ€Œ€ 7127 ²²²²²²²²Ï Eterm --tint forestgreen           em
+                 ‡€Œ€Œ€Œ€ 7130 ²²²²²²²² · bash                             en
+                  Œ ‡€Œ€ 8485 ²²²²²²²²  · make vi_edit                    eo
+                 ‡€Œ€Œ€Œ€ 8487 ²²²²²²²²   · /bin/sh -c theia 0e            ep
+                  Œ Œ ‡€ 8489 ²²²²²²²²²²²²Ï vi -c call HBUF_on            eq
+
 
 

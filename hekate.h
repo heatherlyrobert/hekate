@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.6-, branching into the driving and looping portion"
-#define     P_VERNUM    "0.6b"
-#define     P_VERTXT    "created my mocked-up main screen to test data collection"
+#define     P_VERNUM    "0.6c"
+#define     P_VERTXT    "mock-up is now truely beautiful, time for yVIKEYS"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -57,12 +57,13 @@
 
 
 /*---(heatherly made)--------------------*/
-#include    <yURG.h>         /* CUSTOM  heatherly urgent processing           */
-#include    <yLOG.h>         /* CUSTOM  heatherly program logging             */
-#include    <ySTR.h>         /* CUSTOM  heatherly string handling             */
-#include    <yEXEC.h>        /* CUSTOM  heatherly process execution           */
-#include    <yDLST_solo.h>   /* CUSTOM  heatherly list constants              */
-#include    <ySORT.h>        /* CUSTOM  heatherly gnome sorting library       */
+#include    <yURG.h>         /* HEATHERLY urgent processing           */
+#include    <yLOG.h>         /* HEATHERLY program logging             */
+#include    <ySTR.h>         /* HEATHERLY string handling             */
+#include    <yEXEC.h>        /* HEATHERLY process execution           */
+#include    <yDLST_solo.h>   /* HEATHERLY list constants              */
+#include    <ySORT.h>        /* HEATHERLY gnome sorting library       */
+#include    <yVIKEYS.h>      /* HEATHERLY vi_keys standard            */
 
 
 
@@ -110,6 +111,7 @@ static struct cEXEC {
    tPROC      *p_tail;
    int         p_count;
    /*---(working)-----------*/
+   char        l_note;
    char        e_col;
    char        e_seq;
    char        e_shown;
@@ -227,6 +229,10 @@ static struct cLIBS {
    /*---(libs)--------------*/
    tLIBS      *m_prev;
    tLIBS      *m_next;
+   /*---(working)-----------*/
+   char        e_count;
+   char        u_flag;
+   int         u_line;
    /*---(done)--------------*/
 };
 extern tLIBS      *l_head;
