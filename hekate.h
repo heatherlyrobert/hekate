@@ -32,9 +32,9 @@
 #define     P_CREATED   "2021-05"
 
 #define     P_VERMAJOR  "0.--, pre-production"
-#define     P_VERMINOR  "0.6-, branching into the driving and looping portion"
-#define     P_VERNUM    "0.6c"
-#define     P_VERTXT    "mock-up is now truely beautiful, time for yVIKEYS"
+#define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
+#define     P_VERNUM    "0.7a"
+#define     P_VERTXT    "went crazy, exec/proc are decent port to yVIKEYS"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -64,6 +64,10 @@
 #include    <yDLST_solo.h>   /* HEATHERLY list constants              */
 #include    <ySORT.h>        /* HEATHERLY gnome sorting library       */
 #include    <yVIKEYS.h>      /* HEATHERLY vi_keys standard            */
+#include    <yCOLOR.h>       /* HEATHERLY color library               */
+
+/*===[[ DE-FACTO STANDARD LIBRARIES ]]========================================*/
+#include    <ncurses.h>      /* CURSES : mvprintw, refresh, getch, ...        */
 
 
 
@@ -268,6 +272,22 @@ typedef  struct cMY  tMY;
 struct cMY {
    /*---(runtime config)------*/
    char        version     [LEN_HUND];      /* version string                 */
+   int         m_left;
+   int         m_wide;
+   int         m_bott;
+   int         m_tall;
+   char        e_len;
+   char        e_wide;
+   char        e_mult;
+   char        e_flag       [LEN_LABEL];
+   int         p_index;
+   char        p_flag       [LEN_LABEL];
+   int         l_index;
+   int         l_show;
+   int         l_every;
+   int         l_core;
+   int         l_multi;
+   int         l_singles;
    /*---(done)----------------*/
 };
 extern      tMY         my;
@@ -275,6 +295,19 @@ extern      char        unit_answer [LEN_RECD];
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+/*---(startup)--------------*/
+char*       PROG__version           (void);
+char        PROG__init              (int a_argc, char *a_argv[]);
+char        PROG__args              (int a_argc, char *a_argv[]);
+char        PROG__begin             (void);
+char        PROG__visual            (void);
+char        PROG_startup            (int a_argc, char *a_argv[]);
+/*---(driving)--------------*/
+char        PROG_driver             (void);
+/*---(shutdown)-------------*/
+char        PROG__cloak             (void);
+char        PROG__end               (void);
+char        PROG_shutdown           (void);
 /*---(memory)---------------*/
 char        PROG_purge              (void);
 /*---(drivers)--------------*/
@@ -427,3 +460,15 @@ char*       DATA__unit              (char *a_question, int n);
 char        NCURSE_exec_list        (void);
 char        NCURSE_proc_list        (void);
 
+
+/*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
+char        YVIKEYS_init            (void);
+/*---(prepare)--------------*/
+char        YVIKEYS__lib_count      (tLIBS *a_libs);
+char        YVIKEYS__main_prepare   (void);
+char        YVIKEYS_update          (void);
+/*---(drawing)--------------*/
+char        YVIKEYS_xaxis           (void);
+char        YVIKEYS_main            (void);
+
+char        YVIKEYS_mapper          (char a_req);

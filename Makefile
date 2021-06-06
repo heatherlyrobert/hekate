@@ -6,9 +6,9 @@
 # basename of executable, header, and all code files
 NAME_BASE  = hekate
 # additional standard and outside libraries
-LIB_STD    = -lm
+LIB_STD    = -lm -lncurses -ltinfo
 # all heatherly libraries used, debug versions whenever available
-LIB_MINE   = -lySTR_debug -lySORT_debug -lyVIKEYS_debug
+LIB_MINE   = -lySTR_debug -lySORT_debug -lyVIKEYS_debug -lyCOLOR_debug
 # directory for production code, no trailing slash
 INST_DIR   = /usr/local/sbin
 

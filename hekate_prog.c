@@ -9,6 +9,226 @@ char        unit_answer [LEN_RECD];
 
 
 /*====================------------------------------------====================*/
+/*===----                        support functions                     ----===*/
+/*====================------------------------------------====================*/
+static void  o___SUPPORT_________o () { return; }
+
+char      verstring    [500];
+
+char*        /*-> return library versio --------------[ leaf   [gs.420.012.00]*/ /*-[00.0000.012.!]-*/ /*-[--.---.---.--]-*/
+PROG_version            (void)
+{
+   char    t [20] = "";
+#if    __TINYC__ > 0
+   strncpy (t, "[tcc built  ]", 15);
+#elif  __GNUC__  > 0
+   strncpy (t, "[gnu gcc    ]", 15);
+#elif  __CBANG__  > 0
+   strncpy (t, "[cbang      ]", 15);
+#else
+   strncpy (t, "[unknown    ]", 15);
+#endif
+   snprintf (verstring, 100, "%s   %s : %s", t, P_VERNUM, P_VERTXT);
+   return verstring;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                      program startup                         ----===*/
+/*====================------------------------------------====================*/
+static void  o___STARTUP_________o () { return; }
+
+char         /*-> very first setup -------------------[ shoot  [gz.633.201.0A]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
+PROG__init              (int a_argc, char *a_argv[])
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   /*---(log header)---------------------*/
+   DEBUG_PROG   yLOG_info     ("purpose" , P_PURPOSE);
+   DEBUG_PROG   yLOG_info     ("namesake", P_NAMESAKE);
+   DEBUG_PROG   yLOG_info     ("heritage", P_HERITAGE);
+   DEBUG_PROG   yLOG_info     ("imagery" , P_IMAGERY);
+   DEBUG_PROG   yLOG_info     ("hekete"  , PROG_version    ());
+   DEBUG_PROG   yLOG_info     ("yURG"    , yURG_version    ());
+   DEBUG_PROG   yLOG_info     ("ySTR"    , ySTR_version    ());
+   DEBUG_PROG   yLOG_info     ("yLOG"    , yLOGS_version   ());
+   DEBUG_PROG   yLOG_info     ("yVIKEYS" , yVIKEYS_version ());
+   /*---(header)-------------------------*/
+   DEBUG_PROG   yLOG_enter    (__FUNCTION__);
+   /*---(yvikeys config)-----------------*/
+   rc = yVIKEYS_init         (MODE_MAP);
+   if (rc == 0)  rc = yVIKEYS_whoami       (P_FULLPATH, P_VERNUM, P_VERTXT, P_NAMESAKE, P_SUFFIX, P_CONTENT, NULL, NULL, NULL);
+   /*> if (rc == 0)  rc = yVIKEYS_srch_config  (api_yvikeys_searcher , api_yvikeys_unsearcher);   <*/
+   DEBUG_PROG   yLOG_value    ("yvikeys"   , rc);
+   if (rc <  0) {
+      DEBUG_PROG   yLOG_exitr    (__FUNCTION__, rc);
+      return rc;
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG   yLOG_exit     (__FUNCTION__);
+   return 0;
+}
+
+char         /*-> process the command line args ------[ ------ [gz.952.251.B4]*/ /*-[01.0000.121.!]-*/ /*-[--.---.---.--]-*/
+PROG__args              (int a_argc, char *a_argv[])
+{
+   DEBUG_PROG  yLOG_enter   (__FUNCTION__);
+   /*---(locals)-------------------------*/
+   int         i           = 0;
+   char       *a           = NULL;
+   int         x_total     = 0;
+   int         x_args      = 0;
+   char        x_name      [LEN_FULL]   = "";
+   char        t           [LEN_FULL]   = "";
+   /*---(begin)--------------------------*/
+   /*> FILE_rename ("");                                                              <*/
+   /*---(process)------------------------*/
+   for (i = 1; i < a_argc; ++i) {
+      a = a_argv[i];
+      ++x_total;
+      if (a[0] == '@')  continue;
+      DEBUG_ARGS  yLOG_info    ("cli arg", a);
+      ++x_args;
+      /*> if      (strncmp (a, "-f"        ,10) == 0)  strlcpy (x_name , a_argv[++i], LEN_RECD);   <* 
+       *> else if (strncmp (a, "-h"        ,10) == 0)  PROG_usage();                             <* 
+       *> else if (strncmp (a, "--help"    ,10) == 0)  PROG_usage();                             <*/
+      /*---(prefixes)--------------------*/
+      /*> else if (strncmp (a, "--formula-"          , 10) == 0)  PROG_layout_set ("cli", "formula"  , a + 10);   <* 
+       *> else if (strncmp (a, "--status-"           ,  9) == 0)  PROG_layout_set ("cli", "status"   , a +  9);   <* 
+       *> else if (strncmp (a, "--command-"          , 10) == 0)  PROG_layout_set ("cli", "command"  , a + 10);   <* 
+       *> else if (strncmp (a, "--layout-"           ,  9) == 0)  PROG_layout_set ("cli", "layout"   , a +  9);   <* 
+       *> else if (strncmp (a, "--function-list"     ,  9) == 0)  CALC_func_list  ();                             <*/
+      /*---(other)-----------------------*/
+      /*> else if (a[0] != '-'                     )   strlcpy (x_name , a_argv[i]  , LEN_RECD);   <*/
+   }
+   DEBUG_ARGS  yLOG_value  ("entries"   , x_total);
+   DEBUG_ARGS  yLOG_value  ("arguments" , x_args);
+   if (x_args == 0) {
+      DEBUG_ARGS  yLOG_note   ("no arguments identified");
+   }
+   /*---(complete)-----------------------*/
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
+   return 0;
+}
+
+char         /*-> initialize program and variables ---[ ------ [gz.741.041.07]*/ /*-[00.0000.121.!]-*/ /*-[--.---.---.--]-*/
+PROG__begin             (void)
+{
+   DEBUG_PROG  yLOG_enter (__FUNCTION__);
+   /*---(locals)-----------+-----------+-*/
+   int         i, j, k;
+   char        tmp         [100];
+   /*---(overall)------------------------*/
+   yVIKEYS_view_config   (P_NAMESAKE, P_VERNUM, YVIKEYS_CURSES, 0, 0, 0);
+   yVIKEYS_map_config    (YVIKEYS_OFFICE, YVIKEYS_mapper, NULL, NULL);
+   /*---(complete)-----------------------*/
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
+   return 0;
+}
+
+char         /*-> initialize program and variables ---[ ------ [gz.421.001.08]*/ /*-[00.0000.101.!]-*/ /*-[--.---.---.--]-*/
+PROG__visual            (void)
+{
+   DEBUG_PROG  yLOG_enter (__FUNCTION__);
+   YVIKEYS_init          ();
+   yVIKEYS_view_basic    (YVIKEYS_MAIN , YVIKEYS_FLAT, YVIKEYS_TOPLEF, 0, YVIKEYS_main);
+   yVIKEYS_view_simple   (YVIKEYS_XAXIS    , 0, YVIKEYS_xaxis);
+   yVIKEYS_cmds_direct   (":layout min");
+   yVIKEYS_cmds_direct   (":xaxis show");
+   /*> DRAW_init  ();                                                                 <*/
+   /*> CURS_screen_reset ();                                                          <*/
+   /*---(status options)-----------------*/
+   /*> yVIKEYS_view_option (YVIKEYS_STATUS, "tab"    , CURS_status_tab     , "tab name, type, and dimensions"             );   <* 
+    *> yVIKEYS_view_option (YVIKEYS_STATUS, "cell"   , CURS_status_cell    , "details of current cell"                    );   <* 
+    *> yVIKEYS_view_option (YVIKEYS_STATUS, "deps"   , CURS_status_deps    , "details of current cell dependencies"       );   <* 
+    *> yVIKEYS_view_option (YVIKEYS_STATUS, "rpn"    , CURS_status_rpn     , "details of current cell rpn notation"       );   <* 
+    *> yVIKEYS_view_option (YVIKEYS_STATUS, "mundo"  , CURS_status_history , "change history for debugging"               );   <* 
+    *> yVIKEYS_view_option (YVIKEYS_STATUS, "error"  , CURS_status_error   , "details on recent errors"                   );   <* 
+    *> yVIKEYS_view_option (YVIKEYS_STATUS, "detail" , CURS_status_detail  , "details on recent errors"                   );   <* 
+    *> yVIKEYS_view_option (YVIKEYS_BUFFER, "summary", CURS_bufsum         , "one-line buffer inventory"                  );   <* 
+    *> yVIKEYS_view_option (YVIKEYS_BUFFER, "detail" , CURS_bufdet         , "multi-line buffer list"                     );   <* 
+    *> yVIKEYS_cmds_direct (":status mode");                                                                                   <* 
+    *> yVIKEYS_cmds_direct (":read");                                                                                          <* 
+    *> MAP_mapper (YVIKEYS_INIT);                                                                                              <* 
+    *> yVIKEYS_map_refresh ();                                                                                                 <*/
+   /*---(complete)-----------------------*/
+   DEBUG_PROG  yLOG_exit  (__FUNCTION__);
+   return 0;
+}
+
+char
+PROG_startup            (int a_argc, char *a_argv[])
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rc          = 0;
+   /*---(initialize)---------------------*/
+   if (rc >= 0)  rc = yURG_logger  (a_argc, a_argv);
+   if (rc >= 0)  rc = yURG_urgs    (a_argc, a_argv);
+   if (rc >= 0)  rc = PROG__init   (a_argc, a_argv);
+   if (rc >= 0)  rc = PROG__args   (a_argc, a_argv);
+   if (rc >= 0)  rc = PROG__begin  ();
+   if (rc >= 0)  rc = PROG__visual ();
+   /*---(complete)-----------------------*/
+   return rc;
+}
+
+
+
+/*====================------------------------------------====================*/
+/*===----                      program driver                          ----===*/
+/*====================------------------------------------====================*/
+static void  o___DRIVING________o () { return; }
+
+char
+PROG_driver             (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rc          = 0;
+   rc = yVIKEYS_main  ("keys", "every", NULL);
+   return rc;
+}
+
+/*====================------------------------------------====================*/
+/*===----                      program shutdown                        ----===*/
+/*====================------------------------------------====================*/
+static void  o___SHUTDOWN_______o () { return; }
+
+char
+PROG__cloak             (void)
+{
+   yVIKEYS_wrap ();
+   return 0;
+}
+
+char
+PROG__end               (void)
+{
+   /*---(header)-------------------------*/
+   yLOG_enter (__FUNCTION__);
+   /*---(stop logging)-------------------*/
+   yLOG_info  ("logger",   "shutting down logger");
+   yLOG_exit  (__FUNCTION__);
+   yLOGS_end   ();
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+PROG_shutdown           (void)
+{
+   /*---(locals)-----------+-----------+-*/
+   char        rc          = 0;
+   /*---(shutdown)-----------------------*/
+   if (rc >= 0)  rc = PROG__cloak  ();
+   if (rc >= 0)  rc = PROG__end    ();
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                      memory allocation                       ----===*/
 /*====================------------------------------------====================*/
 static void  o___MEMORY__________o () { return; }

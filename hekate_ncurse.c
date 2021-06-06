@@ -74,7 +74,6 @@ NCURSE_proc_list_OLD    (void)
    char        w           =    0;
    char        n           =    0;
    char        x_seq       =    0;
-   char        e_wide      =    0;
    /*---(prepare)------------------------*/
    EXEC_by_cursor (&x_exec, YDLST_DHEAD);
    while (x_exec != NULL) {
@@ -95,8 +94,8 @@ NCURSE_proc_list_OLD    (void)
       EXEC_by_cursor (&x_exec, YDLST_DNEXT);
    }
    /*---(title)--------------------------*/
-   e_wide = 4 + w + 3 + 4 + (m * 2) + 2;
-   snprintf (s, e_wide, "%d exec ············································", e_count);
+   my.e_wide = 4 + w + 3 + 4 + (m * 2) + 2;
+   snprintf (s, my.e_wide, "%d exec ············································", e_count);
    snprintf (t, LEN_HUND, "%d proc ············································", p_count);
    printf ("%s %s\n", s, t);
    PROC_by_cursor (&x_proc, YDLST_DHEAD);
@@ -110,7 +109,7 @@ NCURSE_proc_list_OLD    (void)
          if (x_exec->e_col > 0)   x_mul [x_exec->e_col * 2 - 2] = '‰';
          printf ("%-2.2s  %s%-4.4s%s    ", x_exec->hint, x_pre, x_cnt, x_mul);
       } else {
-         printf ("%*.*s", e_wide, e_wide, "                     ");
+         printf ("%*.*s", my.e_wide, my.e_wide, "                     ");
       }
       printf ("%-2.2s  %-5d %2d %-40.40s\n", x_proc->hint, x_proc->rpid, x_proc->p_lvl, x_proc->cmdline);
       PROC_by_cursor (&x_proc, YDLST_DNEXT);
@@ -118,20 +117,6 @@ NCURSE_proc_list_OLD    (void)
    printf ("widest = %d, multiples = %d, height = %d\n", w, m, n);
    return 0;
 }
-
-static    int      e_len        = 0;
-static    int      e_wide       = 0;
-static    int      e_mult       = 0;
-static    int      e_index      = 0;
-static    char     e_flag       [LEN_LABEL];
-static    int      p_index      = 0;
-static    char     p_flag       [LEN_LABEL];
-static    int      l_index      = 0;
-static    int      l_show       = 0;
-static    int      l_every      = 0;
-static    int      l_core       = 0;
-static    int      l_multi      = 0;
-static    int      l_singles    = 0;
 
 char
 NCURSE_proc_showlib     (int a_line, char *a_print)
@@ -145,19 +130,19 @@ NCURSE_proc_showlib     (int a_line, char *a_print)
    char        x_print     [LEN_HUND] = "";
    /*---(titles)-------------------------*/
    if (a_line == 0) {
-      sprintf (a_print, "EVERY (%d) used in every process", l_every);
+      sprintf (a_print, "EVERY (%d) used in every process", my.l_every);
       return 0;
    }
-   else if (a_line == l_every + 2) {
-      sprintf (a_print, "CORE (%d) 10+ procs, 2+ execs", l_core);
+   else if (a_line == my.l_every + 2) {
+      sprintf (a_print, "CORE (%d) 10+ procs, 2+ execs", my.l_core);
       return 0;
    }
-   else if (a_line == l_every + l_core + 4) {
-      sprintf (a_print, "MULTI (%d) more than one exec", l_multi);
+   else if (a_line == my.l_every + my.l_core + 4) {
+      sprintf (a_print, "MULTI (%d) more than one exec", my.l_multi);
       return 0;
    }
    /*---(entries)------------------------*/
-   if      (a_line < l_every + 1) {
+   if      (a_line < my.l_every + 1) {
       n = a_line;
       LIBS_by_cursor (&x_libs, YDLST_DHEAD);
       while (x_libs != NULL) {
@@ -174,7 +159,7 @@ NCURSE_proc_showlib     (int a_line, char *a_print)
          LIBS_by_cursor (&x_libs, YDLST_DNEXT);
       }
    }
-   /*> else if (n < l_every + l_core)  x_line += 3;                                  <*/
+   /*> else if (n < my.l_every + my.l_core)  x_line += 3;                                  <*/
 
    if (x_libs != NULL) {
       snprintf (x_cnt , 6, "Ï€%d€€", x_libs->t_count);
@@ -212,23 +197,23 @@ NCURSE_proc_show        (tPROC *a_proc)
    /*---(executable)---------------------*/
    if (x_exec->e_seq == 0) {
       /*---(prefix)----------------------*/
-      snprintf (x_pre, e_len + 3, "%s Ï%s", x_exec->base, S_MID);
+      snprintf (x_pre, my.e_len + 3, "%s Ï%s", x_exec->base, S_MID);
       strllower (x_pre, LEN_TITLE);
       /*---(count)-----------------------*/
       if (x_exec->p_count > 1)  snprintf (x_cnt, LEN_TERSE, "-%d%s", x_exec->p_count, S_MID);
       else                      snprintf (x_cnt, LEN_TERSE, "%-4.4s", S_MID);
       /*---(multi)-----------------------*/
-      snprintf (x_mul, e_mult * 2 + 1, "%s", S_MID);
+      snprintf (x_mul, my.e_mult * 2 + 1, "%s", S_MID);
       /*---(output)----------------------*/
       sprintf (x_eprint, "%-2.2s  %s%-4.4s", x_exec->hint, x_pre, x_cnt);
    } else {
-      snprintf (x_mul, e_mult * 2 + 1, "%s", S_SPC);
-      sprintf (x_eprint, "%*.*s", e_wide, e_wide, "                          ");
+      snprintf (x_mul, my.e_mult * 2 + 1, "%s", S_SPC);
+      sprintf (x_eprint, "%*.*s", my.e_wide, my.e_wide, "                          ");
    }
    ++(x_exec->e_seq);
    /*---(multi-use betweens)----------*/
-   for (i = 1; i <= e_mult; ++i) {
-      if (e_flag [i] > 0) {
+   for (i = 1; i <= my.e_mult; ++i) {
+      if (my.e_flag [i] > 0) {
          if (x_exec->e_seq == 1)  x_mul [(i * 2) - 2] = 'Œ';
          else                     x_mul [(i * 2) - 2] = '';
       }
@@ -236,9 +221,9 @@ NCURSE_proc_show        (tPROC *a_proc)
    /*---(assign multi-use column)--------*/
    if (x_exec->p_count > 1) {
       if (x_exec->e_col == 0) {
-         x_exec->e_col = ++p_index;
+         x_exec->e_col = ++my.p_index;
       }
-      e_flag [x_exec->e_col] = x_exec->e_seq;
+      my.e_flag [x_exec->e_col] = x_exec->e_seq;
    }
    a_proc->e_seq = x_exec->e_seq;
    /*---(multi-use ties)--------------*/
@@ -246,16 +231,16 @@ NCURSE_proc_show        (tPROC *a_proc)
       x_mul [x_exec->e_col * 2 - 2] = '‰';
    } else if (x_exec->e_col > 0 && a_proc->e_seq == x_exec->p_count) {
       x_mul [x_exec->e_col * 2 - 2] = '„';
-      e_flag [x_exec->e_col] = 0;
+      my.e_flag [x_exec->e_col] = 0;
    } else if (x_exec->e_col > 0) {
       x_mul [x_exec->e_col * 2 - 2] = '‡';
    }
    /*---(multi-use fill-in)-----------*/
    if (x_exec->e_col > 0) {
-      for (i = x_exec->e_col; i <= e_mult; ++i) {
+      for (i = x_exec->e_col; i <= my.e_mult; ++i) {
          x_mul [i * 2 - 1] = '€';
          if (i > x_exec->e_col) {
-            if (e_flag [i] > 0)  x_mul [i * 2 - 2] = 'Œ';
+            if (my.e_flag [i] > 0)  x_mul [i * 2 - 2] = 'Œ';
             else                 x_mul [i * 2 - 2] = '€';
          }
       }
@@ -266,22 +251,22 @@ NCURSE_proc_show        (tPROC *a_proc)
    /*---(proc-tree defaults)-------------*/
    strcpy (x_lvl, "");
    for (i = 0; i < a_proc->p_lvl; ++i)   strlcat (x_lvl, "··", LEN_TITLE);
-   for (i = a_proc->p_lvl; i < 20; ++i)  p_flag [i] = 0;
+   for (i = a_proc->p_lvl; i < 20; ++i)  my.p_flag [i] = 0;
    /*---(proc-tree specifics)------------*/
    if (a_proc->p_lvl > 0) {
       if (a_proc->h_next == NULL) {
          x_lvl [(a_proc->p_lvl - 1) * 2]     = 'Ï';
          x_lvl [(a_proc->p_lvl - 1) * 2 + 1] = ' ';
-         p_flag [a_proc->p_lvl - 1] = 0;
+         my.p_flag [a_proc->p_lvl - 1] = 0;
       } else {
          x_lvl [(a_proc->p_lvl - 1) * 2]     = 'Ï';
          x_lvl [(a_proc->p_lvl - 1) * 2 + 1] = ' ';
-         p_flag [a_proc->p_lvl - 1] = 1;
+         my.p_flag [a_proc->p_lvl - 1] = 1;
       }
    }
    /*---(proc-tree fills)----------------*/
    for (i = 0; i < a_proc->p_lvl; ++i) {
-      if (p_flag [i] > 0 && x_lvl [i * 2] != 'Ï')  x_lvl [i * 2] = '';
+      if (my.p_flag [i] > 0 && x_lvl [i * 2] != 'Ï')  x_lvl [i * 2] = '';
    }
    /*---(show proc)----------------------*/
    /*> printf ("%-2.2s  %-5d %2d %2d %s%-40.40s\n", a_proc->hint, a_proc->rpid, a_proc->p_lvl, a_proc->p_seq, x_lvl, a_proc->cmdline);   <*/
@@ -289,9 +274,9 @@ NCURSE_proc_show        (tPROC *a_proc)
    snprintf (x_tprint,  6, "€€%d€€-", a_proc->t_count);
    /*---(show libs)----------------------*/
    NCURSE_proc_showlib     (x_line, x_lprint);
-   /*> LIBS_by_index (&x_libs, l_index++);                                                      <* 
+   /*> LIBS_by_index (&x_libs, my.l_index++);                                                      <* 
     *> while (x_libs != NULL && (x_libs->t_count <= 9 || x_libs->e_count <= 1)) {               <* 
-    *>    LIBS_by_index (&x_libs, l_index++);                                                   <* 
+    *>    LIBS_by_index (&x_libs, my.l_index++);                                                   <* 
     *> }                                                                                        <* 
     *> if (x_libs != NULL) {                                                                    <* 
     *>    snprintf (x_cnt , 6, "Ï€%d€€", x_libs->t_count);                                      <* 
@@ -347,16 +332,16 @@ NCURSE_proc__libcnt     (tLIBS *a_libs)
    /*---(save)---------------------------*/
    a_libs->e_count = c;
    if (c == e_count) {
-      ++l_every;
+      ++my.l_every;
       a_libs->u_flag = 'e';
    } else if (a_libs->t_count > 10 && a_libs->e_count > 1) {
-      ++l_core;
+      ++my.l_core;
       a_libs->u_flag = 'c';
    } else if (a_libs->e_count > 1) {
-      ++l_multi;
+      ++my.l_multi;
       a_libs->u_flag = 'm';
    } else {
-      ++l_singles;
+      ++my.l_singles;
       a_libs->u_flag = '-';
    }
    a_libs->u_line  = 0;
@@ -378,11 +363,11 @@ NCURSE_proc_prepare     (void)
    EXEC_by_cursor (&x_exec, YDLST_DHEAD);
    while (x_exec != NULL) {
       l = strlen (x_exec->base);
-      if (l > e_len)  e_len = l;
+      if (l > my.e_len)  my.e_len = l;
       x_exec->e_col   = 0;
       x_exec->e_seq   = 0;
       x_exec->e_shown = '-';
-      if (x_exec->p_count > 1)  ++e_mult;
+      if (x_exec->p_count > 1)  ++my.e_mult;
       n += x_exec->p_count;
       EXEC_by_cursor (&x_exec, YDLST_DNEXT);
    }
@@ -393,24 +378,23 @@ NCURSE_proc_prepare     (void)
       PROC_by_cursor (&x_proc, YDLST_DNEXT);
    }
    /*---(reset libs)---------------------*/
-   l_index   = 0;
-   l_show    = 0;
-   l_every   = 0;
-   l_core    = 0;
-   l_multi   = 0;
-   l_singles = 0;
-   LIBS_by_index (&x_libs, l_index++);
+   my.l_index   = 0;
+   my.l_show    = 0;
+   my.l_every   = 0;
+   my.l_core    = 0;
+   my.l_multi   = 0;
+   my.l_singles = 0;
+   LIBS_by_index (&x_libs, my.l_index++);
    while (x_libs != NULL) {
       NCURSE_proc__libcnt (x_libs);
-      LIBS_by_index (&x_libs, l_index++);
+      LIBS_by_index (&x_libs, my.l_index++);
    }
-   l_index = 0;
+   my.l_index = 0;
    /*---(reset flags)--------------------*/
-   e_index = 0;
-   p_index = 0;
+   my.p_index = 0;
    for (i = 0; i < 20; ++i) {
-      e_flag [i] = 0;
-      p_flag [i] = 0;
+      my.e_flag [i] = 0;
+      my.p_flag [i] = 0;
    }
    /*---(complete)-----------------------*/
    return 0;
@@ -435,11 +419,11 @@ NCURSE_proc_list        (void)
    /*---(prepare)------------------------*/
    NCURSE_proc_prepare ();
    /*---(title)--------------------------*/
-   e_wide = 4 + e_len + 2 + 4;
-   snprintf (r, e_wide, "[ %d execs····································", e_count);
+   my.e_wide = 4 + my.e_len + 2 + 4;
+   snprintf (r, my.e_wide, "[ %d execs····································", e_count);
    l = strlen (r);
    r [l - 1] = ']';
-   snprintf (s, e_mult * 2 + 3, "[ %d multi···············", e_mult);
+   snprintf (s, my.e_mult * 2 + 3, "[ %d multi···············", my.e_mult);
    l = strlen (s);
    s [l - 1] = ']';
    snprintf (t, 77, "[·· %d procs············································································", p_count);
@@ -450,7 +434,7 @@ NCURSE_proc_list        (void)
    u [l - 1] = ']';
    printf ("%s%s%s%s\n", r, s, t, u);
    NCURSE_proc_level (0, p_head);
-   /*> printf ("widest = %d, multiples = %d, height = %d\n", e_len, e_mult, n);       <*/
+   /*> printf ("widest = %d, multiples = %d, height = %d\n", my.e_len, my.e_mult, n);       <*/
    return 0;
 }
 
