@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7a"
-#define     P_VERTXT    "went crazy, exec/proc are decent port to yVIKEYS"
+#define     P_VERNUM    "0.7b"
+#define     P_VERTXT    "sweetly displaying libraries now with some colors"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -115,10 +115,12 @@ static struct cEXEC {
    tPROC      *p_tail;
    int         p_count;
    /*---(working)-----------*/
+   char        note;
    char        l_note;
-   char        e_col;
-   char        e_seq;
+   uchar       e_col;
+   uchar       e_seq;
    char        e_shown;
+   char        e_print     [LEN_HUND];
    /*---(done)--------------*/
 };
 extern tEXEC      *e_head;
@@ -174,9 +176,14 @@ static struct cPROC {
    tTIES      *t_tail;
    int         t_count;
    /*---(working)-----------*/
+   char        note;
    char        e_seq;
    char        p_lvl;
    char        p_seq;
+   char        e_print     [LEN_HUND];
+   char        m_print     [LEN_HUND];
+   char        p_print     [LEN_HUND];
+   char        t_print     [LEN_LABEL];
    /*---(done)--------------*/
 };
 extern tPROC      *p_head;
@@ -234,9 +241,12 @@ static struct cLIBS {
    tLIBS      *m_prev;
    tLIBS      *m_next;
    /*---(working)-----------*/
+   char        note;
    char        e_count;
    char        u_flag;
    int         u_line;
+   int         l_seq;
+   char        l_print     [LEN_HUND];
    /*---(done)--------------*/
 };
 extern tLIBS      *l_head;
@@ -276,18 +286,20 @@ struct cMY {
    int         m_wide;
    int         m_bott;
    int         m_tall;
-   char        e_len;
-   char        e_wide;
-   char        e_mult;
-   char        e_flag       [LEN_LABEL];
+   uchar       e_len;
+   uchar       e_wide;
+   uchar       e_mult;
+   uchar       e_flag       [LEN_LABEL];    /* sequence number 0-255 */
    int         p_index;
-   char        p_flag       [LEN_LABEL];
+   uchar       p_flag       [LEN_LABEL];    /* 0 or 1 */
    int         l_index;
    int         l_show;
    int         l_every;
    int         l_core;
    int         l_multi;
    int         l_singles;
+   int         l_etitle;
+   int         l_ctitle;
    /*---(done)----------------*/
 };
 extern      tMY         my;
@@ -449,8 +461,6 @@ char        DATA_by_index           (tDATA **r_curr, int a_index);
 char*       DATA_key                (tDATA *a_curr);
 char        DATA_hook               (tDATA *a_next, tDATA *a_curr);
 char        DATA_unhook             (tDATA *a_curr);
-/*---(treeify)--------------*/
-char        DATA_treeify            (void);
 /*---(unittest)-------------*/
 char*       DATA__unit              (char *a_question, int n);
 /*---(done)-----------------*/

@@ -13,7 +13,6 @@ main     (int a_argc, char *a_argv [])
    }
    /*---(run)----------------------------*/
    PROG_review ();
-   DATA_treeify ();
    YVIKEYS_update ();
    /*> NCURSE_proc_list ();                                                           <*/
    PROG_driver ();

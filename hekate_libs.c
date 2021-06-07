@@ -92,6 +92,8 @@ LIBS_wipe               (tLIBS *a_new, char a_type)
       a_new->u_flag   = '-';
       a_new->u_line   = 0;
    }
+   /*---(working)------------------------*/
+   a_new->l_print [0] = '\0';
    /*---(done)---------------------------*/
    return 0;
 }

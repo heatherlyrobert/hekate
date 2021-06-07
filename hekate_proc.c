@@ -69,6 +69,15 @@ PROC__memory            (tPROC *a_cur)
    ++n;  if (a_cur->t_head      != NULL)        s_print [n] = 'X';
    ++n;  if (a_cur->t_tail      != NULL)        s_print [n] = 'X';
    ++n;  if (a_cur->t_count     >  0)           s_print [n] = 'X';
+   ++n;
+   ++n;  if (a_cur->note        != '-')         s_print [n] = 'X';
+   ++n;  if (a_cur->e_seq       >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->p_lvl       >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->p_seq       >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->e_print [0] != '\0')        s_print [n] = 'X';
+   ++n;  if (a_cur->m_print [0] != '\0')        s_print [n] = 'X';
+   ++n;  if (a_cur->p_print [0] != '\0')        s_print [n] = 'X';
+   ++n;  if (a_cur->t_print [0] != '\0')        s_print [n] = 'X';
    return s_print;
 }
 
@@ -124,12 +133,17 @@ PROC_wipe               (tPROC *a_new, char a_type)
       a_new->t_count  = 0;
    }
    /*---(working)------------------------*/
-   a_new->p_lvl    = 0;
-   a_new->p_seq    = 0;
+   a_new->note      = '-';
+   a_new->e_seq     = 0;
+   a_new->p_lvl     = 0;
+   a_new->p_seq     = 0;
+   a_new->e_print [0] = '\0';
+   a_new->m_print [0] = '\0';
+   a_new->p_print [0] = '\0';
+   a_new->t_print [0] = '\0';
    /*---(done)---------------------------*/
    return 0;
 }
-
 
 
 /*====================------------------------------------====================*/

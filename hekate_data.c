@@ -994,45 +994,6 @@ DATA_gather             (void)
    return rc;
 }
 
-char
-DATA_treeify_level      (char a_level, tPROC *a_parent)
-{
-   tPROC      *x_proc      = NULL;
-   int         c           = 0;
-   DEBUG_INPT   yLOG_enter   (__FUNCTION__);
-   DEBUG_INPT   yLOG_value   ("a_parent"  , a_parent->rpid);
-   x_proc = p_head;
-   while  (x_proc != NULL) {
-      DEBUG_INPT   yLOG_value   ("x_proc"    , x_proc->rpid);
-      if (x_proc->ppid == a_parent->rpid) {
-         DEBUG_INPT   yLOG_note   ("found CHILD");
-         if (a_parent->h_head == NULL) {
-            a_parent->h_head  = x_proc;
-            a_parent->h_tail  = x_proc;
-            a_parent->h_count = 1;
-         } else {
-            a_parent->h_tail->h_next = x_proc;
-            a_parent->h_tail         = x_proc;
-            ++(a_parent->h_count);
-         }
-         x_proc->h_next = NULL;
-         x_proc->p_lvl = a_level;
-         x_proc->p_seq = ++c;
-         DATA_treeify_level (a_level + 1, x_proc);
-      }
-      x_proc = x_proc->m_next;
-   }
-   DEBUG_INPT   yLOG_exit    (__FUNCTION__);
-   return 0;
-}
-
-char
-DATA_treeify            (void)
-{
-   DATA_treeify_level (1, p_head);
-   return 0;
-}
-
 
 
 /*====================------------------------------------====================*/
