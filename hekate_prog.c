@@ -185,6 +185,8 @@ PROG_driver             (void)
 {
    /*---(locals)-----------+-----------+-*/
    char        rc          = 0;
+   YVIKEYS_mapper (YVIKEYS_INIT);
+   yVIKEYS_map_refresh ();
    rc = yVIKEYS_main  ("keys", "every", NULL);
    return rc;
 }

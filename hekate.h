@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7b"
-#define     P_VERTXT    "sweetly displaying libraries now with some colors"
+#define     P_VERNUM    "0.7c"
+#define     P_VERTXT    "whoo-hoo, full basic movements and ready to debug"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -177,9 +177,10 @@ static struct cPROC {
    int         t_count;
    /*---(working)-----------*/
    char        note;
-   char        e_seq;
-   char        p_lvl;
-   char        p_seq;
+   ushort      f_seq;
+   uchar       e_seq;
+   uchar       p_lvl;
+   uchar       p_seq;
    char        e_print     [LEN_HUND];
    char        m_print     [LEN_HUND];
    char        p_print     [LEN_HUND];
@@ -286,6 +287,7 @@ struct cMY {
    int         m_wide;
    int         m_bott;
    int         m_tall;
+   ushort      f_seq;
    uchar       e_len;
    uchar       e_wide;
    uchar       e_mult;
@@ -388,6 +390,7 @@ char        PROC_by_cursor          (tPROC **r_curr, char a_move);
 char        PROC_by_exec_cursor     (tPROC **r_curr, tEXEC *a_owner, char a_move);
 char        PROC_by_index           (tPROC **r_curr, int a_index);
 char        PROC_by_rpid            (tPROC **r_curr, int a_rpid);
+char        PROC_by_seq             (tPROC **r_curr, int a_seq);
 /*---(unittest)-------------*/
 char*       PROC__unit              (char *a_question, int n);
 /*---(done)-----------------*/

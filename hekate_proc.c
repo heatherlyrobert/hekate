@@ -71,6 +71,7 @@ PROC__memory            (tPROC *a_cur)
    ++n;  if (a_cur->t_count     >  0)           s_print [n] = 'X';
    ++n;
    ++n;  if (a_cur->note        != '-')         s_print [n] = 'X';
+   ++n;  if (a_cur->f_seq       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->e_seq       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->p_lvl       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->p_seq       >  0)           s_print [n] = 'X';
@@ -134,6 +135,7 @@ PROC_wipe               (tPROC *a_new, char a_type)
    }
    /*---(working)------------------------*/
    a_new->note      = '-';
+   a_new->f_seq     = 0;
    a_new->e_seq     = 0;
    a_new->p_lvl     = 0;
    a_new->p_seq     = 0;
@@ -273,6 +275,45 @@ PROC_by_rpid            (tPROC **r_curr, int a_rpid)
    x_proc = p_head;
    while (x_proc != NULL) {
       if (x_proc->rpid == a_rpid) {
+         p_curr = x_proc;
+         break;
+      }
+      x_proc = x_proc->m_next;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_NORM   yLOG_spoint  (x_proc);
+   --rce;  if (x_proc == NULL) {
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(normal result)------------------*/
+   if (r_curr != NULL)  *r_curr = p_curr;
+   /*---(complete)-----------------------*/
+   DEBUG_NORM   yLOG_exit    (__FUNCTION__);
+   return rc;
+}
+
+char
+PROC_by_seq             (tPROC **r_curr, int a_seq)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   tPROC      *x_proc      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
+   /*---(defaults)-----------------------*/
+   if (r_curr != NULL)  *r_curr = NULL;
+   /*---(defense)------------------------*/
+   DEBUG_NORM   yLOG_spoint  (p_head);
+   --rce;  if (p_head == NULL) {
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk)---------------------------*/
+   x_proc = p_head;
+   while (x_proc != NULL) {
+      if (x_proc->f_seq == a_seq) {
          p_curr = x_proc;
          break;
       }
