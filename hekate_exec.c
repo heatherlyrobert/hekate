@@ -57,6 +57,7 @@ EXEC__memory            (tEXEC *a_cur)
    ++n;  if (a_cur->e_seq       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->e_shown     != '-')         s_print [n] = 'X';
    ++n;  if (a_cur->e_print [0] != '\0')        s_print [n] = 'X';
+   ++n;  if (a_cur->e_alt   [0] != '\0')        s_print [n] = 'X';
    return s_print;
 }
 
@@ -100,6 +101,7 @@ EXEC_wipe               (tEXEC *a_new, char a_type)
    a_new->e_seq    = 0;
    a_new->e_shown  = '-';
    a_new->e_print [0] = '\0';
+   a_new->e_alt   [0] = '\0';
    /*---(done)---------------------------*/
    return 0;
 }
