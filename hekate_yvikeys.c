@@ -65,6 +65,8 @@ YVIKEYS__prep_exec      (void)
    while (x_exec != NULL) {
       l = strlen (x_exec->base);
       if (l > my.e_len)  my.e_len = l;
+      x_exec->f_seq   = 0;
+      x_exec->f_temp  = 0;
       x_exec->e_col   = 0;
       x_exec->e_seq   = 0;
       x_exec->e_shown = '-';
@@ -241,10 +243,12 @@ YVIKEYS__prep_eprint    (tPROC *a_proc)
       snprintf  (x_mprint, my.e_mult * 2 + 1, "%s", S_MID);
       /*---(output)----------------------*/
       sprintf   (x_eprint, "%-2.2s  %s%-4.4s", x_exec->hint, x_pre, x_cnt);
+      /*---(update)----------------------*/
+      x_exec->f_seq = x_exec->f_temp = a_proc->f_seq;
+      strlcpy (x_exec->e_print, x_eprint, LEN_HUND);
       /*---(done)------------------------*/
    }
    /*---(save)---------------------------*/
-   strlcpy (x_exec->e_print, x_eprint, LEN_HUND);
    strlcpy (a_proc->e_print, x_eprint, LEN_HUND);
    strlcpy (a_proc->m_print, x_mprint, LEN_HUND);
    /*---(update)-------------------------*/
@@ -463,21 +467,95 @@ char
 YVIKEYS__proc_show      (tPROC *a_proc)
 {
    /*---(locals)-----------+-----+-----+-*/
-   static int  x_line      =    0;
+   int         x_line      =    0;
    int         l           =    0;
+   int         x_conn      =    0;
+   int         x_mid       =    0;
    /*---(prepare)------------------------*/
    x_line = a_proc->f_seq - g_ymap.gbeg + 1;
    if (x_line < 1)  return 0;
    if (x_line > g_ymap.gend)  return 0;
    l = my.e_wide + my.e_mult * 2 + 1;
+   x_conn = my.m_left + l + strlen (a_proc->p_print) + strlen (a_proc->t_print) + 3;
+   x_mid  = 2 + my.l_every + 2 + (my.l_core / 2);
    /*---(exec)---------------------------*/
    attron  (S_COLOR_FSIMPLE);
    mvprintw (my.m_bott - my.m_tall + x_line, my.m_left, "%s%sÏ", a_proc->e_print, a_proc->m_print);
    attrset (0);
    /*---(proc)---------------------------*/
-   if (a_proc->f_seq == g_ymap.gcur)  attron  (S_COLOR_HCURR);
-   else                               attron  (S_COLOR_HNORM);
+   if (a_proc->f_seq == g_ymap.gcur)   attron  (S_COLOR_HCURR);
+   else                                attron  (S_COLOR_HNORM);
    mvprintw (my.m_bott - my.m_tall + x_line, my.m_left + l, " %s·%sÏ", a_proc->p_print, a_proc->t_print);
+   attrset (0);
+   mvprintw (my.m_bott - my.m_tall + x_line, x_conn, "   ", a_proc->p_print, a_proc->t_print);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+YVIKEYS__main_exec      (void)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   tPROC      *x_proc      = NULL;
+   tEXEC      *x_exec      = NULL;
+   tPROC      *x_other     = NULL;
+   int         x_line      =    0;
+   int         l           =    0;
+   int         x_link      =    0;
+   int         i           =    0;
+   int         x_turn      =   -1;
+   int         x_len       =    0;
+   /*---(find proc)----------------------*/
+   PROC_by_seq (&x_proc, g_ymap.gcur);
+   if (x_proc == NULL)  x_proc = p_head;
+   x_exec = x_proc->e_link;
+   /*---(prepare)------------------------*/
+   x_line = x_exec->f_seq - g_ymap.gbeg + 1;
+   if (x_line < 1)  return 0;
+   if (x_line > g_ymap.gend)  return 0;
+   l = my.e_wide + my.e_mult * 2 + 1;
+   /*---(exec)---------------------------*/
+   attron  (S_COLOR_FDANGER);
+   mvprintw (my.m_bott - my.m_tall + x_line, my.m_left, "%s", x_exec->e_print);
+   attrset (0);
+   /*---(connector)----------------------*/
+   x_link  = x_proc->f_seq - g_ymap.gbeg + 1;
+   attron  (S_COLOR_FDANGER);
+   /*> mvprintw (66, 120, "proc  %2d  exec  %2d", x_proc->f_seq, x_exec->f_seq);      <*/
+   mvprintw (x_link, l - 1, "Ï");
+   x_len = strlen (x_proc->m_print);
+   for (i = 0; i < x_len; ++i) {
+      switch (x_proc->m_print [i]) {
+      case '‡' : case '„' :
+         x_turn = i;
+      case 'Ï' : case '€' : case 'ƒ' : case '‰' :
+         mvprintw (x_link, my.e_wide + i, "%c", x_proc->m_print [i]);
+         break;
+      }
+   }
+   /*> mvprintw (67, 120, "turn  %2d  %s", x_turn, x_proc->m_print);                  <*/
+   if (x_exec->f_seq != x_proc->f_seq) {
+      /*> for (i = x_line + 1; i < x_link; ++i) {                                     <*/
+      for (i = x_exec->f_seq; i <= x_proc->f_seq; ++i) {
+         PROC_by_seq (&x_other, i);
+         switch (x_other->m_print [x_turn]) {
+         case '‡' : case '„' : case 'Œ' : case '' :
+         case 'Ï' : case '€' : case 'ƒ' : case '‰' :
+            mvprintw (i - g_ymap.gbeg + 1, my.e_wide + x_turn, "%c", x_other->m_print [x_turn]);
+            break;
+         }
+         /*> mvprintw (68, 120, "line  %2d  link  %2d  turn  %2d  i     %2d", x_line, x_link, x_turn, i);   <*/
+      }
+      for (i = 0; i <= x_turn; ++i) {
+         PROC_by_seq (&x_other, x_line + g_ymap.gbeg - 1);
+         switch (x_other->m_print [i]) {
+         case '‡' : case '„' :
+         case 'Ï' : case '€' : case 'ƒ' : case '‰' :
+            mvprintw (x_line, my.e_wide + i, "%c", x_other->m_print [i]);
+            break;
+         }
+      }
+   }
    attrset (0);
    /*---(complete)-----------------------*/
    return 0;
@@ -500,11 +578,18 @@ YVIKEYS__main_libs      (void)
    int         m           =    0;
    int         l           =    0;
    int         i           =    0;
-   /*---(prepare)------------------------*/
-   x_left  = my.m_left + 123;
+   int         x_mid       =    0;
+   int         x_conn      =    0;
+   int         x_flag      =  '-';
+   int         x_line      =    0;
    /*---(find proc)----------------------*/
    PROC_by_seq (&x_proc, g_ymap.gcur);
    if (x_proc == NULL)  x_proc = p_head;
+   /*---(prepare)------------------------*/
+   x_left  = my.m_left + 123;
+   x_mid   = 2 + my.l_every + 2 + (my.l_core / 2);
+   x_conn  = my.m_left + my.e_wide + my.e_mult * 2 + 1 + strlen (x_proc->p_print) + strlen (x_proc->t_print) + 3;
+   x_line  = x_proc->f_seq - g_ymap.gbeg + 1;
    /*---(every and core libs)------------*/
    LIBS_by_cursor (&x_libs, YDLST_DHEAD);
    while (x_libs != NULL) {
@@ -568,6 +653,7 @@ YVIKEYS__main_libs      (void)
          break;
       case 'c' :
          ++m;
+         if (x_ties->l_link->l_seq == x_mid)  x_flag = 'y';
          mvprintw (x_ties->l_link->l_seq, x_left - 2, "‡€%s", x_ties->l_link->l_print);
          break;
       case 'm' : case '-' :
@@ -577,6 +663,22 @@ YVIKEYS__main_libs      (void)
          break;
       }
       TIES_by_proc_cursor (&x_ties, x_proc, YDLST_DNEXT);
+   }
+   attrset (0);
+   /*---(proc connector)-----------------*/
+   attron  (S_COLOR_FDANGER);
+   if (x_flag == 'y')  mvprintw (x_mid, x_left - 2, "Š");
+   else                mvprintw (x_mid, x_left - 2, "†");
+   if (x_line <  x_mid) {
+      mvprintw (x_line, x_conn, "€‚");
+      mvprintw (x_mid , x_conn + 1, "„€");
+      for (i = x_line + 1; i < x_mid; ++i)  mvprintw (i , x_conn + 1, "");
+   } else if (x_line == x_mid) {
+      mvprintw (x_line, x_conn, "€€€");
+   } else if (x_line >  x_mid) {
+      mvprintw (x_line, x_conn, "€…");
+      mvprintw (x_mid , x_conn + 1, "ƒ€");
+      for (i = x_mid + 1; i < x_line; ++i)  mvprintw (i , x_conn + 1, "");
    }
    attrset (0);
    /*---(titles)-------------------------*/
@@ -633,22 +735,15 @@ YVIKEYS_main            (void)
    /*---(get size)-----------------------*/
    yVIKEYS_view_size     (YVIKEYS_MAIN, &(my.m_left), &(my.m_wide), &(my.m_bott), &(my.m_tall), NULL);
    /*---(dislay procs)-------------------*/
-   YVIKEYS__main_proc (0, p_head);
-   YVIKEYS__main_libs ();
-   /*> mvprintw (40, 120, "umin  %2d  gmin  %2d  gamin %2d  glmin %2d", g_ymap.umin, g_ymap.gmin, g_ymap.gamin, g_ymap.glmin);   <* 
-    *> mvprintw (41, 120, "ubeg  %2d  gbeg  %2d  gprev %2d", g_ymap.ubeg, g_ymap.gbeg, g_ymap.gprev);                            <* 
-    *> mvprintw (42, 120, "ucur  %2d  gcur  %2d", g_ymap.ucur, g_ymap.gcur);                                                     <* 
-    *> mvprintw (43, 120, "uend  %2d  gend  %2d  gnext %2d", g_ymap.uend, g_ymap.gend, g_ymap.gnext);                            <* 
-    *> mvprintw (44, 120, "umax  %2d  gmax  %2d  gamax %2d  glmax %2d", g_ymap.umax, g_ymap.gmax, g_ymap.gamax, g_ymap.glmax);   <* 
-    *> mvprintw (45, 120, "uava  %2d  utend %2d", g_ymap.uavail, g_ymap.utend);                                                  <*/
-   /*> x_proc = p_head;                                                                                                                                                  <* 
-    *> while (x_proc != NULL) {                                                                                                                                          <* 
-    *>    ++c;                                                                                                                                                           <* 
-    *>    snprintf (x_print, 75, "%-5d %-2.2s %s······································································", x_proc->rpid, x_proc->hint, x_proc->cmdline);   <* 
-    *>    mvprintw (x_bott - x_tall + c, x_left, "%s", x_print);                                                                                                         <* 
-    *>    x_proc = x_proc->m_next;                                                                                                                                       <* 
-    *>    if (c > 20)  break;                                                                                                                                            <* 
-    *> }                                                                                                                                                                 <*/
+   YVIKEYS__main_proc  (0, p_head);
+   YVIKEYS__main_libs  ();
+   YVIKEYS__main_exec  ();
+   mvprintw (60, 120, "umin  %2d  gmin  %2d  gamin %2d  glmin %2d", g_ymap.umin, g_ymap.gmin, g_ymap.gamin, g_ymap.glmin);
+   mvprintw (61, 120, "ubeg  %2d  gbeg  %2d  gprev %2d", g_ymap.ubeg, g_ymap.gbeg, g_ymap.gprev);
+   mvprintw (62, 120, "ucur  %2d  gcur  %2d", g_ymap.ucur, g_ymap.gcur);
+   mvprintw (63, 120, "uend  %2d  gend  %2d  gnext %2d", g_ymap.uend, g_ymap.gend, g_ymap.gnext);
+   mvprintw (64, 120, "umax  %2d  gmax  %2d  gamax %2d  glmax %2d", g_ymap.umax, g_ymap.gmax, g_ymap.gamax, g_ymap.glmax);
+   mvprintw (65, 120, "uava  %2d  utend %2d", g_ymap.uavail, g_ymap.utend);
    /*---(complete)-----------------------*/
    DEBUG_GRAF  yLOG_exit    (__FUNCTION__);
    return 0;

@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7c"
-#define     P_VERTXT    "whoo-hoo, full basic movements and ready to debug"
+#define     P_VERNUM    "0.7d"
+#define     P_VERTXT    "built red connectors from exec to proc to libs.  yes!"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -117,6 +117,8 @@ static struct cEXEC {
    /*---(working)-----------*/
    char        note;
    char        l_note;
+   ushort      f_seq;
+   ushort      f_temp;
    uchar       e_col;
    uchar       e_seq;
    char        e_shown;

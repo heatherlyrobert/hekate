@@ -94,6 +94,8 @@ EXEC_wipe               (tEXEC *a_new, char a_type)
    a_new->p_tail   = NULL;
    a_new->p_count  = 0;
    /*---(working)------------------------*/
+   a_new->f_seq    = 0;
+   a_new->f_temp   = 0;
    a_new->e_col    = 0;
    a_new->e_seq    = 0;
    a_new->e_shown  = '-';
