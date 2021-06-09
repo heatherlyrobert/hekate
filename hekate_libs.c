@@ -50,6 +50,7 @@ LIBS__memory            (tLIBS *a_cur)
    ++n;  if (a_cur->t_tail      != NULL)        s_print [n] = 'X';
    ++n;  if (a_cur->t_count     >  0)           s_print [n] = 'X';
    ++n;
+   ++n;  if (a_cur->l_note      != '-')         s_print [n] = 'X';
    ++n;  if (a_cur->e_count     >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->u_flag      != '-')         s_print [n] = 'X';
    ++n;  if (a_cur->u_line      >  0)           s_print [n] = 'X';
@@ -89,6 +90,7 @@ LIBS_wipe               (tLIBS *a_new, char a_type)
       a_new->t_tail   = NULL;
       a_new->t_count  = 0;
       a_new->e_count  = 0;
+      a_new->l_note   = '-';
       a_new->u_flag   = '-';
       a_new->u_line   = 0;
    }
@@ -289,6 +291,7 @@ char LIBS_by_cursor  (tLIBS **r_curr, char a_move)  { return SHARE_by_cursor (TY
 char LIBS_by_index   (tLIBS **r_curr, int a_index)  { return SHARE_by_index  (TYPE_LIBS, r_curr, a_index); }
 char LIBS_by_inode   (tLIBS **r_curr, int a_inode)  { return SHARE_by_inode  (TYPE_LIBS, r_curr, a_inode); }
 char LIBS_by_name    (tLIBS **r_curr, char *a_name) { return SHARE_by_name   (TYPE_LIBS, r_curr, a_name); }
+char LIBS_by_hint    (tLIBS **r_curr, char *a_hint) { return SHARE_by_hint   (TYPE_LIBS, r_curr, a_hint); }
 
 
 

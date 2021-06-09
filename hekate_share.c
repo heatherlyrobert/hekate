@@ -738,5 +738,72 @@ SHARE_by_name           (char a_type, void **r_curr, char *a_name)
    return 0;
 }
 
+char
+SHARE_by_hint           (char a_type, void **r_curr, char *a_hint)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   char       *x_hint      = NULL;
+   tEXEC      *x_exec      = NULL;
+   tPROC      *x_proc      = NULL;
+   tLIBS      *x_libs      = NULL;
+   void       *x_curr      = NULL;
+   /*---(header)-------------------------*/
+   DEBUG_NORM   yLOG_senter  (__FUNCTION__);
+   DEBUG_DATA   yLOG_schar   (a_type);
+   DEBUG_DATA   yLOG_snote   (a_hint);
+   /*---(defaults)-----------------------*/
+   if (r_curr != NULL)  *r_curr = NULL;
+   /*---(prepare)------------------------*/
+   --rce;
+   IF_EXEC   x_curr = x_exec = e_head;
+   EL_PROC   x_curr = x_proc = p_head;
+   EL_LIBS   x_curr = x_libs = l_head;
+   ELSE {
+      DEBUG_DATA   yLOG_snote   ("unknown type");
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_DATA   yLOG_spoint  (x_curr);
+   --rce;  if (x_curr == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_DATA   yLOG_spoint  (a_hint);
+   --rce;  if (a_hint == NULL) {
+      DEBUG_DATA   yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(walk)---------------------------*/
+   while (x_curr != NULL) {
+      rc = 0;
+      IF_EXEC   x_hint  = x_exec->hint;
+      EL_PROC   x_hint  = x_proc->hint;
+      EL_LIBS   x_hint  = x_libs->hint;
+      if (strcmp (x_hint, a_hint) == 0) {
+         IF_EXEC  e_curr = x_exec;
+         EL_PROC  p_curr = x_proc;
+         EL_LIBS  l_curr = x_libs;
+         break;
+      }
+      IF_EXEC   x_curr = x_exec = x_exec->m_next;
+      EL_PROC   x_curr = x_proc = x_proc->m_next;
+      EL_LIBS   x_curr = x_libs = x_libs->m_next;
+   }
+   /*---(defense)------------------------*/
+   DEBUG_NORM   yLOG_spoint  (x_curr);
+   --rce;  if (x_curr == NULL) {
+      DEBUG_NORM    yLOG_sexitr  (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(normal result)------------------*/
+   if (r_curr != NULL)  *r_curr = x_curr;
+   /*---(complete)-----------------------*/
+   DEBUG_NORM   yLOG_sexit   (__FUNCTION__);
+   return 0;
+}
+
 
 

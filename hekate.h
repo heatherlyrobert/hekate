@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7e"
-#define     P_VERTXT    "execs can change location to aide scrolling!!!"
+#define     P_VERNUM    "0.7f"
+#define     P_VERTXT    "hints are working 90p well, including cursoring ;)"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -115,7 +115,7 @@ static struct cEXEC {
    tPROC      *p_tail;
    int         p_count;
    /*---(working)-----------*/
-   char        note;
+   char        e_note;
    char        l_note;
    ushort      f_seq;
    ushort      f_temp;
@@ -179,7 +179,7 @@ static struct cPROC {
    tTIES      *t_tail;
    int         t_count;
    /*---(working)-----------*/
-   char        note;
+   char        p_note;
    ushort      f_seq;
    uchar       e_seq;
    uchar       p_lvl;
@@ -245,7 +245,7 @@ static struct cLIBS {
    tLIBS      *m_prev;
    tLIBS      *m_next;
    /*---(working)-----------*/
-   char        note;
+   char        l_note;
    char        e_count;
    char        u_flag;
    int         u_line;
@@ -294,9 +294,9 @@ struct cMY {
    uchar       e_len;
    uchar       e_wide;
    uchar       e_mult;
-   uchar       e_flag       [LEN_LABEL];    /* sequence number 0-255 */
+   uchar       e_flag      [LEN_LABEL];    /* sequence number 0-255 */
    int         p_index;
-   uchar       p_flag       [LEN_LABEL];    /* 0 or 1 */
+   uchar       p_flag      [LEN_LABEL];    /* 0 or 1 */
    int         l_index;
    int         l_show;
    int         l_every;
@@ -305,6 +305,7 @@ struct cMY {
    int         l_singles;
    int         l_etitle;
    int         l_ctitle;
+   char        hint        [LEN_TERSE];
    /*---(done)----------------*/
 };
 extern      tMY         my;
@@ -348,6 +349,7 @@ char        SHARE_cursor_by_owner   (char a_type, void **r_curr, void *a_owner, 
 char        SHARE_by_index          (char a_type, void **r_curr, int a_index);
 char        SHARE_by_inode          (char a_type, void **r_curr, int a_inode);
 char        SHARE_by_name           (char a_type, void **r_curr, char *a_name);
+char        SHARE_by_hint           (char a_type, void **r_curr, char *a_hint);
 /*---(done)-----------------*/
 
 
@@ -370,6 +372,7 @@ char        EXEC_by_cursor          (tEXEC **r_curr, char a_move);
 char        EXEC_by_index           (tEXEC **r_curr, int a_index);
 char        EXEC_by_inode           (tEXEC **r_curr, int a_inode);
 char        EXEC_by_name            (tEXEC **r_curr, char *a_name);
+char        EXEC_by_hint            (tEXEC **r_curr, char *a_hint);
 /*---(unittest)-------------*/
 char*       EXEC__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -394,6 +397,8 @@ char        PROC_by_exec_cursor     (tPROC **r_curr, tEXEC *a_owner, char a_move
 char        PROC_by_index           (tPROC **r_curr, int a_index);
 char        PROC_by_rpid            (tPROC **r_curr, int a_rpid);
 char        PROC_by_seq             (tPROC **r_curr, int a_seq);
+char        PROC_by_hint            (tPROC **r_curr, char *a_hint);
+char        PROC_by_seq_cursor      (tPROC **r_curr, char a_move);
 /*---(unittest)-------------*/
 char*       PROC__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -438,6 +443,7 @@ char        LIBS_by_cursor          (tLIBS **r_curr, char a_move);
 char        LIBS_by_index           (tLIBS **r_curr, int a_index);
 char        LIBS_by_inode           (tLIBS **r_curr, int a_inode);
 char        LIBS_by_name            (tLIBS **r_curr, char *a_name);
+char        LIBS_by_hint            (tLIBS **r_curr, char *a_hint);
 /*---(unittest)-------------*/
 char*       LIBS__unit              (char *a_question, int n);
 /*---(done)-----------------*/
@@ -479,6 +485,7 @@ char        NCURSE_proc_list        (void);
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 char        YVIKEYS_init            (void);
+char        YVIKEYS_hints           (char *a_hint);
 /*---(prepare)--------------*/
 char        YVIKEYS__lib_count      (tLIBS *a_libs);
 char        YVIKEYS__main_prepare   (void);

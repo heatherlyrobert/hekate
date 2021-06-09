@@ -70,7 +70,7 @@ PROC__memory            (tPROC *a_cur)
    ++n;  if (a_cur->t_tail      != NULL)        s_print [n] = 'X';
    ++n;  if (a_cur->t_count     >  0)           s_print [n] = 'X';
    ++n;
-   ++n;  if (a_cur->note        != '-')         s_print [n] = 'X';
+   ++n;  if (a_cur->p_note      != '-')         s_print [n] = 'X';
    ++n;  if (a_cur->f_seq       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->e_seq       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->p_lvl       >  0)           s_print [n] = 'X';
@@ -134,7 +134,7 @@ PROC_wipe               (tPROC *a_new, char a_type)
       a_new->t_count  = 0;
    }
    /*---(working)------------------------*/
-   a_new->note      = '-';
+   a_new->p_note    = '-';
    a_new->f_seq     = 0;
    a_new->e_seq     = 0;
    a_new->p_lvl     = 0;
@@ -253,6 +253,7 @@ static void  o___SEARCH__________o () { return; }
 char PROC_by_cursor      (tPROC **r_curr, char a_move)                  { return SHARE_by_cursor       (TYPE_PROC, r_curr, a_move); }
 char PROC_by_exec_cursor (tPROC **r_curr, tEXEC *a_owner, char a_move)  { return SHARE_cursor_by_owner (TYPE_EXEC, r_curr, a_owner, a_move); }
 char PROC_by_index       (tPROC **r_curr, int a_index)                  { return SHARE_by_index        (TYPE_PROC, r_curr, a_index); }
+char PROC_by_hint        (tPROC **r_curr, char *a_hint)                 { return SHARE_by_hint         (TYPE_PROC, r_curr, a_hint); }
 
 char
 PROC_by_rpid            (tPROC **r_curr, int a_rpid)
@@ -329,6 +330,89 @@ PROC_by_seq             (tPROC **r_curr, int a_seq)
    if (r_curr != NULL)  *r_curr = p_curr;
    /*---(complete)-----------------------*/
    DEBUG_NORM   yLOG_exit    (__FUNCTION__);
+   return rc;
+}
+
+
+static tPROC *s_found = NULL;
+static tPROC *s_last  = NULL;
+static tPROC *s_save  = NULL;
+static char   s_next  = '-';
+
+char
+PROC__seq_cursor        (char a_lvl, tPROC *a_proc, char a_move)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rc          =    0;
+   char        x_lvl       [LEN_TITLE] = "";
+   tPROC      *x_proc      = NULL;
+   /*---(check current)------------------*/
+   if (a_proc->p_note == ';') {
+      if (a_move == '[') {
+         s_found = s_save = a_proc;
+         return 1;
+      }
+      if (a_move == '<' && a_proc == s_save) {
+         if (s_last != NULL)  s_found = s_save = s_last;
+         else                 s_found = s_save = a_proc;
+         return 1;
+      }
+      if (a_move == '>' && s_next == 'y') {
+         s_found = s_save = a_proc;
+         return 1;
+      }
+      if (a_move == '>' && a_proc == s_save) {
+         s_next = 'y';
+      }
+      s_last = a_proc;
+   }
+   /*---(recurse)------------------------*/
+   x_proc = a_proc->h_head;
+   while (x_proc != NULL) {
+      rc = PROC__seq_cursor (a_lvl + 1, x_proc, a_move);
+      if (rc == 1)  return 1;
+      x_proc = x_proc->h_next;
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+
+char
+PROC_by_seq_cursor      (tPROC **r_curr, char a_move)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   char        rc          =    0;
+   /*---(prepare)------------------------*/
+   s_found = NULL;
+   s_last  = NULL;
+   s_next  = '-';
+   /*---(defense)------------------------*/
+   --rce;  if (strchr ("[<.>]rs", a_move) == NULL)  return rce;
+   /*---(reset)--------------------------*/
+   if (a_move == 'r') {
+      s_save = NULL;
+      return 0;
+   }
+   /*---(save)---------------------------*/
+   if (a_move == 's') {
+      if (r_curr != NULL)  s_save = *r_curr;
+      return 0;
+   }
+   /*---(default)------------------------*/
+   if (r_curr != NULL)  *r_curr = NULL;
+   /*---(return current)-----------------*/
+   if (a_move == '.') {
+      if (r_curr!= NULL)  *r_curr = s_found = s_save;
+      return 1;
+   }
+   /*---(normal cursoring)---------------*/
+   rc = PROC__seq_cursor (0, p_head, a_move);
+   if (a_move == ']')    s_found = s_save = s_last;
+   if (a_move == '>' && s_found == NULL)  s_found = s_save = s_last;
+   if (r_curr != NULL)   *r_curr = s_found;
+   /*---(complete)-----------------------*/
    return rc;
 }
 
