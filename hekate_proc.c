@@ -421,11 +421,105 @@ PROC_by_seq_cursor      (tPROC **r_curr, char a_move)
 
 
 
+/*====================------------------------------------====================*/
+/*===----                       data dumping                           ----===*/
+/*====================------------------------------------====================*/
+static void  o___DUMP____________o () { return; }
+
+char
+PROC_dump               (FILE *a_file)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         c           =    0;
+   tPROC      *x_proc      = NULL;
+   char        s           [LEN_HUND]  = "";
+   char        t           [LEN_HUND]  = "";
+   /*---(header)-------------------------*/
+   fprintf (a_file, "%s, process inventory                                                               (:dump proc)\n", P_BASENAME);
+   x_proc = p_head;
+   while (x_proc != NULL) {
+      if (c %  5 == 0) fprintf (a_file, "\n");
+      if (c % 25 == 0) fprintf (a_file, "num  rpid- ppid- ---shown------ ---command-line------------------------------ --  fse es lv ps\n\n");
+      ++c;
+      sprintf (s, "%2då%-10.10sæ", strlen (x_proc->shown), x_proc->shown);
+      sprintf (t, "%3då%-40.40sæ", strlen (x_proc->cmdline), x_proc->cmdline);
+      fprintf (a_file, "%-3d  %5d %5d %-14.14s %-45.45s %-2.2s  %3d %2d %2d %2d\n", c,
+            x_proc->rpid, x_proc->ppid, s, t, x_proc->hint,
+            x_proc->f_seq, x_proc->e_seq, x_proc->p_lvl, x_proc->p_seq);
+
+      x_proc = x_proc->m_next;
+   }
+   fprintf (a_file, "\n");
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+/*>                                                                                   <* 
+ *> static struct cPROC {                                                             <* 
+ *>    /+---(master)------------+/                                                    <* 
+ *>    int         rpid;                                                              <* 
+ *>    int         ppid;                                                              <* 
+ *>    char        shown       [LEN_TITLE];                                           <* 
+ *>    char        cmdline     [LEN_RECD];                                            <* 
+ *>    char        hint        [LEN_SHORT];                                           <* 
+ *>    /+---(cpu)---------------+/                                                    <* 
+ *>    char        c_state;                                                           <* 
+ *>    long        c_utime;                                                           <* 
+ *>    long        c_stime;                                                           <* 
+ *>    char        c_snice;                                                           <* 
+ *>    char        c_flag;                                                            <* 
+ *>    /+---(memory)------------+/                                                    <* 
+ *>    int         m_full;                                                            <* 
+ *>    int         m_proc;                                                            <* 
+ *>    int         m_data;                                                            <* 
+ *>    int         m_heap;                                                            <* 
+ *>    int         m_stack;                                                           <* 
+ *>    int         m_other;                                                           <* 
+ *>    char        m_flag;                                                            <* 
+ *>    /+---(disk)--------------+/                                                    <* 
+ *>    int         d_read;                                                            <* 
+ *>    int         d_write;                                                           <* 
+ *>    char        d_flag;                                                            <* 
+ *>    /+---(net)---------------+/                                                    <* 
+ *>    int         n_read;                                                            <* 
+ *>    int         n_write;                                                           <* 
+ *>    char        n_flag;                                                            <* 
+ *>    /+---(executable)--------+/                                                    <* 
+ *>    tEXEC      *e_link;                                                            <* 
+ *>    tPROC      *p_prev;                                                            <* 
+ *>    tPROC      *p_next;                                                            <* 
+ *>    /+---(master list)-------+/                                                    <* 
+ *>    tPROC      *m_prev;                                                            <* 
+ *>    tPROC      *m_next;                                                            <* 
+ *>    /+---(heirarchy)---------+/                                                    <* 
+ *>    tPROC      *h_head;                                                            <* 
+ *>    tPROC      *h_tail;                                                            <* 
+ *>    int        *h_count;                                                           <* 
+ *>    tPROC      *h_sibs;                                                            <* 
+ *>    tPROC      *h_prev;                                                            <* 
+ *>    tPROC      *h_next;                                                            <* 
+ *>    /+---(libs)--------------+/                                                    <* 
+ *>    tTIES      *t_head;                                                            <* 
+ *>    tTIES      *t_tail;                                                            <* 
+ *>    int         t_count;                                                           <* 
+ *>    /+---(working)-----------+/                                                    <* 
+ *>    char        p_note;                                                            <* 
+ *>    ushort      f_seq;                                                             <* 
+ *>    uchar       e_seq;                                                             <* 
+ *>    uchar       p_lvl;                                                             <* 
+ *>    uchar       p_seq;                                                             <* 
+ *>    char        e_print     [LEN_HUND];                                            <* 
+ *>    char        m_print     [LEN_HUND];                                            <* 
+ *>    char        p_print     [LEN_HUND];                                            <* 
+ *>    char        t_print     [LEN_LABEL];                                           <* 
+ *>    /+---(done)--------------+/                                                    <* 
+ *> };                                                                                <*/
+
 
 /*====================------------------------------------====================*/
 /*===----                         unit testing                         ----===*/
 /*====================------------------------------------====================*/
-static void  o___UNIT_TEST_______o () { return; }
+static void  o___UNITTEST________o () { return; }
 
 char*        /*-> unit testing accessor --------------[ ------ [gs.HA0.1B3.K5]*/ /*-[02.0000.00#.#]-*/ /*-[--.---.---.--]-*/
 PROC__unit              (char *a_question, int n)

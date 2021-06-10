@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7g"
-#define     P_VERTXT    "regex search working and comingles with hinting great"
+#define     P_VERNUM    "0.7h"
+#define     P_VERTXT    "missing procs, proc dump, and proper status bar fixed"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -423,6 +423,8 @@ char        PROC_by_rpid            (tPROC **r_curr, int a_rpid);
 char        PROC_by_seq             (tPROC **r_curr, int a_seq);
 char        PROC_by_hint            (tPROC **r_curr, char *a_hint);
 char        PROC_by_seq_cursor      (tPROC **r_curr, char a_move);
+/*---(reports)--------------*/
+char        PROC_dump               (FILE *a_file);
 /*---(unittest)-------------*/
 char*       PROC__unit              (char *a_question, int n);
 /*---(done)-----------------*/

@@ -94,8 +94,8 @@ DATA__exename           (char *a_file, int *a_inode, char *a_base, char *a_full)
    --rce;  for (i = 0; i < 4; ++i) {
       p = strtok_r (NULL, " \t", &r);
       if (p == NULL) {
-         DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
-         return rce;
+         DEBUG_ENVI   yLOG_exit    (__FUNCTION__);
+         return 0;      /* kernel threads have no smaps */
       }
    }
    /*---(inode)--------------------------*/
@@ -819,10 +819,12 @@ DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit)
    char        x_file      [LEN_RECD]  = "";
    /*---(header)------------------------*/
    DEBUG_ENVI   yLOG_enter   (__FUNCTION__);
+   DEBUG_ENVI   yLOG_char    ("a_unit"    , a_unit);
    /*---(pre-work)--------------------*/
-   rc = DATA_prework (a_rpid, a_proc, a_rpid);
+   rc = DATA_prework (a_rpid, a_proc, a_unit);
    DEBUG_ENVI   yLOG_value   ("prework"   , rc);
    --rce;  if (rc < 0) {
+      /*> PROC_unhook (a_proc);                                                       <*/
       DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
    }

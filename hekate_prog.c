@@ -136,6 +136,10 @@ PROG__visual            (void)
    yVIKEYS_view_simple   (YVIKEYS_XAXIS    , 0, YVIKEYS_xaxis);
    yVIKEYS_cmds_direct   (":layout min");
    yVIKEYS_cmds_direct   (":xaxis show");
+   yVIKEYS_cmds_direct   (":status show");
+   yVIKEYS_cmds_direct   (":command show");
+   yVIKEYS_cmds_direct   (":modes show");
+   yVIKEYS_cmds_direct   (":keys show");
    /*> DRAW_init  ();                                                                 <*/
    /*> CURS_screen_reset ();                                                          <*/
    /*---(status options)-----------------*/
@@ -278,7 +282,12 @@ PROG_review             (void)
          continue;
       }
       /*---(create)----------------------*/
-      DATA_driver (x_rpid, &x_new, '-');
+      rc = DATA_driver (x_rpid, &x_new, '-');
+      DEBUG_INPT   yLOG_value   ("driver"    , rc);
+      if (rc < 0) {
+         DEBUG_INPT   yLOG_note    ("not a user-land entry");
+         continue;
+      }
       /*---(total)-----------------------*/
       ++x_count;
       if (rc >= 0)  ++x_pass;
