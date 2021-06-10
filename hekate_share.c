@@ -5,6 +5,7 @@
 
 #define  IF_EXEC   if      (a_type == TYPE_EXEC)
 #define  EL_PROC   else if (a_type == TYPE_PROC)
+#define  EL_TREE   else if (a_type == TYPE_TREE)
 #define  EL_TIES   else if (a_type == TYPE_TIES)
 #define  EL_LIBS   else if (a_type == TYPE_LIBS)
 #define  EL_DATA   else if (a_type == TYPE_DATA)
@@ -288,6 +289,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
    --rce;
    IF_EXEC  x_curr = x_exec = e_curr;
    EL_PROC  x_curr = x_proc = p_curr;
+   EL_TREE  x_curr = x_proc = p_curr;
    EL_TIES  x_curr = x_ties = t_curr;
    EL_LIBS  x_curr = x_libs = l_curr;
    EL_DATA  x_curr = x_data = d_curr;
@@ -303,6 +305,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
       if (strchr (YDLST_DREL, a_move) != NULL) {
          IF_EXEC  e_curr = x_exec;
          EL_PROC  p_curr = x_proc;
+         EL_TREE  p_curr = x_proc;
          EL_TIES  t_curr = x_ties;
          EL_LIBS  l_curr = x_libs;
          EL_DATA  d_curr = x_data;
@@ -312,6 +315,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
       /*---(bounce types)----------------*/
       IF_EXEC  x_curr = x_exec = e_head;
       EL_PROC  x_curr = x_proc = p_head;
+      EL_TREE  x_curr = x_proc = h_head;
       EL_TIES  x_curr = x_ties = t_head;
       EL_LIBS  x_curr = x_libs = l_head;
       EL_DATA  x_curr = x_data = d_head;
@@ -326,6 +330,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
    case YDLST_HEAD : case YDLST_DHEAD :
       IF_EXEC  x_curr = x_exec = e_head;
       EL_PROC  x_curr = x_proc = p_head;
+      EL_TREE  x_curr = x_proc = h_head;
       EL_TIES  x_curr = x_ties = t_head;
       EL_LIBS  x_curr = x_libs = l_head;
       EL_DATA  x_curr = x_data = d_head;
@@ -333,6 +338,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
    case YDLST_PREV : case YDLST_DPREV :
       IF_EXEC  x_curr = x_exec = x_exec->m_prev;
       EL_PROC  x_curr = x_proc = x_proc->m_prev;
+      EL_TREE  x_curr = x_proc = x_proc->h_prev;
       EL_TIES  x_curr = x_ties = x_ties->m_prev;
       EL_LIBS  x_curr = x_libs = x_libs->m_prev;
       EL_DATA  x_curr = x_data = x_data->m_prev;
@@ -342,6 +348,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
    case YDLST_NEXT : case YDLST_DNEXT :
       IF_EXEC  x_curr = x_exec = x_exec->m_next;
       EL_PROC  x_curr = x_proc = x_proc->m_next;
+      EL_TREE  x_curr = x_proc = x_proc->h_next;
       EL_TIES  x_curr = x_ties = x_ties->m_next;
       EL_LIBS  x_curr = x_libs = x_libs->m_next;
       EL_DATA  x_curr = x_data = x_data->m_next;
@@ -349,6 +356,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
    case YDLST_TAIL : case YDLST_DTAIL :
       IF_EXEC  x_curr = x_exec = e_tail;
       EL_PROC  x_curr = x_proc = p_tail;
+      EL_TREE  x_curr = x_proc = h_tail;
       EL_TIES  x_curr = x_ties = t_tail;
       EL_LIBS  x_curr = x_libs = l_tail;
       EL_DATA  x_curr = x_data = d_tail;
@@ -363,7 +371,8 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
       /*---(bounce off ends)-------------*/
       if (a_move == YDLST_PREV) {
          IF_EXEC  x_curr = x_exec = e_head;
-         EL_PROC  x_curr = x_proc = p_head;
+         EL_PROC  x_curr = x_proc = h_head;
+         EL_TREE  x_curr = x_proc = p_head;
          EL_TIES  x_curr = x_ties = t_head;
          EL_LIBS  x_curr = x_libs = l_head;
          EL_DATA  x_curr = x_data = d_head;
@@ -371,6 +380,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
       if (a_move == YDLST_NEXT) {
          IF_EXEC  x_curr = x_exec = e_tail;
          EL_PROC  x_curr = x_proc = p_tail;
+         EL_TREE  x_curr = x_proc = h_tail;
          EL_TIES  x_curr = x_ties = t_tail;
          EL_LIBS  x_curr = x_libs = l_tail;
          EL_DATA  x_curr = x_data = d_tail;
@@ -379,6 +389,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
       if (x_curr == NULL) {
          IF_EXEC  e_curr = x_exec;
          EL_PROC  p_curr = x_proc;
+         EL_TREE  p_curr = x_proc;
          EL_TIES  t_curr = x_ties;
          EL_LIBS  l_curr = x_libs;
          EL_DATA  l_curr = x_data;
@@ -393,6 +404,7 @@ SHARE_by_cursor         (char a_type, void **r_curr, char a_move)
    /*---(normal result)------------------*/
    IF_EXEC  x_curr = e_curr = x_exec;
    EL_PROC  x_curr = p_curr = x_proc;
+   EL_TREE  x_curr = p_curr = x_proc;
    EL_TIES  x_curr = t_curr = x_ties;
    EL_LIBS  x_curr = l_curr = x_libs;
    EL_DATA  x_curr = d_curr = x_data;
@@ -556,6 +568,7 @@ SHARE_by_index          (char a_type, void **r_curr, int a_index)
       DEBUG_DATA   yLOG_snote   ("requested current");
       IF_EXEC  x_curr = e_curr;
       EL_PROC  x_curr = p_curr;
+      EL_TREE  x_curr = p_curr;
       EL_TIES  x_curr = t_curr;
       EL_LIBS  x_curr = l_curr;
       EL_DATA  x_curr = d_curr;
@@ -572,6 +585,7 @@ SHARE_by_index          (char a_type, void **r_curr, int a_index)
    --rce;
    IF_EXEC   x_curr = x_exec = e_head;
    EL_PROC   x_curr = x_proc = p_head;
+   EL_TREE   x_curr = x_proc = h_head;
    EL_TIES   x_curr = x_ties = t_head;
    EL_LIBS   x_curr = x_libs = l_head;
    EL_DATA   x_curr = x_data = d_head;
@@ -597,6 +611,7 @@ SHARE_by_index          (char a_type, void **r_curr, int a_index)
       ++c;
       IF_EXEC     x_curr = x_exec = x_exec->m_next;
       EL_PROC     x_curr = x_proc = x_proc->m_next;
+      EL_TREE     x_curr = x_proc = x_proc->h_next;
       EL_TIES     x_curr = x_ties = x_ties->m_next;
       EL_LIBS     x_curr = x_libs = x_libs->m_next;
       EL_DATA     x_curr = x_data = x_data->m_next;
@@ -610,6 +625,7 @@ SHARE_by_index          (char a_type, void **r_curr, int a_index)
    /*---(save current)-------------------*/
    IF_EXEC     e_curr = x_exec;
    EL_PROC     p_curr = x_proc;
+   EL_TREE     p_curr = x_proc;
    EL_TIES     t_curr = x_ties;
    EL_LIBS     l_curr = x_libs;
    EL_DATA     d_curr = x_data;

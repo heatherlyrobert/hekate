@@ -53,7 +53,7 @@ EXEC__memory            (tEXEC *a_cur)
    ++n;  if (a_cur->p_tail      != NULL)        s_print [n] = 'X';
    ++n;  if (a_cur->p_count     >  0)           s_print [n] = 'X';
    ++n;
-   ++n;  if (a_cur->e_note      != '-')         s_print [n] = 'X';
+   ++n;  if (a_cur->e_note      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->e_col       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->e_seq       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->e_shown     != '-')         s_print [n] = 'X';
@@ -96,7 +96,7 @@ EXEC_wipe               (tEXEC *a_new, char a_type)
    a_new->p_tail   = NULL;
    a_new->p_count  = 0;
    /*---(working)------------------------*/
-   a_new->e_note   = '-';
+   a_new->e_note   = 0;
    a_new->f_seq    = 0;
    a_new->f_temp   = 0;
    a_new->e_col    = 0;

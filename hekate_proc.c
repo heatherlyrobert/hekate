@@ -7,6 +7,8 @@ tPROC      *p_head      = NULL;
 tPROC      *p_tail      = NULL;
 tPROC      *p_curr      = NULL;
 int         p_count     = 0;
+tPROC      *h_head      = NULL;
+tPROC      *h_tail      = NULL;
 
 
 
@@ -70,7 +72,7 @@ PROC__memory            (tPROC *a_cur)
    ++n;  if (a_cur->t_tail      != NULL)        s_print [n] = 'X';
    ++n;  if (a_cur->t_count     >  0)           s_print [n] = 'X';
    ++n;
-   ++n;  if (a_cur->p_note      != '-')         s_print [n] = 'X';
+   ++n;  if (a_cur->p_note      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->f_seq       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->e_seq       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->p_lvl       >  0)           s_print [n] = 'X';
@@ -126,7 +128,7 @@ PROC_wipe               (tPROC *a_new, char a_type)
       a_new->m_prev   = NULL;
       a_new->m_next   = NULL;
       a_new->h_head   = NULL;
-      a_new->h_next   = NULL;
+      a_new->h_sibs   = NULL;
       a_new->h_tail   = NULL;
       a_new->h_count  = 0;
       a_new->t_head   = NULL;
@@ -134,7 +136,7 @@ PROC_wipe               (tPROC *a_new, char a_type)
       a_new->t_count  = 0;
    }
    /*---(working)------------------------*/
-   a_new->p_note    = '-';
+   a_new->p_note    = 0;
    a_new->f_seq     = 0;
    a_new->e_seq     = 0;
    a_new->p_lvl     = 0;
@@ -251,8 +253,10 @@ PROC_unhook             (tPROC **a_proc)
 static void  o___SEARCH__________o () { return; }
 
 char PROC_by_cursor      (tPROC **r_curr, char a_move)                  { return SHARE_by_cursor       (TYPE_PROC, r_curr, a_move); }
+/*> char PROC_by_seq_cursor  (tPROC **r_curr, char a_move)                  { return SHARE_by_cursor       (TYPE_TREE, r_curr, a_move); }   <*/
 char PROC_by_exec_cursor (tPROC **r_curr, tEXEC *a_owner, char a_move)  { return SHARE_cursor_by_owner (TYPE_EXEC, r_curr, a_owner, a_move); }
 char PROC_by_index       (tPROC **r_curr, int a_index)                  { return SHARE_by_index        (TYPE_PROC, r_curr, a_index); }
+/*> char PROC_by_seq         (tPROC **r_curr, int a_index)                  { return SHARE_by_index        (TYPE_TREE, r_curr, a_index); }   <*/
 char PROC_by_hint        (tPROC **r_curr, char *a_hint)                 { return SHARE_by_hint         (TYPE_PROC, r_curr, a_hint); }
 
 char
@@ -347,7 +351,7 @@ PROC__seq_cursor        (char a_lvl, tPROC *a_proc, char a_move)
    char        x_lvl       [LEN_TITLE] = "";
    tPROC      *x_proc      = NULL;
    /*---(check current)------------------*/
-   if (a_proc->p_note == ';') {
+   if (HAS_HINT (a_proc->p_note)) {
       if (a_move == '[') {
          s_found = s_save = a_proc;
          return 1;
@@ -371,12 +375,11 @@ PROC__seq_cursor        (char a_lvl, tPROC *a_proc, char a_move)
    while (x_proc != NULL) {
       rc = PROC__seq_cursor (a_lvl + 1, x_proc, a_move);
       if (rc == 1)  return 1;
-      x_proc = x_proc->h_next;
+      x_proc = x_proc->h_sibs;
    }
    /*---(complete)-----------------------*/
    return 0;
 }
-
 
 char
 PROC_by_seq_cursor      (tPROC **r_curr, char a_move)

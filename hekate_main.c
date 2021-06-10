@@ -14,7 +14,6 @@ main     (int a_argc, char *a_argv [])
    /*---(run)----------------------------*/
    PROG_review ();
    YVIKEYS_update ();
-   /*> NCURSE_proc_list ();                                                           <*/
    PROG_driver ();
    /*---(shutdown)-----------------------*/
    PROG_shutdown ();

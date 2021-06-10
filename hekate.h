@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7f"
-#define     P_VERTXT    "hints are working 90p well, including cursoring ;)"
+#define     P_VERNUM    "0.7g"
+#define     P_VERTXT    "regex search working and comingles with hinting great"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -65,6 +65,7 @@
 #include    <ySORT.h>        /* HEATHERLY gnome sorting library       */
 #include    <yVIKEYS.h>      /* HEATHERLY vi_keys standard            */
 #include    <yCOLOR.h>       /* HEATHERLY color library               */
+#include    <yREGEX.h>       /* HEATHERLY regular expressions         */
 
 /*===[[ DE-FACTO STANDARD LIBRARIES ]]========================================*/
 #include    <ncurses.h>      /* CURSES : mvprintw, refresh, getch, ...        */
@@ -73,6 +74,7 @@
 
 #define     TYPE_EXEC     'E'
 #define     TYPE_PROC     'P'
+#define     TYPE_TREE     'H'
 #define     TYPE_TIES     'T'
 #define     TYPE_LIBS     'L'
 #define     TYPE_DATA     'D'
@@ -173,6 +175,8 @@ static struct cPROC {
    tPROC      *h_head;
    tPROC      *h_tail;
    int        *h_count;
+   tPROC      *h_sibs;
+   tPROC      *h_prev;
    tPROC      *h_next;
    /*---(libs)--------------*/
    tTIES      *t_head;
@@ -194,6 +198,8 @@ extern tPROC      *p_head;
 extern tPROC      *p_tail;
 extern tPROC      *p_curr;
 extern int         p_count;
+extern tPROC      *h_head;
+extern tPROC      *h_tail;
 
 
 
@@ -310,6 +316,24 @@ struct cMY {
 };
 extern      tMY         my;
 extern      char        unit_answer [LEN_RECD];
+
+
+#define     HAS_MARK(a)        a & 1
+#define     SET_MARK(a)        a |= 1
+#define     NOT_MARK(a)        a &= ~1
+
+#define     HAS_HINT(a)        a & 2
+#define     SET_HINT(a)        a |= 2
+#define     NOT_HINT(a)        a &= ~2
+
+#define     HAS_SRCH(a)        a & 4
+#define     SET_SRCH(a)        a |= 4
+#define     NOT_SRCH(a)        a &= ~4
+
+#define     HAS_INCL(a)        a & 8
+#define     SET_INCL(a)        a |= 8
+#define     NOT_INCL(a)        a &= ~8
+
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
@@ -479,13 +503,13 @@ char*       DATA__unit              (char *a_question, int n);
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
-char        NCURSE_exec_list        (void);
-char        NCURSE_proc_list        (void);
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 char        YVIKEYS_init            (void);
-char        YVIKEYS_hints           (char *a_hint);
+char        YVIKEYS_hinter          (char *a_hint);
+char        YVIKEYS_searcher        (char *s_search);
+char        YVIKEYS_unsearcher      (int b, int x, int y, int z);
 /*---(prepare)--------------*/
 char        YVIKEYS__lib_count      (tLIBS *a_libs);
 char        YVIKEYS__main_prepare   (void);

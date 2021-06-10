@@ -37,6 +37,7 @@ static void  o___PROGRAM_________o () { return; }
 char
 YVIKEYS_init            (void)
 {
+   char        rc          =    0;
    /*---(row and column headers)---------*/
    S_COLOR_HCURR      = yCOLOR_curs_value ("h_current");
    S_COLOR_HNORM      = yCOLOR_curs_value ("h_normal" );
@@ -62,7 +63,8 @@ YVIKEYS_init            (void)
    use_legacy_coding (2);
    clear ();
    strlcpy (my.hint, "--", LEN_TERSE);
-   yVIKEYS_hint_config (YVIKEYS_hints);
+   rc = yVIKEYS_hint_config (YVIKEYS_hinter);
+   rc = yVIKEYS_srch_config (YVIKEYS_searcher , YVIKEYS_unsearcher);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -82,17 +84,17 @@ YVIKEYS__hint_clear     (void)
    tLIBS      *x_libs      = NULL;
    EXEC_by_cursor (&x_exec, YDLST_DHEAD);
    while (x_exec != NULL)  {
-      x_exec->e_note = '-';
+      NOT_HINT (x_exec->e_note);
       EXEC_by_cursor (&x_exec, YDLST_DNEXT);
    }
    PROC_by_cursor (&x_proc, YDLST_DHEAD);
    while (x_proc != NULL)  {
-      x_proc->p_note = '-';
+      NOT_HINT (x_proc->p_note);
       PROC_by_cursor (&x_proc, YDLST_DNEXT);
    }
    LIBS_by_cursor (&x_libs, YDLST_DHEAD);
    while (x_libs != NULL)  {
-      x_libs->l_note = '-';
+      NOT_HINT (x_libs->l_note);
       LIBS_by_cursor (&x_libs, YDLST_DNEXT);
    }
    return 0;
@@ -127,7 +129,7 @@ YVIKEYS__hint_cursor    (char a_move)
          break;
       }
       /*---(cursoring)-------------------*/
-      if (x_proc->p_note == ';') {
+      if (HAS_HINT (x_proc->p_note)) {
          if (a_move == '[')  break;
          if (x_next == 'y')  break;
          switch (a_move) {
@@ -163,7 +165,7 @@ YVIKEYS__hint_proc      (char *a_hint)
    tPROC      *x_proc      = NULL;
    PROC_by_hint (&x_proc, a_hint);
    --rce;  if (x_proc == NULL)  return rce;
-   x_proc->p_note = ';';
+   SET_HINT (x_proc->p_note);
    yVIKEYS_jump (0, 1, x_proc->f_seq, 0);
    PROC_by_seq_cursor (&x_proc, 's');
    return 0;
@@ -181,7 +183,7 @@ YVIKEYS__hint_exec      (char *a_hint)
    PROC_by_exec_cursor (&x_proc, x_exec, YDLST_DHEAD);
    PROC_by_seq_cursor  (&x_proc, 's');
    while (x_proc != NULL)  {
-      x_proc->p_note = ';';
+      SET_HINT (x_proc->p_note);
       PROC_by_exec_cursor (&x_proc, x_exec, YDLST_DNEXT);
    }
    yVIKEYS_jump (0, 1, x_exec->f_seq, 0);
@@ -198,13 +200,13 @@ YVIKEYS__hint_libs      (char *a_hint)
    tTIES      *x_ties      = NULL;
    LIBS_by_hint (&x_libs, a_hint);
    --rce;  if (x_libs == NULL)  return rce;
-   x_libs->l_note = ';';
+   SET_HINT (x_libs->l_note);
    TIES_by_libs_cursor (&x_ties, x_libs, YDLST_DHEAD);
    while (x_ties != NULL)  {
       if (x_proc == NULL)  x_proc = x_ties->p_link;
       if (x_ties->p_link->f_seq < x_proc->f_seq)  x_proc = x_ties->p_link;
-      x_ties->p_link->p_note = ';';
-      x_ties->p_link->e_link->e_note = ';';
+      SET_HINT (x_ties->p_link->p_note);
+      SET_HINT (x_ties->p_link->e_link->e_note);
       TIES_by_libs_cursor (&x_ties, x_libs, YDLST_DNEXT);
    }
    yVIKEYS_jump (0, 1, x_proc->f_seq, 0);
@@ -213,7 +215,7 @@ YVIKEYS__hint_libs      (char *a_hint)
 }
 
 char
-YVIKEYS_hints           (char *a_hint)
+YVIKEYS_hinter          (char *a_hint)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rce         =  -10;
@@ -222,10 +224,10 @@ YVIKEYS_hints           (char *a_hint)
    tPROC      *x_proc      = NULL;
    --rce;  if (a_hint == NULL)                  return rce;
    l = strlen (a_hint);
-   --rce;  if (l < 2)                           return rce;
+   --rce;  if (l < 1)                           return rce;
    --rce;  if (a_hint [0] != ';')               return rce;
    /*---(clearing)-----------------------*/
-   if (strcmp (a_hint, ";;") == 0) {
+   if (strcmp (a_hint, ";") == 0) {
       YVIKEYS__hint_clear ();
       PROC_by_seq_cursor (&x_proc, 's');
       return 0;
@@ -240,6 +242,10 @@ YVIKEYS_hints           (char *a_hint)
       /*> YVIKEYS__hint_cursor (a_hint [1]);                                          <*/
       return 0;
       break;
+   case '+' : case '-' :
+      YVIKEYS_update ();
+      return 0;
+      break;
    }
    /*---(real hints)---------------------*/
    YVIKEYS__hint_clear ();
@@ -249,6 +255,60 @@ YVIKEYS_hints           (char *a_hint)
    rc = YVIKEYS__hint_proc (my.hint);
    if (rc < 0)  rc = YVIKEYS__hint_exec (my.hint);
    if (rc < 0)  rc = YVIKEYS__hint_libs (my.hint);
+   return 0;
+}
+
+char
+YVIKEYS_searcher        (char *a_search)
+{
+   /*---(locals)-----------+------+----+-*/
+   char        rce         =   -10;
+   char        rc          =     0;
+   tPROC      *x_proc      = NULL;
+   char        x_label     [LEN_LABEL] = "";
+   /*---(header)--------------------s----*/
+   DEBUG_SRCH   yLOG_enter   (__FUNCTION__);
+   DEBUG_SRCH   yLOG_point   ("a_search"  , a_search);
+   /*---(defenses)---------------------------*/
+   --rce;  if (a_search == NULL) {
+      DEBUG_SRCH   yLOG_note    ("can not use null search");
+      DEBUG_SRCH   yLOG_exitr   (__FUNCTION__, rce);
+   }
+   DEBUG_SRCH   yLOG_info    ("a_search"  , a_search);
+   rc = yREGEX_comp (a_search + 1);
+   DEBUG_SRCH   yLOG_value   ("comp rc"   , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_SRCH   yLOG_note    ("could not compile search");
+      DEBUG_SRCH   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(process range)----------------------*/
+   x_proc = h_head;
+   while (x_proc != NULL) {
+         DEBUG_SRCH   yLOG_info    ("->cmdline"      , x_proc->cmdline);
+         rc = yREGEX_exec (x_proc->cmdline);
+         DEBUG_SRCH   yLOG_value   ("exec rc"   , rc);
+         if (rc > 0) {
+            sprintf (x_label, "%d", x_proc->rpid);
+            yVIKEYS_srch_found (x_label, 0, 1, x_proc->f_seq, 0);
+            SET_SRCH (x_proc->p_note);
+         }
+      x_proc = x_proc->h_next;
+   }
+   /*---(complete)---------------------------*/
+   DEBUG_SRCH   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+char
+YVIKEYS_unsearcher      (int b, int x, int y, int z)
+{
+   /*---(locals)-----------+------+----+-*/
+   char        rce         =   -10;
+   char        rc          =     0;
+   tPROC      *x_proc      = NULL;
+   PROC_by_seq (&x_proc, y);
+   NOT_SRCH (x_proc->p_note);
    return 0;
 }
 
@@ -312,7 +372,7 @@ YVIKEYS__prep_proc      (void)
       x_proc->h_head  = NULL;
       x_proc->h_tail  = NULL;
       x_proc->h_count = 0;
-      x_proc->h_next  = NULL;
+      x_proc->h_sibs  = NULL;
       PROC_by_cursor (&x_proc, YDLST_DNEXT);
    }
    /*---(complete)-----------------------*/
@@ -330,19 +390,20 @@ YVIKEYS__prep_lib_cnt   (tLIBS *a_libs)
    /*---(clear count)--------------------*/
    EXEC_by_cursor (&x_exec, YDLST_DHEAD);
    while (x_exec != NULL) {
-      x_exec->l_note = '-';
+      NOT_INCL (x_exec->l_note);
       EXEC_by_cursor (&x_exec, YDLST_DNEXT);
    }
    /*---(mark all execs)-----------------*/
    TIES_by_libs_cursor (&x_ties, a_libs, YDLST_DHEAD);
    while (x_ties != NULL) {
-      x_ties->p_link->e_link->l_note = 'y';
+      SET_INCL (x_ties->p_link->e_link->l_note);
       TIES_by_libs_cursor (&x_ties, a_libs, YDLST_DNEXT);
    }
    /*---(count execs)--------------------*/
    EXEC_by_cursor (&x_exec, YDLST_DHEAD);
    while (x_exec != NULL) {
-      if (x_exec->l_note != '-')  c++;
+      if (HAS_INCL (x_exec->l_note))  c++;
+      NOT_INCL (x_exec->l_note);
       EXEC_by_cursor (&x_exec, YDLST_DNEXT);
    }
    /*---(save)---------------------------*/
@@ -395,13 +456,23 @@ YVIKEYS__prep_libs      (void)
 }
 
 char
+YVIKEYS__treeify_hook   (tPROC *a_curr)
+{
+   a_curr->f_seq = ++(my.f_seq);
+   if    (h_tail == NULL) { h_head = a_curr; }
+   else { a_curr->h_prev  = h_tail; h_tail->h_next = a_curr; }
+   h_tail = a_curr;
+   return 0;
+}
+
+char
 YVIKEYS__treeify        (char a_level, tPROC *a_parent)
 {
    tPROC      *x_proc      = NULL;
    int         c           = 0;
    DEBUG_INPT   yLOG_enter   (__FUNCTION__);
    DEBUG_INPT   yLOG_value   ("a_parent"  , a_parent->rpid);
-   a_parent->f_seq = ++(my.f_seq);
+   YVIKEYS__treeify_hook (a_parent);
    x_proc = p_head;
    while  (x_proc != NULL) {
       DEBUG_INPT   yLOG_value   ("x_proc"    , x_proc->rpid);
@@ -412,11 +483,11 @@ YVIKEYS__treeify        (char a_level, tPROC *a_parent)
             a_parent->h_tail  = x_proc;
             a_parent->h_count = 1;
          } else {
-            a_parent->h_tail->h_next = x_proc;
+            a_parent->h_tail->h_sibs = x_proc;
             a_parent->h_tail         = x_proc;
             ++(a_parent->h_count);
          }
-         x_proc->h_next = NULL;
+         x_proc->h_sibs = NULL;
          x_proc->p_lvl = a_level;
          x_proc->p_seq = ++c;
          YVIKEYS__treeify (a_level + 1, x_proc);
@@ -455,7 +526,8 @@ YVIKEYS__prep_eprint    (tPROC *a_proc)
       /*---(multi)-----------------------*/
       snprintf  (x_mprint, my.e_mult * 2 + 1, "%s", S_MID);
       /*---(output)----------------------*/
-      sprintf   (x_eprint, "%-2.2s  %s%-4.4s", x_exec->hint, x_pre, x_cnt);
+      if (yVIKEYS_hinting ())  sprintf   (x_eprint, "%-2.2s  %s%-4.4s", x_exec->hint, x_pre, x_cnt);
+      else                     sprintf   (x_eprint, "%-2.2s  %s%-4.4s", "··"        , x_pre, x_cnt);
       /*---(update)----------------------*/
       x_exec->f_seq = x_exec->f_temp = a_proc->f_seq;
       strlcpy (x_exec->e_print, x_eprint, LEN_HUND);
@@ -542,7 +614,7 @@ YVIKEYS__prep_pprint    (tPROC *a_proc)
    for (i = a_proc->p_lvl; i < 20; ++i)  my.p_flag [i] = 0;
    /*---(proc-tree specifics)------------*/
    if (a_proc->p_lvl > 0) {
-      if (a_proc->h_next == NULL) {
+      if (a_proc->h_sibs == NULL) {
          x_lvl [(a_proc->p_lvl - 1) * 2]     = 'Ï';
          x_lvl [(a_proc->p_lvl - 1) * 2 + 1] = ' ';
          my.p_flag [a_proc->p_lvl - 1] = 0;
@@ -557,7 +629,8 @@ YVIKEYS__prep_pprint    (tPROC *a_proc)
       if (my.p_flag [i] > 0 && x_lvl [i * 2] != 'Ï')  x_lvl [i * 2] = '';
    }
    /*---(final)--------------------------*/
-   snprintf (x_pprint, 75, "%-5d %-2.2s %s%s······································································", a_proc->rpid, a_proc->hint, x_lvl, a_proc->cmdline);
+   if (yVIKEYS_hinting ())  snprintf (x_pprint, 75, "%-5d %-2.2s %s%s······································································", a_proc->rpid, a_proc->hint, x_lvl, a_proc->cmdline);
+   else                     snprintf (x_pprint, 75, "%-5d %-2.2s %s%s······································································", a_proc->rpid, "··"        , x_lvl, a_proc->cmdline);
    snprintf (x_tprint,  6, "€€%d€€-", a_proc->t_count);
    /*---(save)---------------------------*/
    strlcpy (a_proc->p_print, x_pprint, LEN_HUND);
@@ -586,7 +659,8 @@ YVIKEYS__prep_lprint    (void)
          snprintf (x_cnt2, 5, "€€€€€€");
          break;
       }
-      snprintf (x_lprint, 47, "%s%s %-24.24s  %s", x_cnt, x_cnt2, x_libs->terse, x_libs->hint);
+      if (yVIKEYS_hinting ())  snprintf (x_lprint, 47, "%s%s %-24.24s  %s", x_cnt, x_cnt2, x_libs->terse, x_libs->hint);
+      else                     snprintf (x_lprint, 47, "%s%s %-24.24s  %s", x_cnt, x_cnt2, x_libs->terse, "··"        );
       strlcpy (x_libs->l_print, x_lprint, LEN_HUND);
       LIBS_by_cursor (&x_libs, YDLST_DNEXT);
    }
@@ -606,7 +680,7 @@ YVIKEYS__prep_print     (char a_lvl, tPROC *a_proc)
    x_proc = a_proc->h_head;
    while (x_proc != NULL) {
       YVIKEYS__prep_print (a_lvl + 1, x_proc);
-      x_proc = x_proc->h_next;
+      x_proc = x_proc->h_sibs;
    }
    return 0;
 }
@@ -618,6 +692,7 @@ YVIKEYS_update          (void)
    YVIKEYS__prep_proc   ();
    YVIKEYS__prep_libs   ();
    my.f_seq = 0;
+   h_head = h_tail = NULL;
    YVIKEYS__treeify     (1, p_head);
    YVIKEYS__prep_print  (1, p_head);
    YVIKEYS__prep_lprint ();
@@ -749,9 +824,9 @@ YVIKEYS__proc_show      (tPROC *a_proc)
    }
    /*---(proc)---------------------------*/
    if (a_proc->f_seq == g_ymap.gcur)   attron  (S_COLOR_HCURR);
-   else if (a_proc->p_note == ';')     attron  (S_COLOR_MARK);
-   else if (a_proc->p_note == '/')     attron  (S_COLOR_SEARCH);
-   else if (a_proc->p_note == '\'')    attron  (S_COLOR_FOUND);
+   else if (HAS_HINT (a_proc->p_note)) attron  (S_COLOR_MARK);
+   else if (HAS_SRCH (a_proc->p_note)) attron  (S_COLOR_SEARCH);
+   else if (HAS_MARK (a_proc->p_note)) attron  (S_COLOR_FOUND);
    else                                attron  (S_COLOR_HNORM);
    mvprintw (my.m_bott - my.m_tall + x_pline, my.m_left + l, " %s·%sÏ", a_proc->p_print, a_proc->t_print);
    attrset (0);
@@ -993,7 +1068,7 @@ YVIKEYS__main_proc      (char a_lvl, tPROC *a_proc)
    x_proc = a_proc->h_head;
    while (x_proc != NULL) {
       YVIKEYS__main_proc (a_lvl + 1, x_proc);
-      x_proc = x_proc->h_next;
+      x_proc = x_proc->h_sibs;
    }
    return 0;
 }

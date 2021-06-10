@@ -50,7 +50,7 @@ LIBS__memory            (tLIBS *a_cur)
    ++n;  if (a_cur->t_tail      != NULL)        s_print [n] = 'X';
    ++n;  if (a_cur->t_count     >  0)           s_print [n] = 'X';
    ++n;
-   ++n;  if (a_cur->l_note      != '-')         s_print [n] = 'X';
+   ++n;  if (a_cur->l_note      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->e_count     >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->u_flag      != '-')         s_print [n] = 'X';
    ++n;  if (a_cur->u_line      >  0)           s_print [n] = 'X';
@@ -90,7 +90,7 @@ LIBS_wipe               (tLIBS *a_new, char a_type)
       a_new->t_tail   = NULL;
       a_new->t_count  = 0;
       a_new->e_count  = 0;
-      a_new->l_note   = '-';
+      a_new->l_note   = 0;
       a_new->u_flag   = '-';
       a_new->u_line   = 0;
    }
