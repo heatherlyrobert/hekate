@@ -121,7 +121,7 @@ PROG__begin             (void)
    char        tmp         [100];
    /*---(overall)------------------------*/
    yVIKEYS_view_config   (P_NAMESAKE, P_VERNUM, YVIKEYS_CURSES, 0, 0, 0);
-   yVIKEYS_map_config    (YVIKEYS_OFFICE, YVIKEYS_mapper, NULL, NULL);
+   yVIKEYS_map_config    (YVIKEYS_OFFICE, YVIKEYS_mapper, YVIKEYS_locator, YVIKEYS_addressor);
    /*---(complete)-----------------------*/
    DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    return 0;

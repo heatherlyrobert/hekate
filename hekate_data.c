@@ -675,14 +675,17 @@ DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, 
    switch (x_part) {
    case LIBS_TEXT : /* libs code base */
       a_proc->m_full  += a_full;
+      x_libs->m_full  += a_full;
       x_libs->m_text  += a_full;
       break;
    case LIBS_CONS : /* libs constants */
       a_proc->m_full  += a_full;
+      x_libs->m_full  += a_full;
       x_libs->m_cons  += a_full;
       break;
    case LIBS_PRIV : /* libs unknown */
       a_proc->m_full  += a_full;
+      x_libs->m_full  += a_full;
       x_libs->m_priv  += a_full;
       break;
    }

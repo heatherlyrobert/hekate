@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7h"
-#define     P_VERTXT    "missing procs, proc dump, and proper status bar fixed"
+#define     P_VERNUM    "0.7i"
+#define     P_VERTXT    "built solid rough overlay for memory details"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -62,7 +62,6 @@
 #include    <ySTR.h>         /* HEATHERLY string handling             */
 #include    <yEXEC.h>        /* HEATHERLY process execution           */
 #include    <yDLST_solo.h>   /* HEATHERLY list constants              */
-#include    <ySORT.h>        /* HEATHERLY gnome sorting library       */
 #include    <yVIKEYS.h>      /* HEATHERLY vi_keys standard            */
 #include    <yCOLOR.h>       /* HEATHERLY color library               */
 #include    <yREGEX.h>       /* HEATHERLY regular expressions         */
@@ -318,22 +317,6 @@ extern      tMY         my;
 extern      char        unit_answer [LEN_RECD];
 
 
-#define     HAS_MARK(a)        a & 1
-#define     SET_MARK(a)        a |= 1
-#define     NOT_MARK(a)        a &= ~1
-
-#define     HAS_HINT(a)        a & 2
-#define     SET_HINT(a)        a |= 2
-#define     NOT_HINT(a)        a &= ~2
-
-#define     HAS_SRCH(a)        a & 4
-#define     SET_SRCH(a)        a |= 4
-#define     NOT_SRCH(a)        a &= ~4
-
-#define     HAS_INCL(a)        a & 8
-#define     SET_INCL(a)        a |= 8
-#define     NOT_INCL(a)        a &= ~8
-
 
 
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
@@ -510,6 +493,7 @@ char*       DATA__unit              (char *a_question, int n);
 /*345678901-12345678901-12345678901-12345678901-12345678901-12345678901-123456*/
 char        YVIKEYS_init            (void);
 char        YVIKEYS_hinter          (char *a_hint);
+char        YVIKEYS_unhinter        (int b, int x, int y, int z);
 char        YVIKEYS_searcher        (char *s_search);
 char        YVIKEYS_unsearcher      (int b, int x, int y, int z);
 /*---(prepare)--------------*/
@@ -518,6 +502,12 @@ char        YVIKEYS__main_prepare   (void);
 char        YVIKEYS_update          (void);
 /*---(drawing)--------------*/
 char        YVIKEYS_xaxis           (void);
+char        YVIKEYS_memory          (void);
 char        YVIKEYS_main            (void);
 
 char        YVIKEYS_mapper          (char a_req);
+char        YVIKEYS_locator         (char *a_label, int *b, int *x, int *y, int *z);
+char        YVIKEYS_addressor       (char *a_label, int b, int x, int y, int z);
+
+
+

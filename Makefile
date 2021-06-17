@@ -8,7 +8,7 @@ NAME_BASE  = hekate
 # additional standard and outside libraries
 LIB_STD    = -lm -lncurses -ltinfo
 # all heatherly libraries used, debug versions whenever available
-LIB_MINE   = -lySTR_debug -lySORT_debug -lyVIKEYS_debug -lyCOLOR_debug -lyREGEX_debug
+LIB_MINE   = -lySTR_debug -lyVIKEYS_debug -lyCOLOR_debug -lyREGEX_debug
 # directory for production code, no trailing slash
 INST_DIR   = /usr/local/sbin
 

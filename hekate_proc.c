@@ -256,7 +256,6 @@ char PROC_by_cursor      (tPROC **r_curr, char a_move)                  { return
 /*> char PROC_by_seq_cursor  (tPROC **r_curr, char a_move)                  { return SHARE_by_cursor       (TYPE_TREE, r_curr, a_move); }   <*/
 char PROC_by_exec_cursor (tPROC **r_curr, tEXEC *a_owner, char a_move)  { return SHARE_cursor_by_owner (TYPE_EXEC, r_curr, a_owner, a_move); }
 char PROC_by_index       (tPROC **r_curr, int a_index)                  { return SHARE_by_index        (TYPE_PROC, r_curr, a_index); }
-/*> char PROC_by_seq         (tPROC **r_curr, int a_index)                  { return SHARE_by_index        (TYPE_TREE, r_curr, a_index); }   <*/
 char PROC_by_hint        (tPROC **r_curr, char *a_hint)                 { return SHARE_by_hint         (TYPE_PROC, r_curr, a_hint); }
 
 char
@@ -351,25 +350,23 @@ PROC__seq_cursor        (char a_lvl, tPROC *a_proc, char a_move)
    char        x_lvl       [LEN_TITLE] = "";
    tPROC      *x_proc      = NULL;
    /*---(check current)------------------*/
-   if (HAS_HINT (a_proc->p_note)) {
-      if (a_move == '[') {
-         s_found = s_save = a_proc;
-         return 1;
-      }
-      if (a_move == '<' && a_proc == s_save) {
-         if (s_last != NULL)  s_found = s_save = s_last;
-         else                 s_found = s_save = a_proc;
-         return 1;
-      }
-      if (a_move == '>' && s_next == 'y') {
-         s_found = s_save = a_proc;
-         return 1;
-      }
-      if (a_move == '>' && a_proc == s_save) {
-         s_next = 'y';
-      }
-      s_last = a_proc;
+   if (a_move == '[') {
+      s_found = s_save = a_proc;
+      return 1;
    }
+   if (a_move == '<' && a_proc == s_save) {
+      if (s_last != NULL)  s_found = s_save = s_last;
+      else                 s_found = s_save = a_proc;
+      return 1;
+   }
+   if (a_move == '>' && s_next == 'y') {
+      s_found = s_save = a_proc;
+      return 1;
+   }
+   if (a_move == '>' && a_proc == s_save) {
+      s_next = 'y';
+   }
+   s_last = a_proc;
    /*---(recurse)------------------------*/
    x_proc = a_proc->h_head;
    while (x_proc != NULL) {
@@ -413,7 +410,6 @@ PROC_by_seq_cursor      (tPROC **r_curr, char a_move)
    /*---(normal cursoring)---------------*/
    rc = PROC__seq_cursor (0, p_head, a_move);
    if (a_move == ']')    s_found = s_save = s_last;
-   if (a_move == '>' && s_found == NULL)  s_found = s_save = s_last;
    if (r_curr != NULL)   *r_curr = s_found;
    /*---(complete)-----------------------*/
    return rc;
