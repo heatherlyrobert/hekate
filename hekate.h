@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7i"
-#define     P_VERTXT    "built solid rough overlay for memory details"
+#define     P_VERNUM    "0.7j"
+#define     P_VERTXT    "cleaned up, simplified, and shared library drawing logic"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -79,6 +79,11 @@
 #define     TYPE_DATA     'D'
 #define     TYPE_ALLS     'A'
 
+#define     LIB_EVERY     'e'
+#define     LIB_CORES     'c'
+#define     LIB_HEATH     'y'
+#define     LIB_MAJOR     'm'
+#define     LIB_OTHER     '-'
 
 
 typedef struct  cEXEC  tEXEC;
@@ -305,6 +310,7 @@ struct cMY {
    int         l_index;
    int         l_show;
    int         l_every;
+   int         l_heath;
    int         l_core;
    int         l_multi;
    int         l_singles;

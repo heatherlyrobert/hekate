@@ -142,7 +142,7 @@
  *>       n = a_line;                                                                                <* 
  *>       LIBS_by_cursor (&x_libs, YDLST_DHEAD);                                                     <* 
  *>       while (x_libs != NULL) {                                                                   <* 
- *>          if (x_libs->u_flag == 'e')  ++c;                                                        <* 
+ *>          if (x_libs->u_flag == LIB_EVERY)  ++c;                                                        <* 
  *>          if (n == c)  break;                                                                     <* 
  *>          LIBS_by_cursor (&x_libs, YDLST_DNEXT);                                                  <* 
  *>       }                                                                                          <* 
@@ -329,7 +329,7 @@
  *>    a_libs->e_count = c;                                                           <* 
  *>    if (c == e_count) {                                                            <* 
  *>       ++my.l_every;                                                               <* 
- *>       a_libs->u_flag = 'e';                                                       <* 
+ *>       a_libs->u_flag = LIB_EVERY;                                                       <* 
  *>    } else if (a_libs->t_count > 10 && a_libs->e_count > 1) {                      <* 
  *>       ++my.l_core;                                                                <* 
  *>       a_libs->u_flag = 'c';                                                       <* 

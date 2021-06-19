@@ -41,6 +41,27 @@ YVIKEYS_init            (void)
 
 
 /*====================------------------------------------====================*/
+/*===----                        smaller support                       ----===*/
+/*====================------------------------------------====================*/
+static void  o___SUPPORT_________o () { return; }
+
+char
+YVIKEYS__libcolor       (char a_group)
+{
+   switch (a_group) {
+   case LIB_EVERY  : yCOLOR_curs ("#_form");  break;
+   case LIB_CORES  : yCOLOR_curs ("p_rang");  break;
+   case LIB_MAJOR  : yCOLOR_curs ("9_norm");  break;
+   case LIB_OTHER  : yCOLOR_curs ("9_like");  break;
+   case LIB_HEATH  : yCOLOR_curs ("#_norm");  break;
+   default   : return -1;               break;
+   }
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                      processing hints                        ----===*/
 /*====================------------------------------------====================*/
 static void  o___HINTS___________o () { return; }
@@ -413,18 +434,22 @@ YVIKEYS__prep_lib_cnt   (tLIBS *a_libs)
    a_libs->e_count = c;
    if (c == e_count) {
       ++my.l_every;
-      a_libs->u_flag = 'e';
+      a_libs->u_flag = LIB_EVERY;
       a_libs->l_seq  = my.l_every;
+   } else if (strncmp (a_libs->terse, "liby", 4) == 0) {
+      ++my.l_heath;
+      a_libs->u_flag = LIB_HEATH;
+      a_libs->l_seq  = my.l_heath;
    } else if (a_libs->t_count >= 20 && a_libs->e_count > 1) {
       ++my.l_core;
-      a_libs->u_flag = 'c';
+      a_libs->u_flag = LIB_CORES;
       a_libs->l_seq  = my.l_core;
    } else if (a_libs->e_count > 1) {
       ++my.l_multi;
-      a_libs->u_flag = 'm';
+      a_libs->u_flag = LIB_MAJOR;
    } else {
       ++my.l_singles;
-      a_libs->u_flag = '-';
+      a_libs->u_flag = LIB_OTHER;
    }
    a_libs->u_line  = 0;
    /*---(complete)-----------------------*/
@@ -444,6 +469,7 @@ YVIKEYS__prep_libs      (void)
    my.l_index   = 0;;
    my.l_show    = 0;
    my.l_every   = 0;
+   my.l_heath   = 0;
    my.l_core    = 0;
    my.l_multi   = 0;
    my.l_singles = 0;
@@ -653,11 +679,11 @@ YVIKEYS__prep_lprint    (void)
    LIBS_by_cursor (&x_libs, YDLST_DHEAD);
    while (x_libs != NULL) {
       switch (x_libs->u_flag) {
-      case 'e' : case 'c' : case 'm' :
+      case LIB_EVERY : case LIB_CORES : case LIB_MAJOR : case LIB_HEATH :
          snprintf (x_cnt , 6, "Ï€%d€€", x_libs->t_count);
          snprintf (x_cnt2, 5, "€%d€€€", x_libs->e_count);
          break;
-      case '-' : 
+      case LIB_OTHER :
          snprintf (x_cnt , 6, "Ï€%d€€", x_libs->t_count);
          snprintf (x_cnt2, 5, "€€€€€€");
          break;
@@ -927,26 +953,210 @@ YVIKEYS__main_exec      (void)
 }
 
 char
+YVIKEYS__main_libbase (char a_group, int a_left)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   int         c           =    0;
+   tLIBS      *x_libs      = NULL;
+   int         x_top       =    0;
+   int         x_vert      =    0;
+   /*---(prepare)------------------------*/
+   switch (a_group) {
+   case LIB_EVERY :
+      x_top   = my.m_bott - my.m_tall + 1;
+      break;
+   case LIB_CORES :
+      x_top   = my.m_bott - my.m_tall + my.l_every + 3;
+      break;
+   default        :
+      return 0;
+   }
+   /*---(walk)---------------------------*/
+   LIBS_by_cursor (&x_libs, YDLST_DHEAD);
+   while (x_libs != NULL) {
+      if (x_libs->u_flag == a_group) {
+         /*---(lib line)-----------------*/
+         YVIKEYS__libcolor (x_libs->u_flag);
+         ++c;
+         x_vert  = x_top + c;
+         mvprintw (x_vert, a_left, x_libs->l_print);
+         x_libs->l_seq = x_vert;
+         attrset (0);
+         /*---(connector)----------------*/
+         yCOLOR_curs ("9_dang");
+         mvprintw (x_vert, a_left - 2, "Œ ");
+         attrset (0);
+         /*---(done)---------------------*/
+      }
+      LIBS_by_cursor (&x_libs, YDLST_DNEXT);
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+YVIKEYS__main_libmore (tPROC *a_proc, char a_group, int a_left, int *n, int *a_max)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tLIBS      *x_libs      = NULL;
+   tTIES      *x_ties      = NULL;
+   char        i           =    0;
+   int         x_top       =    0;
+   int         x_vert      =    0;
+   /*---(defense)------------------------*/
+   --rce;  if (a_proc == NULL)  return rce;
+   --rce;  if (n      == NULL)  return rce;
+   --rce;  if (a_max  == NULL)  return rce;
+   /*---(prepare)------------------------*/
+   x_top  = my.m_bott - my.m_tall + my.l_every + my.l_core + 5;
+   /*---(clear ties)---------------------*/
+   for (i = x_top; i < g_ymap.uavail; ++i) {
+      mvprintw (i, a_left - 3, "%*.*s", 41, 41, S_SPC);
+   }
+   /*---(set color)----------------------*/
+   YVIKEYS__libcolor (a_group);
+   /*---(walk)---------------------------*/
+   TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DHEAD);
+   while (x_ties != NULL) {
+      x_libs = x_ties->l_link;
+      if (x_libs->u_flag == a_group) {
+         ++(*n);
+         x_vert  = x_top + *n;
+         if (x_vert > *a_max)  *a_max = x_vert;
+         mvprintw (x_vert, a_left, x_libs->l_print);
+         x_libs->l_seq = x_vert;
+      }
+      TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DNEXT);
+   }
+   /*---(unset color)--------------------*/
+   attrset (0);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+YVIKEYS__main_libactu (tPROC *a_proc, char a_group, int a_left, int a_max, int a_mid, char *a_flag, int *c)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tLIBS      *x_libs      = NULL;
+   tTIES      *x_ties      = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_proc == NULL)  return rce;
+   --rce;  if (a_flag == NULL)  return rce;
+   --rce;  if (c      == NULL)  return rce;
+   /*---(walk)---------------------------*/
+   TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DHEAD);
+   while (x_ties != NULL) {
+      x_libs = x_ties->l_link;
+      yCOLOR_curs ("9_dang");
+      if (x_libs->u_flag == a_group) {
+         switch (x_libs->u_flag) {
+         case LIB_EVERY :
+            if (x_libs->l_seq == 2)     mvprintw (x_libs->l_seq, a_left - 2, "ƒ€%s", x_libs->l_print);
+            else                        mvprintw (x_libs->l_seq, a_left - 2, "‡€%s", x_libs->l_print);
+            ++(*c);
+            break;
+         case LIB_CORES :
+            if (x_libs->l_seq == a_mid)  *a_flag = 'y';
+            mvprintw (x_libs->l_seq, a_left - 2, "‡€%s", x_libs->l_print);
+            ++(*c);
+            break;
+         case LIB_MAJOR : case LIB_OTHER :
+            if (x_libs->l_seq < a_max)  mvprintw (x_libs->l_seq, a_left - 2, "‡€%s", x_libs->l_print);
+            else                        mvprintw (x_libs->l_seq, a_left - 2, "„€%s", x_libs->l_print);
+            ++(*c);
+            break;
+         case LIB_HEATH :
+            attrset (0);
+            YVIKEYS__libcolor (x_libs->u_flag);
+            if (x_libs->l_seq < a_max)  mvprintw (x_libs->l_seq, a_left - 2, "‡€%s", x_libs->l_print);
+            else                        mvprintw (x_libs->l_seq, a_left - 2, "„€%s", x_libs->l_print);
+            ++(*c);
+            break;
+         }
+         attrset (0);
+      }
+      TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DNEXT);
+   }
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+YVIKEYS__main_libproc (int a_line, int a_left, int a_mid, int a_conn, char a_flag)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         i           =    0;
+   /*---(set color)----------------------*/
+   yCOLOR_curs ("9_dang");
+   /*---(lib connector)------------------*/
+   if (a_flag == 'y')  mvprintw (a_mid, a_left - 2, "Š");
+   else                mvprintw (a_mid, a_left - 2, "†");
+   if (a_line <  a_mid) {
+      mvprintw (a_line, a_conn, "€‚");
+      mvprintw (a_mid , a_conn + 1, "„€");
+      for (i = a_line + 1; i < a_mid; ++i)  mvprintw (i , a_conn + 1, "");
+   } else if (a_line == a_mid) {
+      mvprintw (a_line, a_conn, "€€€");
+   } else if (a_line >  a_mid) {
+      mvprintw (a_line, a_conn, "€…");
+      mvprintw (a_mid , a_conn + 1, "ƒ€");
+      for (i = a_mid + 1; i < a_line; ++i)  mvprintw (i , a_conn + 1, "");
+   }
+   /*---(unset color)--------------------*/
+   attrset (0);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+YVIKEYS__main_libtitle  (int a_left, int e, int c, int o)
+{
+   int         x_vert      =    0;
+   YVIKEYS__libcolor (LIB_EVERY);
+   x_vert  = my.m_bott - my.m_tall + 1;
+   mvprintw (x_vert, a_left - 1, "EVERY (%2d of %2d) used in every process", e, my.l_every);
+   attrset (0);
+   YVIKEYS__libcolor (LIB_CORES);
+   x_vert += my.l_every + 2;
+   mvprintw (x_vert, a_left - 1, "CORE (%2d of %2d) 10+ procs, 2+ execs", c, my.l_core);
+   attrset (0);
+   yCOLOR_curs ("9_dang");
+   mvprintw (x_vert - 1, a_left - 2, "Œ");
+   mvprintw (x_vert    , a_left - 2, "Œ");
+   attrset (0);
+   YVIKEYS__libcolor (LIB_MAJOR);
+   x_vert += my.l_core  + 2;
+   mvprintw (x_vert, a_left - 1, "OTHER (%2d of %3d) libraries used", o, l_count - my.l_every - my.l_core);
+   attrset (0);
+   yCOLOR_curs ("9_dang");
+   mvprintw (x_vert - 1, a_left - 2, "Œ");
+   if (o > 0)    mvprintw (x_vert    , a_left - 2, "Œ");
+   else          mvprintw (x_vert    , a_left - 2, "Ï");
+   attrset (0);
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
 YVIKEYS__main_libs      (void)
 {
    /*---(locals)-----------+-----+-----+-*/
    tPROC      *x_proc      = NULL;
-   tLIBS      *x_libs      = NULL;
-   tTIES      *x_ties      = NULL;
-   tEXEC      *x_exec      = NULL;
    int         x_left      =  123;
    int         x_vert      =    0;
    int         e           =    0;
    int         c           =    0;
    int         o           =    0;
    int         n           =    0;
-   int         m           =    0;
-   int         l           =    0;
-   int         i           =    0;
    int         x_mid       =    0;
    int         x_conn      =    0;
    int         x_flag      =  '-';
    int         x_line      =    0;
+   int         x_max       =    0;
    /*---(find proc)----------------------*/
    PROC_by_seq (&x_proc, g_ymap.gcur);
    if (x_proc == NULL)  x_proc = p_head;
@@ -955,125 +1165,22 @@ YVIKEYS__main_libs      (void)
    x_mid   = 2 + my.l_every + 2 + (my.l_core / 2);
    x_conn  = my.m_left + my.e_wide + my.e_mult * 2 + 1 + strlen (x_proc->p_print) + strlen (x_proc->t_print) + 3;
    x_line  = x_proc->f_seq - g_ymap.gbeg + 1;
-   /*---(every and core libs)------------*/
-   LIBS_by_cursor (&x_libs, YDLST_DHEAD);
-   while (x_libs != NULL) {
-      switch (x_libs->u_flag) {
-      case 'e' :
-         ++e;
-         x_vert  = my.m_bott - my.m_tall + 1 + e;
-         yCOLOR_curs ("9_norm");
-         mvprintw (x_vert, x_left, x_libs->l_print);
-         x_libs->l_seq = x_vert;
-         attrset (0);
-         yCOLOR_curs ("9_dang");
-         mvprintw (x_vert, x_left - 2, "Œ ");
-         attrset (0);
-         break;
-      case 'c' :
-         ++c;
-         x_vert  = my.m_bott - my.m_tall + my.l_every + 3 + c;
-         yCOLOR_curs ("9_norm");
-         mvprintw (x_vert, x_left, x_libs->l_print);
-         attrset (0);
-         yCOLOR_curs ("9_dang");
-         mvprintw (x_vert, x_left - 2, "Œ ");
-         attrset (0);
-         x_libs->l_seq = x_vert;
-         break;
-      default  :
-         x_libs->l_seq = 0;
-      }
-      attrset (0);
-      LIBS_by_cursor (&x_libs, YDLST_DNEXT);
-   }
+   /*---(backgroup prints)---------------*/
+   YVIKEYS__main_libbase (LIB_EVERY, x_left);
+   YVIKEYS__main_libbase (LIB_CORES, x_left);
+   YVIKEYS__main_libmore (x_proc, LIB_MAJOR, x_left, &n, &x_max);
+   YVIKEYS__main_libmore (x_proc, LIB_OTHER, x_left, &n, &x_max);
+   YVIKEYS__main_libmore (x_proc, LIB_HEATH, x_left, &n, &x_max);
    /*---(major and single libs)----------*/
-   x_vert  = my.m_bott - my.m_tall + my.l_every + my.l_core + 4;
-   for (i = x_vert; i < g_ymap.uavail; ++i) {
-      mvprintw (i, x_left - 3, "%*.*s", 41, 41, S_SPC);
-   }
-   yCOLOR_curs ("9_norm");
-   TIES_by_proc_cursor (&x_ties, x_proc, YDLST_DHEAD);
-   while (x_ties != NULL) {
-      switch (x_ties->l_link->u_flag) {
-      case 'm' : case '-' :
-         ++o;
-         x_vert  = my.m_bott - my.m_tall + my.l_every + my.l_core + 5 + o;
-         mvprintw (x_vert, x_left, x_ties->l_link->l_print);
-         x_ties->l_link->l_seq = x_vert;
-         break;
-      }
-      TIES_by_proc_cursor (&x_ties, x_proc, YDLST_DNEXT);
-   }
-   attrset (0);
-   /*---(major and single libs)----------*/
-   yCOLOR_curs ("9_dang");
-   TIES_by_proc_cursor (&x_ties, x_proc, YDLST_DHEAD);
-   while (x_ties != NULL) {
-      switch (x_ties->l_link->u_flag) {
-      case 'e' :
-         ++l;
-         if (l == 1) mvprintw (x_ties->l_link->l_seq, x_left - 2, "ƒ€%s", x_ties->l_link->l_print);
-         else        mvprintw (x_ties->l_link->l_seq, x_left - 2, "‡€%s", x_ties->l_link->l_print);
-         break;
-      case 'c' :
-         ++m;
-         if (x_ties->l_link->l_seq == x_mid)  x_flag = 'y';
-         mvprintw (x_ties->l_link->l_seq, x_left - 2, "‡€%s", x_ties->l_link->l_print);
-         break;
-      case 'm' : case '-' :
-         ++n;
-         if (n < o)  mvprintw (x_ties->l_link->l_seq, x_left - 2, "‡€%s", x_ties->l_link->l_print);
-         else        mvprintw (x_ties->l_link->l_seq, x_left - 2, "„€%s", x_ties->l_link->l_print);
-         break;
-      }
-      TIES_by_proc_cursor (&x_ties, x_proc, YDLST_DNEXT);
-   }
-   attrset (0);
+   YVIKEYS__main_libactu (x_proc, LIB_EVERY, x_left, x_max, x_mid, &x_flag, &e);
+   YVIKEYS__main_libactu (x_proc, LIB_CORES, x_left, x_max, x_mid, &x_flag, &c);
+   YVIKEYS__main_libactu (x_proc, LIB_MAJOR, x_left, x_max, x_mid, &x_flag, &o);
+   YVIKEYS__main_libactu (x_proc, LIB_OTHER, x_left, x_max, x_mid, &x_flag, &o);
+   YVIKEYS__main_libactu (x_proc, LIB_HEATH, x_left, x_max, x_mid, &x_flag, &o);
    /*---(proc connector)-----------------*/
-   yCOLOR_curs ("9_dang");
-   if (x_flag == 'y')  mvprintw (x_mid, x_left - 2, "Š");
-   else                mvprintw (x_mid, x_left - 2, "†");
-   if (x_line <  x_mid) {
-      mvprintw (x_line, x_conn, "€‚");
-      mvprintw (x_mid , x_conn + 1, "„€");
-      for (i = x_line + 1; i < x_mid; ++i)  mvprintw (i , x_conn + 1, "");
-   } else if (x_line == x_mid) {
-      mvprintw (x_line, x_conn, "€€€");
-   } else if (x_line >  x_mid) {
-      mvprintw (x_line, x_conn, "€…");
-      mvprintw (x_mid , x_conn + 1, "ƒ€");
-      for (i = x_mid + 1; i < x_line; ++i)  mvprintw (i , x_conn + 1, "");
-   }
-   attrset (0);
+   YVIKEYS__main_libproc (x_line, x_left, x_mid, x_conn, x_flag);
    /*---(titles)-------------------------*/
-   yCOLOR_curs ("9_norm");
-   x_vert  = my.m_bott - my.m_tall + 1;
-   mvprintw (x_vert, x_left - 1, "EVERY (%d of %d) used in every process", l, my.l_every);
-   x_vert += my.l_every + 2;
-   mvprintw (x_vert, x_left - 1, "CORE (%d of %d) 10+ procs, 2+ execs", m, my.l_core);
-   attrset (0);
-   if (c > 0) {
-      yCOLOR_curs ("9_dang");
-      mvprintw (x_vert - 1, x_left - 2, "Œ");
-      mvprintw (x_vert    , x_left - 2, "Œ");
-      attrset (0);
-   }
-   yCOLOR_curs ("9_norm");
-   x_vert += my.l_core  + 2;
-   mvprintw (x_vert, x_left - 1, "OTHER (%d of %d) libraries used", n, l_count - my.l_every - my.l_core);
-   attrset (0);
-   if (o > 0) {
-      yCOLOR_curs ("9_dang");
-      mvprintw (x_vert - 1, x_left - 2, "Œ");
-      mvprintw (x_vert    , x_left - 2, "Œ");
-      attrset (0);
-   } else {
-      yCOLOR_curs ("9_dang");
-      mvprintw (x_vert - 1, x_left - 2, "Œ");
-      mvprintw (x_vert    , x_left - 2, "Ï");
-      attrset (0);
-   }
+   YVIKEYS__main_libtitle  (x_left, e, c, o);
    /*---(complete)-----------------------*/
    return 0;
 }
@@ -1145,14 +1252,14 @@ YVIKEYS__memory_exec    (tEXEC *a_exec, int a_left, int *a_epss)
    char        t           [LEN_LABEL] = "";
    /*---(background)---------------------*/
    yCOLOR_curs ("9_norm");
-   mvprintw ( 9, a_left,   "ƒ²²²²²²exec²²²²²²²‚²²²²²²²²²‚");
-   for (i = 10; i < 32; ++i) {
+   mvprintw ( 6, a_left,   "ƒ²²²²²²exec²²²²²²²‚²²²²²²²²²‚");
+   for (i =  7; i < 29; ++i) {
       mvprintw (i, a_left, "Œ                           Œ");
    }
-   mvprintw (32, a_left,   "„²²²²²²²²²²²²²²²²²…²²²²²²²²²…");
+   mvprintw (29, a_left,   "„²²²²²²²²²²²²²²²²²…²²²²²²²²²…");
    /*---(data)---------------------------*/
    a_left += 2;  /* 18 characters */
-   n       = 10;
+   n       =  7;
    mvprintw (n  , a_left,  "                    per");
    mvprintw (++n, a_left, "%-16.16s"        , a_exec->base);
    ++n;
@@ -1206,14 +1313,14 @@ YVIKEYS__memory_proc    (tPROC *a_proc, int a_left, int a_epss, int a_lpss)
    int         a           =    0;
    /*---(background)---------------------*/
    yCOLOR_curs ("9_norm");
-   mvprintw ( 9, a_left,   "ƒ²²²²²²proc²²²²²²²‚");
-   for (i = 10; i < 32; ++i) {
+   mvprintw ( 6, a_left,   "ƒ²²²²²²proc²²²²²²²‚");
+   for (i =  7; i < 29; ++i) {
       mvprintw (i, a_left, "Œ                 Œ");
    }
-   mvprintw (32, a_left,   "„²²²²²²²²²²²²²²²²²…");
+   mvprintw (29, a_left,   "„²²²²²²²²²²²²²²²²²…");
    /*---(data)---------------------------*/
    a_left += 2;  /* 18 characters */
-   n       = 10;
+   n       =  7;
    mvprintw (++n, a_left, "%-10.10s"        , a_proc->shown);
    ++n;
    mvprintw (++n, a_left, "rpid  : %d"      , a_proc->rpid);
@@ -1250,12 +1357,16 @@ YVIKEYS__memory_libone  (int n, int l, tTIES *a_ties, tLIBS *a_libs, int *a_lpss
    int         a           =    0;
    int         b           =    0;
    char        s           [LEN_LABEL] = "";
-   mvprintw (n, l          , "%-15.15s %3d", a_libs->terse, a_libs->t_count);
+   /*---(title)--------------------------*/
+   mvprintw (n, l          , "%-20.20s %3d", a_libs->terse, a_libs->t_count);
+   /*---(ties)---------------------------*/
    strl4comma  (a_ties->m_data , s, 0, 'c', '-', LEN_LABEL);
-   mvprintw (n, l += 20    , "%8s", s);
+   mvprintw (n, l += 26    , "%8s", s);
    strl4comma  (a_ties->m_heap , s, 0, 'c', '-', LEN_LABEL);
    mvprintw (n, l += 9     , "%8s", s);
    b = a_ties->m_data + a_ties->m_heap;
+   /*---(libs)---------------------------*/
+   strl4comma  (a_libs->m_full , s, 0, 'c', '-', LEN_LABEL);
    mvprintw (n, l += 9     , "%8s", s);
    strl4comma  (a_libs->m_text , s, 0, 'c', '-', LEN_LABEL);
    mvprintw (n, l += 9     , "%8s", s);
@@ -1263,12 +1374,47 @@ YVIKEYS__memory_libone  (int n, int l, tTIES *a_ties, tLIBS *a_libs, int *a_lpss
    mvprintw (n, l += 9     , "%8s", s);
    strl4comma  (a_libs->m_priv , s, 0, 'c', '-', LEN_LABEL);
    mvprintw (n, l += 9     , "%8s", s);
+   /*---(totals)-------------------------*/
    a = a_libs->m_full / a_libs->t_count;
    strl4comma  (a            , s, 0, 'c', '-', LEN_LABEL);
    mvprintw (n, l += 9     , "%8s", s);
    strl4comma  (a + b        , s, 0, 'c', '-', LEN_LABEL);
    mvprintw (n, l += 9     , "%8s", s);
+   /*---(saveback)-----------------------*/
    if (a_lpss != NULL)  *a_lpss += a + b;
+   /*---(complete)-----------------------*/
+   return 0;
+}
+
+char
+YVIKEYS__memory_group   (char a_group, tPROC *a_proc, int a_left, int *n, int *y, int *a_lpss)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   char        rce         =  -10;
+   tTIES      *x_ties      = NULL;
+   tLIBS      *x_libs      = NULL;
+   /*---(defense)------------------------*/
+   --rce;  if (a_proc  == NULL)  return rce;
+   --rce;  if (n       == NULL)  return rce;
+   --rce;  if (y       == NULL)  return rce;
+   /*---(set color)----------------------*/
+   YVIKEYS__libcolor (a_group);
+   /*---(walk ties)----------------------*/
+   TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DHEAD);
+   while (x_ties != NULL) {
+      x_libs = x_ties->l_link;
+      if (x_libs->u_flag == a_group) {
+         if (*n % 5 == 0) ++(*y);
+         ++(*n);
+         ++(*y);
+         YVIKEYS__memory_libone (*y, a_left, x_ties, x_libs, a_lpss);
+      }
+      TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DNEXT);
+   }
+   /*---(unset color)--------------------*/
+   attrset (0);
+   /*---(complete)-----------------------*/
+   return 0;
 }
 
 char
@@ -1276,7 +1422,6 @@ YVIKEYS__memory_libs    (tPROC *a_proc, int a_left, int *a_lpss)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         i           =    0;
-   int         n           =    0;
    tTIES      *x_ties      = NULL;
    tLIBS      *x_libs      = NULL;
    char        s           [LEN_LABEL] = "";
@@ -1284,58 +1429,30 @@ YVIKEYS__memory_libs    (tPROC *a_proc, int a_left, int *a_lpss)
    int         a           =    0;
    int         b           =    0;
    int         c           =    0;
-   int         x_line      =    0;
+   int         n           =    0;
+   int         y           =    0;
    /*---(background)---------------------*/
-   n = a_proc->t_count + (int) (a_proc->t_count / 5);
-   if (a_proc->t_count % 5 == 0) --n;
+   y = a_proc->t_count + (int) (a_proc->t_count / 5);
+   if (a_proc->t_count % 5 == 0) --y;
    yCOLOR_curs ("9_norm");
-   mvprintw ( 9, a_left,   "ƒ²²²²²libs²²²²²²²²²²²²‚²²²²²²²tie²²²²²²²‚²²²²²²²²²²²²²²²²lib²²²²²²²²²²²²²²²²‚²²²²²²²pss²²²²²²²²‚");
-   for (i = 10; i < 10 + n + 2; ++i) {
-      mvprintw (i, a_left, "Œ                                                                                              Œ");
+   mvprintw ( 6, a_left,   "ƒ²²²²²libs²²²²²²²²²²²²²²²²²‚²²²²²²²tie²²²²²²²‚²²²²²²²²²²²²²²²²lib²²²²²²²²²²²²²²²²‚²²²²²²²per²²²²²²²²‚");
+   mvprintw ( 7, a_left,   "Œ                     proc      data     heap     full     text     cons     priv      pss     +tie Œ");
+   for (i =  8; i <  7 + y + 2; ++i) {
+      mvprintw (i, a_left, "Œ                                                                                                   Œ");
    }
-   mvprintw (10 + n + 2, a_left,   "„²²²²²²²²²²²²²²²²²²²²²…²²²²²²²²²²²²²²²²²…²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²…²²²²²²²²²²²²²²²²²²…");
+   mvprintw ( 7 + y + 1, a_left,   "Œ                     proc      data     heap     full     text     cons     priv      pss     +tie Œ");
+   mvprintw ( 7 + y + 2, a_left,   "„²²²²²²²²²²²²²²²²²²²²²²²²²²…²²²²²²²²²²²²²²²²²…²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²²…²²²²²²²²²²²²²²²²²²…");
    attrset (0);
    /*---(data)---------------------------*/
    a_left += 2;  /* 18 characters */
-   n       =  9;
+   y       =  6;
    if (a_lpss != NULL)  *a_lpss = 0;
-   yCOLOR_curs ("#_form");
-   TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DHEAD);
-   while (x_ties != NULL) {
-      if (x_ties->l_link->u_flag == 'e') {
-         if (x_line % 5 == 0) ++n;
-         ++x_line;
-         ++n;
-         YVIKEYS__memory_libone (n, a_left, x_ties, x_ties->l_link, a_lpss);
-      }
-      TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DNEXT);
-   }
-   attrset (0);
-   yCOLOR_curs ("p_rang");
-   TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DHEAD);
-   while (x_ties != NULL) {
-      if (x_ties->l_link->u_flag == 'c') {
-         if (x_line % 5 == 0) ++n;
-         ++x_line;
-         ++n;
-         YVIKEYS__memory_libone (n, a_left, x_ties, x_ties->l_link, a_lpss);
-      }
-      TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DNEXT);
-   }
-   attrset (0);
-   yCOLOR_curs ("9_norm");
-   TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DHEAD);
-   while (x_ties != NULL) {
-      if (strchr ("m-", x_ties->l_link->u_flag) != NULL) {
-         if (x_line % 5 == 0) ++n;
-         ++x_line;
-         ++n;
-         YVIKEYS__memory_libone (n, a_left, x_ties, x_ties->l_link, a_lpss);
-      }
-      TIES_by_proc_cursor (&x_ties, a_proc, YDLST_DNEXT);
-   }
-   attrset (0);
-   /*> if (a_lpss != NULL)  *a_lpss  = c;                                             <*/
+   /*---(display)------------------------*/
+   YVIKEYS__memory_group (LIB_EVERY, a_proc, a_left, &n, &y, a_lpss);
+   YVIKEYS__memory_group (LIB_CORES, a_proc, a_left, &n, &y, a_lpss);
+   YVIKEYS__memory_group (LIB_MAJOR, a_proc, a_left, &n, &y, a_lpss);
+   YVIKEYS__memory_group (LIB_OTHER, a_proc, a_left, &n, &y, a_lpss);
+   YVIKEYS__memory_group (LIB_HEATH, a_proc, a_left, &n, &y, a_lpss);
    /*---(complete)-----------------------*/
    return 0;
 }
