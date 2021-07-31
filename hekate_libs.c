@@ -115,6 +115,87 @@ char LIBS_purge   (void)         { return SHARE_purge (TYPE_LIBS); }
 
 
 /*====================------------------------------------====================*/
+/*===----                      environmental data                      ----===*/
+/*====================------------------------------------====================*/
+static void  o___ENVIRON_________o () { return; }
+
+char
+LIBS__size              (tLIBS *a_libs)
+{
+   /*---(locals)-----------+-----+-----+-*/
+   int         rce         =  -10;
+   int         rc          =    0;
+   FILE       *f;
+   char        x_cmd       [LEN_RECD]  = "";
+   char        x_recd      [LEN_RECD]  = "";
+   int         i           =    0;
+   char       *p           = NULL;
+   char       *r           = NULL;
+   /*---(header)------------------------*/
+   DEBUG_ENVI   yLOG_enter   (__FUNCTION__);
+   /*---(defense)-----------------------*/
+   DEBUG_ENVI   yLOG_point   ("a_libs"    , a_libs);
+   --rce;  if (a_libs == NULL) {
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   DEBUG_ENVI   yLOG_point   ("->name"    , a_libs->name);
+   --rce;  if (strlen (a_libs->name) <= 0) {
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(remove file)--------------------*/
+   sprintf (x_cmd, "rm tmp/size.tmp  2> /dev/null");
+   rc = system (x_cmd);
+   DEBUG_ENVI   yLOG_value   ("rm"        , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(run command)--------------------*/
+   sprintf (x_cmd, "size %s  > /tmp/size.tmp  2> /dev/null", a_libs->name);
+   rc = system (x_cmd);
+   DEBUG_ENVI   yLOG_value   ("size"      , rc);
+   --rce;  if (rc < 0) {
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(open proc)----------------------*/
+   f = fopen ("/tmp/size.tmp", "rt");
+   DEBUG_ENVI   yLOG_point   ("f"         , f);
+   --rce;  if (f == NULL) {
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(read line)---------------------*/
+   fgets (x_recd, LEN_RECD, f);
+   fgets (x_recd, LEN_RECD, f);
+   p = strtok_r (x_recd, " \t", &r);
+   for (i = 0; i < 4; ++i) {
+      if (p == NULL)  break;
+      switch (i) {
+      case 0 :  a_libs->s_text  = atoi (p) / 1024;  break;
+      case 1 :  a_libs->s_data  = atoi (p) / 1024;  break;
+      case 2 :  a_libs->s_bss   = atoi (p) / 1024;  break;
+      case 3 :  a_libs->s_total = atoi (p) / 1024;  break;
+      }
+      p = strtok_r (NULL, " \t", &r);
+   }
+   /*---(close file)--------------------*/
+   rc = fclose (f);
+   DEBUG_ENVI   yLOG_value   ("close"     , rc);
+   --rce;  if (f <  0) {
+      DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
+      return rce;
+   }
+   /*---(complete)----------------------*/
+   DEBUG_ENVI   yLOG_exit    (__FUNCTION__);
+   return 0;
+}
+
+
+
+/*====================------------------------------------====================*/
 /*===----                   hooking and unhooking                      ----===*/
 /*====================------------------------------------====================*/
 static void  o___HOOKING_________o () { return; }
@@ -186,15 +267,17 @@ LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties)
          return rce;
       }
       l_curr = x_libs;
+      /*---(add name)-----------------------*/
+      DEBUG_YEXEC  yLOG_point   ("l_curr", l_curr);
+      strlcpy (l_curr->name , a_name, LEN_RECD);
+      p = strrchr (a_name, '/');
+      if (p == NULL)  p = a_name;
+      else            ++p;
+      strlcpy (l_curr->terse, p, LEN_TITLE);
+      rc = 1;
+      /*---(add size)-----------------------*/
+      LIBS__size (l_curr);
    }
-   /*---(add name)-----------------------*/
-   DEBUG_YEXEC  yLOG_point   ("l_curr", l_curr);
-   strlcpy (l_curr->name , a_name, LEN_RECD);
-   p = strrchr (a_name, '/');
-   if (p == NULL)  p = a_name;
-   else            ++p;
-   strlcpy (l_curr->terse, p, LEN_TITLE);
-   rc = 1;
    /*---(hook tie to proc)---------------*/
    if (a_proc->t_head == NULL) {
       DEBUG_DATA   yLOG_note   ("first in proc");

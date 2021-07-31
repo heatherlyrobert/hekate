@@ -65,6 +65,7 @@ PROG__init              (int a_argc, char *a_argv[])
       DEBUG_PROG   yLOG_exitr    (__FUNCTION__, rc);
       return rc;
    }
+   my.mem_dump = NULL;
    /*---(complete)-----------------------*/
    DEBUG_PROG   yLOG_exit     (__FUNCTION__);
    return 0;
@@ -90,9 +91,12 @@ PROG__args              (int a_argc, char *a_argv[])
       if (a[0] == '@')  continue;
       DEBUG_ARGS  yLOG_info    ("cli arg", a);
       ++x_args;
+      if      (strcmp  (a, "--memory"     ) == 0)  {
+         my.mem_dump = fopen ("/tmp/hekate_mem.dump", "wt");
+      }
       /*> if      (strncmp (a, "-f"        ,10) == 0)  strlcpy (x_name , a_argv[++i], LEN_RECD);   <* 
-       *> else if (strncmp (a, "-h"        ,10) == 0)  PROG_usage();                             <* 
-       *> else if (strncmp (a, "--help"    ,10) == 0)  PROG_usage();                             <*/
+       *> else if (strncmp (a, "-h"        ,10) == 0)  PROG_usage();                               <* 
+       *> else if (strncmp (a, "--help"    ,10) == 0)  PROG_usage();                               <*/
       /*---(prefixes)--------------------*/
       /*> else if (strncmp (a, "--formula-"          , 10) == 0)  PROG_layout_set ("cli", "formula"  , a + 10);   <* 
        *> else if (strncmp (a, "--status-"           ,  9) == 0)  PROG_layout_set ("cli", "status"   , a +  9);   <* 
@@ -140,22 +144,6 @@ PROG__visual            (void)
    yVIKEYS_cmds_direct   (":command show");
    yVIKEYS_cmds_direct   (":modes show");
    yVIKEYS_cmds_direct   (":keys show");
-   /*> DRAW_init  ();                                                                 <*/
-   /*> CURS_screen_reset ();                                                          <*/
-   /*---(status options)-----------------*/
-   /*> yVIKEYS_view_option (YVIKEYS_STATUS, "tab"    , CURS_status_tab     , "tab name, type, and dimensions"             );   <* 
-    *> yVIKEYS_view_option (YVIKEYS_STATUS, "cell"   , CURS_status_cell    , "details of current cell"                    );   <* 
-    *> yVIKEYS_view_option (YVIKEYS_STATUS, "deps"   , CURS_status_deps    , "details of current cell dependencies"       );   <* 
-    *> yVIKEYS_view_option (YVIKEYS_STATUS, "rpn"    , CURS_status_rpn     , "details of current cell rpn notation"       );   <* 
-    *> yVIKEYS_view_option (YVIKEYS_STATUS, "mundo"  , CURS_status_history , "change history for debugging"               );   <* 
-    *> yVIKEYS_view_option (YVIKEYS_STATUS, "error"  , CURS_status_error   , "details on recent errors"                   );   <* 
-    *> yVIKEYS_view_option (YVIKEYS_STATUS, "detail" , CURS_status_detail  , "details on recent errors"                   );   <* 
-    *> yVIKEYS_view_option (YVIKEYS_BUFFER, "summary", CURS_bufsum         , "one-line buffer inventory"                  );   <* 
-    *> yVIKEYS_view_option (YVIKEYS_BUFFER, "detail" , CURS_bufdet         , "multi-line buffer list"                     );   <* 
-    *> yVIKEYS_cmds_direct (":status mode");                                                                                   <* 
-    *> yVIKEYS_cmds_direct (":read");                                                                                          <* 
-    *> MAP_mapper (YVIKEYS_INIT);                                                                                              <* 
-    *> yVIKEYS_map_refresh ();                                                                                                 <*/
    /*---(complete)-----------------------*/
    DEBUG_PROG  yLOG_exit  (__FUNCTION__);
    return 0;
@@ -271,7 +259,7 @@ PROG_review             (void)
       ++x_total;
       rc = 0;
       /*---(simple filtering)-------------------*/
-      if (strchr (LTRS_NUMBER, x_file->d_name [0]) == NULL) {
+      if (strchr (YSTR_NUMBER, x_file->d_name [0]) == NULL) {
          DEBUG_INPT   yLOG_note    ("not leading number");
          continue;
       }

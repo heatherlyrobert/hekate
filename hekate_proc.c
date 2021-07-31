@@ -43,6 +43,7 @@ PROC__memory            (tPROC *a_cur)
    ++n;  if (a_cur->c_flag      != '-')         s_print [n] = 'X';
    ++n;
    ++n;  if (a_cur->m_full      >  0)           s_print [n] = 'X';
+   ++n;  if (a_cur->m_pss       >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_proc      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_data      >  0)           s_print [n] = 'X';
    ++n;  if (a_cur->m_heap      >  0)           s_print [n] = 'X';
@@ -108,6 +109,7 @@ PROC_wipe               (tPROC *a_new, char a_type)
    a_new->c_flag   = '-';
    /*---(memory--------------------------*/
    a_new->m_full   = 0;
+   a_new->m_pss    = 0;
    a_new->m_proc   = 0;
    a_new->m_data   = 0;
    a_new->m_heap   = 0;
@@ -389,6 +391,13 @@ PROC_by_seq_cursor      (tPROC **r_curr, char a_move)
    s_last  = NULL;
    s_next  = '-';
    /*---(defense)------------------------*/
+   switch (a_move) {
+   case YDLST_DHEAD :  a_move = YDLST_HEAD;  break;
+   case YDLST_DPREV :  a_move = YDLST_PREV;  break;
+   case YDLST_DCURR :  a_move = YDLST_CURR;  break;
+   case YDLST_DNEXT :  a_move = YDLST_NEXT;  break;
+   case YDLST_DTAIL :  a_move = YDLST_TAIL;  break;
+   }
    --rce;  if (strchr ("[<.>]rs", a_move) == NULL)  return rce;
    /*---(reset)--------------------------*/
    if (a_move == 'r') {

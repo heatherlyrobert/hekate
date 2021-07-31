@@ -519,7 +519,7 @@ DATA_cpu                (tPROC *a_proc, char *a_file)
 }
 
 char
-DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, int a_inode, char *a_perm, int a_full, int a_rss, int a_pvt)
+DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, int a_inode, char *a_perm, int a_full, int a_rss, int a_pvt, char a_exec)
 {
    /*---(locals)-----------+-----+-----+-*/
    char        rc          =    0;
@@ -534,6 +534,13 @@ DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, 
    long        x_beg       =    0;
    long        x_end       =    0;
    static int  c           =    0;
+   char        x_etext     =  '·';
+   char        x_econs     =  '·';
+   char        x_eheap     =  '·';
+   char        x_theap     =  '·';
+   char        x_ltext     =  '·';
+   char        x_lcons     =  '·';
+   char        x_lpriv     =  '·';
    /*---(header)-------------------------*/
    DEBUG_ENVI   yLOG_enter   (__FUNCTION__);
    /*---(defense)------------------------*/
@@ -603,8 +610,9 @@ DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, 
       else if (strncmp (a_perm, "rw-", 3    ) == 0)  x_part = TIES_DATA;
       else                                           x_part = LIBS_PRIV;
    } else {
-      if (x_ties == NULL)  x_part = EXEC_HEAP;
-      else                 x_part = TIES_HEAP;
+      if (strstr (a_name, "(deleted)") == 0)  x_part = '-'; /* drm trouble */
+      else if (x_ties == NULL)                x_part = EXEC_HEAP;
+      else                                    x_part = TIES_HEAP;
    }
    DEBUG_ENVI   yLOG_char    ("x_part"    , x_part);
    /*---(calculate empty)----------------*/
@@ -616,45 +624,53 @@ DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, 
    /*---(executable)---------------------*/
    switch (x_part) {
    case EXEC_TEXT :  /* exec code base */
-      x_exec->m_text  += a_full;
-      x_exec->m_full  += a_full;
-      a_proc->m_full  += a_full;
+      if (a_exec != 'y') {
+         x_exec->m_text  += a_full;
+         x_exec->m_full  += a_full;
+      } else {
+         if (x_exec->m_text != a_full)  x_etext = 'B';
+         else                           x_etext = 'Ï';
+      }
       break;
    case EXEC_CONS :  /* exec const data */
-      x_exec->m_cons  += a_full;
-      x_exec->m_full  += a_full;
-      a_proc->m_full  += a_full;
+      if (a_exec != 'y') {
+         x_exec->m_cons  += a_full;
+         x_exec->m_full  += a_full;
+      } else {
+         if (x_exec->m_cons != a_full)  x_econs = 'B';
+         else                           x_econs = 'Ï';
+      }
       break;
    case EXEC_KERN : /* mapped kernel space */
-      x_exec->m_kern  += a_full;
-      x_exec->m_full  += a_full;
-      a_proc->m_full  += a_full;
+      if (a_exec != 'y') {
+         x_exec->m_kern  += a_full;
+         x_exec->m_full  += a_full;
+      }
       break;
    case EXEC_HEAP :  /* exec shared heap */
-      a_proc->m_full  += a_full;
-      x_exec->m_full  += a_full;
-      x_exec->m_heap  += a_full;
+      x_eheap = 'B';
+      if (a_exec != 'y') {
+         x_exec->m_full  += a_full;
+         x_exec->m_heap  += a_full;
+      }
       break;
    }
    /*---(process)------------------------*/
    switch (x_part) {
    case PROC_DATA :  /* variable data */
-      a_proc->m_full  += a_pvt;
       a_proc->m_proc  += a_pvt;
       a_proc->m_data  += a_pvt;
       break;
    case PROC_HEAP : 
-      a_proc->m_full  += a_rss;
       a_proc->m_proc  += a_rss;
       a_proc->m_heap  += a_rss;
       break;
    case PROC_STCK : 
-      a_proc->m_full  += a_rss;
       a_proc->m_proc  += a_rss;
       a_proc->m_stack += a_rss;
       break;
    case PROC_OTHR : 
-      a_proc->m_full  += a_full;
+      a_proc->m_proc  += a_full;
       a_proc->m_other += a_full;
       x_empty = 0;
       break;
@@ -663,44 +679,57 @@ DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, 
    /*---(ties)---------------------------*/
    switch (x_part) {
    case TIES_DATA :  /* libs data */
-      a_proc->m_full  += a_pvt;
       x_ties->m_data  += a_pvt;
       break;
    case TIES_HEAP :  /* libs heap */
-      a_proc->m_full  += a_full;
+      x_theap = 'B';
       x_ties->m_heap  += a_full;
       break;
    }
    /*---(libraries)----------------------*/
    switch (x_part) {
    case LIBS_TEXT : /* libs code base */
-      a_proc->m_full  += a_full;
-      x_libs->m_full  += a_full;
-      x_libs->m_text  += a_full;
+      if (x_libs->m_text == 0)  {
+         x_libs->m_full  += a_full;
+         x_libs->m_text  += a_full;
+      } else {
+         if (x_libs->m_text != a_full)  x_ltext = 'B';
+         else                           x_ltext = 'Ï';
+      }
       break;
    case LIBS_CONS : /* libs constants */
-      a_proc->m_full  += a_full;
-      x_libs->m_full  += a_full;
-      x_libs->m_cons  += a_full;
+      if (x_libs->m_cons == 0)  {
+         x_libs->m_full  += a_full;
+         x_libs->m_cons  += a_full;
+      } else {
+         if (x_libs->m_cons != a_full)  x_lcons = 'B';
+         else                           x_lcons = 'Ï';
+      }
       break;
    case LIBS_PRIV : /* libs unknown */
-      a_proc->m_full  += a_full;
-      x_libs->m_full  += a_full;
-      x_libs->m_priv  += a_full;
+      if (x_libs->m_priv == 0)  {
+         /*> x_libs->m_full  += a_full;                                               <*/
+         x_libs->m_priv  += a_full;
+      } else {
+         if (x_libs->m_priv != a_full)  x_lpriv = 'B';
+         else                           x_lpriv = 'Ï';
+      }
       break;
    }
    /*---(reporting)----------------------*/
-   /*> if (c % 5 == 0)  printf ("\nline   ---name------------- perm   -full -rss- -pvt-   -   etext econs eheap ekern   pdata pheap stack other   tdata theap   ltext lcons lpriv   -total-\n");   <*/
-   /*> printf ("%4d   %-20.20s %-4.4s   ", a_line, x_base, a_perm);                   <*/
-   /*> printf ("%5d %5d %5d   %c   "     , a_full, a_rss, a_pvt, x_part);             <*/
-   /*> printf ("%5d %5d %5d %5d   "      , x_exec->m_text, x_exec->m_cons, x_exec->m_heap, x_exec->m_kern);   <*/
-   /*> printf ("%5d %5d %5d %5d   "      , a_proc->m_data, a_proc->m_heap, a_proc->m_stack, a_proc->m_other);   <*/
-   /*> if (x_ties != NULL)  printf ("%5d %5d   "          , x_ties->m_data, x_ties->m_heap);                   <* 
-    *> else                 printf ("              ");                                                         <* 
-    *> if (x_libs != NULL)  printf ("%5d %5d %5d   "      , x_libs->m_text, x_libs->m_cons, x_libs->m_priv);   <* 
-    *> else                 printf ("                    ");                                                   <* 
-    *> printf ("%7d"                    , a_proc->m_full);                                                     <* 
-    *> printf ("\n");                                                                                          <*/
+   if (my.mem_dump != NULL) {
+      if (c % 5 == 0)  fprintf (my.mem_dump, "\nline   ---name------------- perm   -full -rss- -pvt-   -   etext econs eheap ekern   pdata pheap stack other   tdata theap   ltext lcons lpriv   -total-\n");
+      fprintf (my.mem_dump, "%4d   %-20.20s %-4.4s   ", a_line, x_base, a_perm);
+      fprintf (my.mem_dump, "%5d %5d %5d   %c   "     , a_full, a_rss, a_pvt, x_part);
+      fprintf (my.mem_dump, "%5d %5d %5d %5d   "      , x_exec->m_text, x_exec->m_cons, x_exec->m_heap, x_exec->m_kern);
+      fprintf (my.mem_dump, "%5d %5d %5d %5d   "      , a_proc->m_data, a_proc->m_heap, a_proc->m_stack, a_proc->m_other);
+      if (x_ties != NULL)  fprintf (my.mem_dump, "%5d %5d   "          , x_ties->m_data, x_ties->m_heap);
+      else                 fprintf (my.mem_dump, "              ");
+      if (x_libs != NULL)  fprintf (my.mem_dump, "%5d %5d %5d   "      , x_libs->m_text, x_libs->m_cons, x_libs->m_priv);
+      else                 fprintf (my.mem_dump, "                    ");
+      fprintf (my.mem_dump, "%7d   %c %c %c   %c   %c %c %c"     , a_proc->m_full, x_etext, x_econs, x_eheap, x_theap, x_ltext, x_lcons, x_lpriv);
+      fprintf (my.mem_dump, "\n");
+   }
    ++c;
    /*---(complete)-----------------------*/
    DEBUG_ENVI   yLOG_exit    (__FUNCTION__);
@@ -708,7 +737,7 @@ DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, 
 }
 
 char
-DATA_mem                (tPROC *a_proc, char *a_file)
+DATA_mem                (tPROC *a_proc, char *a_file, char a_exec)
 {
    /*---(locals)-----------+-----+-----+-*/
    int         rce         =  -10;
@@ -794,7 +823,7 @@ DATA_mem                (tPROC *a_proc, char *a_file)
             x_pvt  += atol (p);
             break; 
          case 15 :
-            DATA__mem_update (a_proc, x_name, x_line, x_addr, x_inode, x_perm, x_full, x_rss, x_pvt);
+            DATA__mem_update (a_proc, x_name, x_line, x_addr, x_inode, x_perm, x_full, x_rss, x_pvt, a_exec);
             break;
          }
       }
@@ -820,6 +849,7 @@ DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit)
    int         rce         =  -10;
    int         rc          =    0;
    char        x_file      [LEN_RECD]  = "";
+   char        x_used      =  '-';
    /*---(header)------------------------*/
    DEBUG_ENVI   yLOG_enter   (__FUNCTION__);
    DEBUG_ENVI   yLOG_char    ("a_unit"    , a_unit);
@@ -830,6 +860,9 @@ DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit)
       /*> PROC_unhook (a_proc);                                                       <*/
       DEBUG_ENVI   yLOG_exitr   (__FUNCTION__, rce);
       return rce;
+   }
+   if (my.mem_dump != NULL) {
+      fprintf (my.mem_dump, "\n\n%d -----------------------------------------\n", a_rpid);
    }
    /*---(gather cpu)------------------*/
    if (a_unit != 'y')  sprintf (x_file, "/proc/%d/stat", a_rpid);
@@ -847,7 +880,8 @@ DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit)
    if (a_unit != 'y')  sprintf (x_file, "/proc/%d/smaps", a_rpid);
    else                sprintf (x_file, "./testdata/%d_smaps", a_rpid);
    DEBUG_ENVI   yLOG_info    ("x_file"    , x_file);
-   rc = DATA_mem (*a_proc, x_file);
+   if ((*a_proc)->e_link->m_text > 0)   x_used = 'y';
+   rc = DATA_mem (*a_proc, x_file, x_used);
    DEBUG_ENVI   yLOG_value   ("memory"    , rc);
    --rce;  if (rc < 0) {
       PROC_unhook (a_proc);
@@ -957,7 +991,7 @@ DATA_gather             (void)
       ++x_total;
       rc = 0;
       /*---(simple filtering)-------------------*/
-      if (strchr (LTRS_NUMBER, x_file->d_name [0]) == NULL) {
+      if (strchr (YSTR_NUMBER, x_file->d_name [0]) == NULL) {
          DEBUG_INPT   yLOG_note    ("not leading number");
          continue;
       }

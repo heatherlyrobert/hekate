@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7j"
-#define     P_VERTXT    "cleaned up, simplified, and shared library drawing logic"
+#define     P_VERNUM    "0.7k"
+#define     P_VERTXT    "screen resizing logic greatly improved"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"
@@ -101,6 +101,7 @@ static struct cEXEC {
    char        hint        [LEN_SHORT];
    /*---(memory)------------*/
    int         m_full;   /* all exec space */
+   int         m_pss;    /* all exec space divided by number of procs */
    int         m_text;   /* actual code space */
    int         m_cons;   /* read only vars */
    int         m_heap;   /* shared heap */
@@ -154,6 +155,7 @@ static struct cPROC {
    char        c_flag;
    /*---(memory)------------*/
    int         m_full;
+   int         m_pss;
    int         m_proc;
    int         m_data;
    int         m_heap;
@@ -194,7 +196,7 @@ static struct cPROC {
    uchar       p_seq;
    char        e_print     [LEN_HUND];
    char        m_print     [LEN_HUND];
-   char        p_print     [LEN_HUND];
+   char        p_print     [LEN_RECD];
    char        t_print     [LEN_LABEL];
    /*---(done)--------------*/
 };
@@ -296,18 +298,22 @@ typedef  struct cMY  tMY;
 struct cMY {
    /*---(runtime config)------*/
    char        version     [LEN_HUND];      /* version string                 */
-   int         m_left;
-   int         m_wide;
-   int         m_bott;
-   int         m_tall;
+   int         w_left;
+   int         w_wide;
+   int         w_bott;
+   int         w_tall;
    ushort      f_seq;
    uchar       e_len;
    uchar       e_wide;
    uchar       e_mult;
    uchar       e_flag      [LEN_LABEL];    /* sequence number 0-255 */
+   uchar       m_wide;
    int         p_index;
+   uchar       p_wide;
    uchar       p_flag      [LEN_LABEL];    /* 0 or 1 */
    int         l_index;
+   uchar       t_wide;
+   uchar       l_wide;
    int         l_show;
    int         l_every;
    int         l_heath;
@@ -317,6 +323,7 @@ struct cMY {
    int         l_etitle;
    int         l_ctitle;
    char        hint        [LEN_TERSE];
+   FILE       *mem_dump;
    /*---(done)----------------*/
 };
 extern      tMY         my;
@@ -473,8 +480,8 @@ char        DATA__size              (tPROC *a_proc);
 char        DATA_prework            (int a_rpid, tPROC **a_proc, char a_unit);
 /*---(detail)---------------*/
 char        DATA_cpu                (tPROC *a_proc, char *a_file);
-char        DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, int a_inode, char *a_perm, int a_full, int a_rss, int a_pvt);
-char        DATA_mem                (tPROC *a_proc, char *a_file);
+char        DATA__mem_update        (tPROC *a_proc, char *a_name, int a_line, char *a_addr, int a_inode, char *a_perm, int a_full, int a_rss, int a_pvt, char a_used);
+char        DATA_mem                (tPROC *a_proc, char *a_file, char a_used);
 /*---(driver)---------------*/
 char        DATA_driver             (int a_rpid, tPROC **a_proc, char a_unit);
 /*---(memory)---------------*/
