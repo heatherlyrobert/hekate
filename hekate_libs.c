@@ -274,6 +274,7 @@ LIBS_hook               (tPROC *a_proc, char *a_name, tTIES **a_ties)
       if (p == NULL)  p = a_name;
       else            ++p;
       strlcpy (l_curr->terse, p, LEN_TITLE);
+      if (strncmp (l_curr->terse, "libGL.so", 8) == 0)  strcpy (l_curr->hint, "zb");
       rc = 1;
       /*---(add size)-----------------------*/
       LIBS__size (l_curr);

@@ -33,8 +33,8 @@
 
 #define     P_VERMAJOR  "0.--, pre-production"
 #define     P_VERMINOR  "0.7-, convert to interactive use (yVIKEYS)"
-#define     P_VERNUM    "0.7k"
-#define     P_VERTXT    "screen resizing logic greatly improved"
+#define     P_VERNUM    "0.7l"
+#define     P_VERTXT    "demo complete for webpage"
 
 #define     P_PRIORITY  "direct, simple, brief, vigorous, and lucid (h.w. fowler)"
 #define     P_PRINCIPAL "[grow a set] and build your wings on the way down (r. bradbury)"

@@ -1719,9 +1719,6 @@ YVIKEYS__memory_libsum  (int n, int l, int a_wide, int a_tall)
    return 0;
 }
 
-/*> draw  8    128  Ä  Å  Ç  É    132  Ñ  Ö  Ü  á    136  à  â  ä  ã    140  å  ç  é  è   <* 
- *> draw  9    144  ê  ë  í  ì    148  î  ï  ñ  ó    152  ò  ô  ö  õ    156  ú  ù  û  ü   <*/
-
 char
 YVIKEYS__memory_libs    (tPROC *a_proc, int a_left, int *a_lpss, int a_wide, int a_tall)
 {

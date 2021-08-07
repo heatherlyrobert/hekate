@@ -76,6 +76,7 @@ PROG__args              (int a_argc, char *a_argv[])
 {
    DEBUG_PROG  yLOG_enter   (__FUNCTION__);
    /*---(locals)-------------------------*/
+   char        rc          = 0;
    int         i           = 0;
    char       *a           = NULL;
    int         x_total     = 0;
@@ -84,6 +85,7 @@ PROG__args              (int a_argc, char *a_argv[])
    char        t           [LEN_FULL]   = "";
    /*---(begin)--------------------------*/
    /*> FILE_rename ("");                                                              <*/
+   rc = yVIKEYS_args (a_argc, a_argv);
    /*---(process)------------------------*/
    for (i = 1; i < a_argc; ++i) {
       a = a_argv[i];

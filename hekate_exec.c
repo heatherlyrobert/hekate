@@ -180,6 +180,7 @@ EXEC_hook               (tPROC *a_proc, char *a_name)
       }
       e_curr = e_temp;
       strlcpy (e_temp->base, a_name, LEN_TITLE);
+      if (strcmp (a_name, "hekate") == 0)  strcpy (e_temp->hint, "za");
       rc = 1;
    } else {
       DEBUG_NORM   yLOG_note    ("existing");

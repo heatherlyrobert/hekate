@@ -1,0 +1,174 @@
+##[[ SETUP ]]###################################################################
+#   ffmpeg -fflags +genpts -f X11grab -video_size 1220x670 -i :0.0+10,10 -c:v libx264 -r 25 -pix_fmt yuv420p -preset medium -strict -2 -an -y hekate_quick.mp4
+
+º/¦»
+º;;¦»
+º:mark purge¦»
+º_»
+º:note #¦»
+
+ºµre5»
+ºµcMa»
+
+º:myhome 20   20¦»
+º:mysize 1200 650¦»
+
+
+##[[ INTRO  (10sec) ]]##########################################################
+
+······º··j··:note 52)HEKATE¦»
+·Ï····º··j··»
+·Ï····º··j··:note 43=greek goddess of crossroads and witchcraft¦»
+·Ï····º··j··»
+·Ï····º··j··:note 63=process viewer to DIRECTIONALLY understand memory use¦»
+·Ï····º··j··»
+·Ï····º··j··:note 54=90sec quick sampler¦»
+·Ï····º··j··»
+·Ï····º··j··»
+º:note #¦»
+
+·Ï····º··j··:note 52)FIRST¦»
+·Ï····º··j··»
+·Ï····º··j··:note 52)the hekate screen is laid out in 3 columns¦»
+·Ï····º··j··»
+·Ï····º·2j··:note 23=LEFT¦»
+·Ï····º·2j··»
+·Ï····º·2j··:note 23=left are the shared executables¦»
+·Ï····º·2j··»
+·Ï····º·gj··:note 53=CENTER¦»
+·Ï····º·gb··»
+·Ï····º·3k··:note 53=center are the processes, similar to posix "top" or htop¦»
+·Ï····º·3k··»
+·Ï····º·3k··:note 83=RIGHT¦»
+·Ï····º·3k··»
+·Ï····º·3k··:note 83=right are the shared libraries loaded in memory¦»
+·Ï····º··k··»
+º:note #¦»
+
+
+##[[ PROCS  (10sec) ]]##########################################################
+
+·Ï····º··k··:note 53)center are the processes, similar to "top" of htop¦»
+·Ï·´··º··k··:note 29=quick search for ETERM (matches in RED)¦»
+ºµre6»
+/Eterm¦
+ºµre5»
+·´·´··º:note Ip=the bright line is the current process¦»
+·´·´··º:note 3u=PID¦»
+·Ï·´··º:note 3u=prefix is the PID¦»
+·´·´··º:note 5u=CMD¦»
+·Ï·´··º:note 5u=middle is the command line¦»
+·´·´··º:note 7u=LIBS¦»
+·Ï·´··º:note 7u=suffix is number of shared libraries used¦»
+·Ï·´··º··>··»
+·Ï·´··º··>··»
+º:note #¦»
+
+
+##[[ EXECS  (??sec) ]]##########################################################
+
+······º:note 14)left are the shared executables¦»
+·Ï·´··º··>··»
+·Ï·´··º··>··:note 1u=ETERM line shows count of processes¦»
+·Ï·´··º··>··»
+·Ï·´··º··<··:note 23=easy to scroll through results¦»
+·Ï·´··º··<··»
+·Ï·´··º··j··:note 25=or move normally¦»
+·Ï·´··º··j··»
+·Ï·´··º··j··»
+º:note #¦»
+
+······º:note 14)left are the shared executables¦»
+·´·´··º:note 29=use hint for HEKATE (matches in BLUE)¦»
+º/¦»
+ºµre6»
+;+¦··;;za¦
+ºµre5»
+ºzt··3k»
+·Ï·´··º:note 22=and you can see the two instances¦»
+·Ï·´··º··;[¦··»
+·Ï·´··º··;]¦··»
+·Ï·´··º··;[¦··»
+·Ï·´··º··;]¦··»
+·Ï·´··º··;[¦··»
+º:note #¦»
+
+
+##[[ LIBS  (??sec) ]]###########################################################
+
+······º:note 74)right are the shared libraries¦»
+·Ï·´··º:note 71=EVERY¦»
+·Ï·´··º:note 71="every" are used for every process¦»
+·Ï·´··º··j··»
+·Ï·´··º··j··:note 72=CORE¦»
+·Ï·´··º··j··»
+·Ï·´··º··j··:note 72="core" are shared by many process¦»
+·Ï·´··º··j··»
+·Ï·´··º··j··:note 77=OTHER¦»
+·Ï·´··º··j··»
+·Ï·´··º··j··:note 77="other" are any remaining used¦»
+·Ï·´··º··j··»
+·Ï·´··º··j··:note 73=red are actually used by process¦»
+·Ï·´··º··j··»
+·Ï·´··º··j··»
+·Ï·´··º··j··»
+·Ï·´··º··;]¦··»
+·Ï·Ï··
+º:note #¦»
+
+······º:note 74)right are the shared libraries¦»
+·Ï·Ï··º:note 29=use hint for libGL (matches in BLUE)¦»
+ºµre6»
+;;zb¦
+ºµre5»
+·Ï·´··º:note 28=scrolling through results¦»
+·Ï·´··º··;>¦··»
+·Ï·´··º··;>¦··»
+·Ï·´··º··zm···:note 57=and, center line on screen¦»
+·Ï·´··º·······:note 77=YELLOW¦»
+·Ï·´··º·······:note 77=yellow are my personal libraries¦»
+·Ï·´··º·······:note 78=made the stand out for personal reasons¦»
+ÏÏÏÏÏÏ
+º:note #¦»
+
+
+##[[ OVERLAY (??sec) ]]#########################################################
+
+······º:note 29=call up the memory overlay¦»
+ºµre6»
+:o mem¦
+ºµre5»
+······º:note 52)FINALLY¦»
+·Ï·´··º:note 52)the overlay view showing details¦»
+·Ï·´··º:note 14=EXEC¦»
+·Ï·´··º:note 14=shared executable¦»
+·Ï·´··º:note 34=PROC¦»
+·Ï·´··º:note 34=specific process¦»
+·Ï·´··º:note 54=LIBS¦»
+·Ï·´··º:note 54=shared libraries¦»
+·Ï·´··
+º:note #¦»
+º;;¦»
+
+
+······º:note 52)the overlay view showing details¦»
+·Ï·´··º:note 57=it also updates automatically as you move¦»
+·Ï·´··º_»
+·Ï·´··º··j··»
+·Ï·´··º··j··»
+·Ï·´··º··j··»
+·Ï·´··º··j··»
+·Ï·´··º··j··»
+·Ï·´··º··j··»
+º:note #¦»
+
+
+##[[ FINALE (??sec) ]]##########################################################
+
+·Ï····º:note 52=its far from perfect (DIRECTIONAL)¦»
+·Ï·Ï··º:note 53=many better, higher quality, and faster options¦»
+·Ï·Ï··º:note 54=but; every tragic, misbegotten byte is mine ;)¦»
+·Ï·Ï··º:note 55)end-of-sampler.  done, finito, completare.¦»
+
+
+
